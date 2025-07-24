@@ -1,0 +1,93 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Servicios">
+	<div id="main-content">
+		<main class="content">
+			<section class="section">
+				<h2>Servicios Públicos</h2>
+				<ul>
+					<li>
+						<strong>Sistema de Cloacas:</strong> Gestión y tratamiento
+						de aguas residuales mediante un sistema de lagunas de estabilización
+						y cámara de cloración.
+					</li>
+					<li>
+						<strong>Agua potable:</strong> Acceso al recurso con calidad
+						garantizada para la comunidad.
+					</li>
+					<li>
+						<strong>Colaboración ambiental:</strong> Participación en
+						proyectos de vigilancia sanitaria junto al gobierno local,
+						el hospital y equipos científicos.
+					</li>
+				</ul>
+			</section>
+
+			<section class="section">
+				<h2>Servicios Sociales</h2>
+				<ul>
+					<li>
+						<strong>Asistencia social:</strong> Apoyo integral a sectores
+						vulnerables.
+					</li>
+					<li>
+						<strong>Programas comunitarios:</strong> Actividades destinadas
+						al desarrollo social, educativo y sanitario.
+					</li>
+				</ul>
+			</section>
+
+			<section class="section">
+				<h2>Vivienda y Hábitat</h2>
+				<ul>
+					<li>
+						<strong>Proyectos habitacionales:</strong> Promoción de soluciones
+						habitacionales dignas.
+					</li>
+					<li>
+						<strong>Autoconstrucción y créditos:</strong> Asistencia
+						para el acceso a la vivienda propia.
+					</li>
+				</ul>
+			</section>
+		</main>
+	</div>
+
+	<style>
+		#main-content {
+			padding-top: 160px;
+			margin: 0 1rem;
+			transition: padding-top 0.3s ease;
+		}
+		.content {
+			padding: 2rem 1rem;
+			max-width: 900px;
+			margin: 0 auto;
+			line-height: 1.6;
+			font-size: 1.1rem;
+			color: #333;
+		}
+		.section {
+			margin-bottom: 3rem;
+			background-color: #f9f9f9;
+			padding: 2rem;
+			border-radius: 12px;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+		}
+		h2 {
+			color: #004481;
+			margin-bottom: 1rem;
+			font-size: 1.8rem;
+			border-left: 5px solid #ffcc00;
+			padding-left: 1rem;
+		}
+		ul {
+			padding-left: 1.5rem;
+		}
+		li {
+			margin-bottom: 0.8rem;
+		}
+	</style>
+</Layout>

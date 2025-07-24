@@ -1,0 +1,61 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Página no encontrada">
+	<div id="main-content">
+		<section class="error-container">
+			<h1>404</h1>
+			<h2>Página no encontrada</h2>
+			<p>
+				La página que estás buscando no existe o fue movida. Verificá la
+				URL o volvé al inicio.
+			</p>
+			<a href="/" class="home-button">Volver al inicio</a>
+		</section>
+	</div>
+
+	<style>
+		#main-content {
+			padding-top: 160px;
+			text-align: center;
+			margin: 0 1rem;
+		}
+		.error-container {
+			max-width: 600px;
+			margin: 3rem auto;
+			padding: 2rem;
+			background-color: #f9f9f9;
+			border-radius: 12px;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+		}
+		h1 {
+			font-size: 6rem;
+			color: #ffcc00;
+			margin: 0;
+		}
+		h2 {
+			font-size: 2rem;
+			color: #004481;
+			margin-top: 0.5rem;
+		}
+		p {
+			color: #555;
+			margin: 1rem 0 2rem;
+			font-size: 1.1rem;
+		}
+		.home-button {
+			display: inline-block;
+			padding: 0.75rem 1.5rem;
+			background-color: #004481;
+			color: white;
+			text-decoration: none;
+			border-radius: 2rem;
+			font-weight: bold;
+			transition: background 0.3s ease;
+		}
+		.home-button:hover {
+			background-color: #002e6e;
+		}
+	</style>
+</Layout>

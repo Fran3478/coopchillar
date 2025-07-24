@@ -1,0 +1,693 @@
+<div class="noticias-y-blog">
+	<!-- Carrusel de Noticias -->
+	<div class="news-carousel" id="news-carousel">
+		<div class="carousel-wrapper">
+			<!-- Slide 1 -->
+			<div class="news-highlight">
+				<img
+					src="/images/slide1.webp"
+					alt="Noticia 1"
+					class="news-image"
+				/>
+				<div class="news-overlay">
+					<div class="news-card">
+						<h4>NOTICIAS RECIENTES</h4>
+						<p class="news-title">
+							Consejos para mejorar tu Economía Financiera
+						</p>
+						<div class="news-footer">
+							<span>05 abr.</span>
+							<a href="#">Conoce más <span>&rarr;</span></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Slide 2 -->
+			<div class="news-highlight">
+				<img
+					src="/images/factura-electronica.webp"
+					alt="Noticia 2"
+					class="news-image"
+				/>
+				<div class="news-overlay">
+					<div class="news-card">
+						<h4>NOTICIAS RECIENTES</h4>
+						<p class="news-title">
+							Beneficios del consumo consciente de energía
+						</p>
+						<div class="news-footer">
+							<span>15 abr.</span>
+							<a href="#">Conoce más <span>&rarr;</span></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="news-arrows">
+			<button class="arrow-btn" id="prev">&#x276E;</button>
+			<button class="arrow-btn" id="next">&#x276F;</button>
+		</div>
+	</div>
+
+	<!-- Carrusel de Blog -->
+	<div class="blog-sidebar">
+		<h3 class="blog-title">Novedades</h3>
+		<div class="blog-carousel">
+			<div class="blog-entries" id="blog-entries">
+				<!-- Entradas del blog -->
+				<div class="blog-entry">
+					<img src="/images/factura-electronica.webp" alt="Blog 1" />
+					<div>
+						<p class="blog-entry-title">Cosechando Sueños</p>
+						<p class="blog-entry-category">Poesía</p>
+						<p class="blog-entry-date">21 mar.</p>
+					</div>
+				</div>
+				<div class="blog-entry">
+					<img src="/images/factura-electronica.webp" alt="Blog 2" />
+					<div>
+						<p class="blog-entry-title">
+							El arte de adaptarse al cambio
+						</p>
+						<p class="blog-entry-category">Reflexiones</p>
+						<p class="blog-entry-date">21 mar.</p>
+					</div>
+				</div>
+				<div class="blog-entry">
+					<img src="/images/factura-electronica.webp" alt="Blog 3" />
+					<div>
+						<p class="blog-entry-title">
+							¿Cómo cuidar el planeta? Un desafío que nos
+							incumbe...
+						</p>
+						<p class="blog-entry-category">
+							Cuidado de Nuestro Planeta
+						</p>
+						<p class="blog-entry-date">30 may.</p>
+					</div>
+				</div>
+				<div class="blog-entry">
+					<img src="/images/factura-electronica.webp" alt="Blog 4" />
+					<div>
+						<p class="blog-entry-title">
+							Cooperativismo en tiempos modernos
+						</p>
+						<p class="blog-entry-category">Sociedad</p>
+						<p class="blog-entry-date">12 jun.</p>
+					</div>
+				</div>
+				<div class="blog-entry">
+					<img src="/images/factura-electronica.webp" alt="Blog 1" />
+					<div>
+						<p class="blog-entry-title">Cosechando Sueños</p>
+						<p class="blog-entry-category">Poesía</p>
+						<p class="blog-entry-date">21 mar.</p>
+					</div>
+				</div>
+				<div class="blog-entry">
+					<img src="/images/factura-electronica.webp" alt="Blog 1" />
+					<div>
+						<p class="blog-entry-title">Cosechando Sueños</p>
+						<p class="blog-entry-category">Poesía</p>
+						<p class="blog-entry-date">21 mar.</p>
+					</div>
+				</div>
+				<div class="blog-entry">
+					<img src="/images/factura-electronica.webp" alt="Blog 1" />
+					<div>
+						<p class="blog-entry-title">Cosechando Sueños</p>
+						<p class="blog-entry-category">Poesía</p>
+						<p class="blog-entry-date">21 mar.</p>
+					</div>
+				</div>
+				<div class="blog-entry">
+					<img src="/images/factura-electronica.webp" alt="Blog 1" />
+					<div>
+						<p class="blog-entry-title">Cosechando Sueños</p>
+						<p class="blog-entry-category">Poesía</p>
+						<p class="blog-entry-date">21 mar.</p>
+					</div>
+				</div>
+			</div>
+			<div class="blog-arrows" id="blog-arrows">
+				<button class="blog-arrow" id="blog-prev">&#x25B2;</button>
+				<button class="blog-arrow" id="blog-next">&#x25BC;</button>
+			</div>
+		</div>
+		<a href="#" class="ver-todo-btn">VER TODO &rarr;</a>
+	</div>
+</div>
+
+<style>
+	.noticias-y-blog {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 2rem;
+		max-width: 1200px;
+		margin: 0 auto;
+		align-items: flex-start;
+	}
+
+	.news-carousel {
+		flex: 1 1 60%;
+		position: relative;
+		max-width: 60%;
+		overflow: hidden;
+		border-radius: 16px;
+	}
+
+	.carousel-wrapper {
+		display: flex;
+		transition: transform 0.6s ease-in-out;
+	}
+
+	.news-highlight {
+		min-width: 100%;
+		position: relative;
+	}
+
+	.news-image {
+		width: 100%;
+		display: block;
+		border-radius: 16px;
+	}
+
+	.news-overlay {
+		position: absolute;
+		inset: 0;
+	}
+
+	.news-card {
+		position: absolute;
+		bottom: 1rem;
+		right: 1rem;
+		background-color: #004481;
+		color: white;
+		padding: 1.5rem;
+		border-radius: 20px;
+		max-width: 300px;
+		z-index: 2;
+	}
+
+	.news-title {
+		font-size: 1rem;
+		line-height: 1.4;
+		margin-bottom: 1rem;
+	}
+
+	.news-footer {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.85rem;
+		font-weight: 600;
+	}
+
+	.news-footer a {
+		color: white;
+		text-decoration: none;
+	}
+
+	.news-arrows {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+
+	.arrow-btn {
+		background-color: orange;
+		border: none;
+		color: white;
+		font-size: 1.2rem;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		cursor: pointer;
+		transition: background 0.2s ease;
+	}
+
+	.arrow-btn:hover {
+		background-color: darkorange;
+	}
+
+	/* BLOG */
+	.blog-sidebar {
+		flex: 1 1 35%;
+		max-width: 35%;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+
+	.blog-title {
+		color: #004481;
+		font-weight: bold;
+		font-size: 1.2rem;
+		margin-bottom: 1rem;
+	}
+
+	.blog-carousel {
+		position: relative;
+		flex: 1;
+		overflow: hidden;
+		max-height: 490px;
+	}
+
+	.blog-entries {
+		display: flex;
+		flex-direction: column;
+		transition: transform 0.5s ease;
+	}
+
+	.blog-entry {
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 1rem;
+		align-items: center;
+		height: 80px;
+	}
+
+	.blog-entry img {
+		width: 80px;
+		height: 60px;
+		object-fit: cover;
+		border-radius: 12px;
+	}
+
+	.blog-entry-title {
+		font-weight: bold;
+		font-size: 0.95rem;
+		margin: 0;
+		color: #333;
+	}
+
+	.blog-entry-category {
+		font-size: 0.8rem;
+		color: #888;
+		margin: 0.2rem 0;
+	}
+
+	.blog-entry-date {
+		font-size: 0.75rem;
+		color: #666;
+		margin: 0;
+	}
+
+	.blog-arrows {
+		position: absolute;
+		top: 0.5rem;
+		right: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.blog-arrow {
+		background-color: orange;
+		color: white;
+		border: none;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		cursor: pointer;
+		opacity: 0.8;
+	}
+
+	.blog-arrow:hover {
+		opacity: 1;
+	}
+
+	.ver-todo-btn {
+		display: inline-block;
+		background-color: #004481;
+		color: white;
+		text-decoration: none;
+		padding: 0.6rem 1.2rem;
+		border-radius: 999px;
+		font-weight: bold;
+		font-size: 0.9rem;
+		transition: background 0.3s ease;
+	}
+
+	.ver-todo-btn:hover {
+		background-color: #0060b4;
+	}
+
+	@media (max-width: 768px) {
+		.noticias-y-blog {
+			flex-direction: column;
+		}
+		.news-carousel,
+		.blog-sidebar {
+			max-width: 100%;
+		}
+	}
+</style>
+
+<script>
+	const wrapper = document.querySelector(
+		".carousel-wrapper"
+	) as HTMLElement | null;
+	const slides = document.querySelectorAll<HTMLElement>(".news-highlight");
+	const prevBtn = document.getElementById("prev") as HTMLButtonElement | null;
+	const nextBtn = document.getElementById("next") as HTMLButtonElement | null;
+
+	let index = 0;
+	let autoSlideInterval: ReturnType<typeof setInterval>;
+
+	function updateCarousel(): void {
+		if (wrapper) {
+			const offset = -index * 100;
+			wrapper.style.transform = `translateX(${offset}%)`;
+		}
+	}
+	function nextSlide() {
+		index = (index + 1) % slides.length;
+		updateCarousel();
+	}
+
+	function prevSlide() {
+		index = (index - 1 + slides.length) % slides.length;
+		updateCarousel();
+	}
+
+	function startAutoSlide(): void {
+		autoSlideInterval = setInterval(nextSlide, 8000);
+	}
+
+	function resetAutoSlide(): void {
+		clearInterval(autoSlideInterval);
+		startAutoSlide();
+	}
+
+	if (nextBtn) {
+		nextBtn.addEventListener("click", () => {
+			nextSlide();
+			resetAutoSlide();
+		});
+	}
+
+	if (prevBtn) {
+		prevBtn.addEventListener("click", () => {
+			prevSlide();
+			resetAutoSlide();
+		});
+	}
+
+	// Swipe soporte táctil
+	let startX = 0;
+	let isDragging = false;
+
+	if (wrapper) {
+		wrapper.addEventListener("touchstart", (e: TouchEvent) => {
+			startX = e.touches[0].clientX;
+			isDragging = true;
+		});
+
+		wrapper.addEventListener("touchmove", (e: TouchEvent) => {
+			if (!isDragging) return;
+			const currentX = e.touches[0].clientX;
+			const diffX = currentX - startX;
+
+			if (Math.abs(diffX) > 50) {
+				if (diffX < 0) nextSlide();
+				else prevSlide();
+				resetAutoSlide();
+				isDragging = false;
+			}
+		});
+
+		wrapper.addEventListener("touchend", () => {
+			isDragging = false;
+		});
+	}
+
+	updateCarousel();
+	startAutoSlide();
+
+	const blogEntries = document.getElementById("blog-entries");
+	const blogPrev = document.getElementById("blog-prev");
+	const blogNext = document.getElementById("blog-next");
+	const blogArrows = document.getElementById("blog-arrows");
+
+	let blogIndex = 0;
+	const entryHeight = 90; // altura aprox. con margen
+	const totalEntries = blogEntries?.children.length ?? 0;
+	const maxVisible = 5;
+
+	let autoScrollInterval;
+
+	function updateBlogCarousel() {
+		if (blogEntries) {
+			const offset = -blogIndex * entryHeight;
+			blogEntries.style.transform = `translateY(${offset}px)`;
+		}
+	}
+
+	function startAutoScroll() {
+		if (totalEntries > maxVisible) {
+			autoScrollInterval = setInterval(() => {
+				blogIndex = (blogIndex + 1) % (totalEntries - maxVisible + 1);
+				updateBlogCarousel();
+			}, 5000); // cada 5 segundos
+		}
+	}
+
+	function stopAutoScroll() {
+		clearInterval(autoScrollInterval);
+	}
+
+	if (blogNext) {
+		blogNext.addEventListener("click", () => {
+			if (blogIndex < totalEntries - maxVisible) {
+				blogIndex++;
+				updateBlogCarousel();
+				stopAutoScroll();
+				startAutoScroll();
+			}
+		});
+	}
+
+	if (blogPrev) {
+		blogPrev.addEventListener("click", () => {
+			if (blogIndex > 0) {
+				blogIndex--;
+				updateBlogCarousel();
+				stopAutoScroll();
+				startAutoScroll();
+			}
+		});
+	}
+
+	// Ocultar botones si hay 5 o menos entradas
+	if (blogArrows) {
+		blogArrows.style.display = totalEntries > maxVisible ? "flex" : "none";
+	}
+
+	// Iniciar scroll si hay más de 5
+	updateBlogCarousel();
+	startAutoScroll();
+</script>
+
+<!-- <div class="news-highlight">
+	<img
+		src="/images/factura-electronica.webp"
+		alt="Imagen de noticia"
+		class="news-image"
+	/>
+
+	<div class="news-overlay">
+		<div class="news-card">
+			<h4>NOTICIAS RECIENTES</h4>
+			<p class="news-title">
+				Consejos para mejorar tu Economía Financiera
+			</p>
+			<div class="news-footer">
+				<span>05 abr.</span>
+				<a href="#">Conoce más <span>&rarr;</span></a>
+			</div>
+		</div>
+
+		<div class="news-arrows">
+			<button class="arrow-btn">&#x276E;</button>
+			<button class="arrow-btn">&#x276F;</button>
+		</div>
+	</div>
+	<div class="news-card">
+		<h4>NOTICIAS RECIENTES</h4>
+		<p class="news-title">Consejos para mejorar tu Economía Financiera</p>
+		<div class="news-footer">
+			<span>05 abr.</span>
+			<a href="#">Conoce más <span>&rarr;</span></a>
+		</div>
+	</div>
+
+	<div class="news-arrows">
+		<button class="arrow-btn">&#x276E;</button>
+		<button class="arrow-btn">&#x276F;</button>
+	</div>
+</div>
+
+<style>
+	.news-highlight {
+		position: relative;
+		width: 100%;
+		max-width: 850px;
+		border-radius: 16px;
+		overflow: hidden;
+		font-family: sans-serif;
+	}
+
+	.news-image {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+
+	.news-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.news-card {
+		position: absolute;
+		bottom: 1rem;
+		right: 1rem;
+		background-color: #1c154d; /* Azul oscuro */
+		color: white;
+		padding: 1.5rem;
+		border-radius: 20px;
+		max-width: 300px;
+		z-index: 2;
+	}
+
+	.news-card h4 {
+		font-size: 0.9rem;
+		margin: 0 0 0.5rem;
+		font-weight: 700;
+		letter-spacing: 0.5px;
+	}
+
+	.news-title {
+		font-size: 1rem;
+		margin: 0 0 1rem;
+		line-height: 1.4;
+	}
+
+	.news-footer {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.85rem;
+		font-weight: 600;
+	}
+
+	.news-footer a {
+		color: white;
+		text-decoration: none;
+	}
+
+	.news-footer a span {
+		margin-left: 4px;
+	}
+
+	.news-arrows {
+		position: absolute;
+		top: 50%;
+		right: 1rem;
+		transform: translateY(-50%);
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		z-index: 2;
+	}
+
+	.arrow-btn {
+		background-color: orange;
+		border: none;
+		color: white;
+		font-size: 1.2rem;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		cursor: pointer;
+		transition: background 0.2s ease;
+	}
+
+	.arrow-btn:hover {
+		background-color: darkorange;
+	}
+</style> -->
+
+<!-- <div class="news-card">
+	<img src="/images/factura-electronica.webp" alt="Imagen de la noticia" />
+	<div class="news-content">
+		<h3>Noticias Recientes</h3>
+		<p>Consejos para mejorar tu Economía Financiera</p>
+		<div class="news-footer">
+			<span>05 abr.</span>
+			<a href="#">Conoce más &rarr;</a>
+		</div>
+	</div>
+</div>
+
+<style>
+	.news-card {
+		width: 300px;
+		background: #ffffff;
+		border-radius: 10px;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		margin: 1rem;
+		transition: transform 0.3s ease;
+	}
+
+	.news-card:hover {
+		transform: scale(1.05);
+	}
+
+	.news-card img {
+		width: 100%;
+		height: 180px;
+		object-fit: cover;
+	}
+
+	.news-content {
+		padding: 1rem;
+		text-align: left;
+	}
+
+	.news-content h3 {
+		font-size: 1.1rem;
+		color: #4a6fa5;
+		margin-bottom: 0.5rem;
+	}
+
+	.news-content p {
+		font-size: 0.9rem;
+		color: #333333;
+		margin-bottom: 1rem;
+	}
+
+	.news-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-size: 0.8rem;
+		color: #999999;
+	}
+
+	.news-footer a {
+		color: #4a6fa5;
+		text-decoration: none;
+		font-weight: bold;
+	}
+
+	.news-footer a:hover {
+		text-decoration: underline;
+	}
+</style> -->

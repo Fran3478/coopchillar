@@ -1,0 +1,144 @@
+<div class="carousel">
+	<div class="logos" id="logos">
+		<div class="service-item">
+			<div class="service-card">
+				<img src="/images/icons/energia.svg" alt="Energía" />
+			</div>
+			<p class="service-label">Energía</p>
+		</div>
+		<div class="service-item">
+			<div class="service-card">
+				<img src="/images/icons/agua.svg" alt="Agua" />
+			</div>
+			<p class="service-label">Agua</p>
+		</div>
+		<div class="service-item">
+			<div class="service-card">
+				<img src="/images/icons/energia.svg" alt="Energía" />
+			</div>
+			<p class="service-label">Sepelio</p>
+		</div>
+		<div class="service-item">
+			<div class="service-card">
+				<img src="/images/icons/agua.svg" alt="Agua" />
+			</div>
+			<p class="service-label">Cloaca</p>
+		</div>
+		<div class="service-item">
+			<div class="service-card">
+				<img src="/images/icons/energia.svg" alt="Energía" />
+			</div>
+			<p class="service-label">Celular</p>
+		</div>
+	</div>
+</div>
+
+<style>
+	:root {
+		--carousel-gap: 2rem;
+		--card-width: 120px;
+	}
+
+	.carousel {
+		overflow: hidden;
+		width: 100%;
+		position: relative;
+		padding: 1rem 0;
+	}
+
+	.carousel::before,
+	.carousel::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		width: 5rem;
+		height: 100%;
+		z-index: 2;
+		pointer-events: none;
+	}
+
+	.carousel::before {
+		left: 0;
+		background: linear-gradient(to right, white, transparent);
+	}
+
+	.carousel::after {
+		right: 0;
+		background: linear-gradient(to left, white, transparent);
+	}
+
+	.logos {
+		display: flex;
+		gap: var(--carousel-gap);
+		width: max-content;
+		will-change: transform;
+	}
+
+	.service-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.service-card {
+		width: var(--card-width);
+		height: calc(var(--card-width) * 1.08);
+		background: linear-gradient(135deg, #4a6fa5, #678fc5);
+		border-radius: 65% 35% 59% 41% / 51% 48% 52% 49%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+		transition:
+			transform 0.3s ease,
+			border-radius 0.5s ease;
+	}
+
+	.service-card:hover {
+		transform: scale(1.05);
+		border-radius: 44% 56% 37% 63% / 35% 36% 64% 65%;
+	}
+
+	.service-card img {
+		width: 60px;
+		height: 60px;
+	}
+
+	.service-label {
+		margin-top: 0.5rem;
+		font-size: 1.5rem;
+		color: #333;
+		font-weight: bold;
+	}
+</style>
+
+<script>
+	const logos = document.getElementById("logos");
+
+	if (logos) {
+		const originalItems = [...logos.children];
+		const totalToClone = 2; // Clona los ítems dos veces
+		for (let i = 0; i < totalToClone; i++) {
+			originalItems.forEach((item) => {
+				const clone = item.cloneNode(true);
+				clone.setAttribute("aria-hidden", "true");
+				logos.appendChild(clone);
+			});
+		}
+
+		let position = 0;
+		const speed = 0.5; // pixeles por frame
+
+		function animate() {
+			position -= speed;
+			// Cuando el scroll llega al final de la mitad (original), reiniciamos la posición
+			if (Math.abs(position) >= logos.scrollWidth / (totalToClone + 1)) {
+				position = 0;
+			}
+			logos.style.transform = `translateX(${position}px)`;
+			requestAnimationFrame(animate);
+		}
+
+		animate();
+	}
+</script>

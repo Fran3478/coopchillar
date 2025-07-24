@@ -1,0 +1,380 @@
+---
+import Servicios from "../components/Servicios.astro";
+import Layout from "../layouts/Layout.astro";
+import Novedades from "../components/Novedades.astro";
+---
+
+<Layout title="Cooperativa de muestra">
+	<div id="main-content">
+		<section id="home-hero">
+			<div class="slider-wrapper">
+				<!-- Slider -->
+				<div id="carousel" class="carousel-box">
+					<!-- Vistas -->
+					<div class="slide active">
+						<img src="/images/slide1.webp" alt="Slide 1" />
+						<div class="caption">Texto de Slide 1</div>
+					</div>
+					<div class="slide">
+						<img src="/images/slide2.webp" alt="Slide 2" />
+						<div class="caption">Texto de Slide 2</div>
+					</div>
+					<div class="slide">
+						<img src="/images/slide3.webp" alt="Slide 3" />
+						<div class="caption">Texto de Slide 3</div>
+					</div>
+				</div>
+				<!-- Dots del slider -->
+				<div class="carousel-dots-outside">
+					<span class="dot active" data-index="0"></span>
+					<span class="dot" data-index="1"></span>
+					<span class="dot" data-index="2"></span>
+				</div>
+			</div>
+
+			<!-- Card lateral -->
+			<aside class="hero-card custom-bg-card">
+				<div class="card-shape"></div>
+				<div class="card-logo">
+					<img src="/images/logo-sanjusto.webp" alt="Logo" />
+				</div>
+				<div class="card-inner">
+					<h3>OFICINA VIRTUAL</h3>
+					<p>
+						Realiza consultas de tus productos y servicios. Haz tus
+						pagos seguros en línea.
+					</p>
+					<a
+						href="https://migestarcoop.com.ar/SanJusto/login"
+						class="cta-button">INGRESAR</a
+					>
+				</div>
+			</aside>
+		</section>
+		<Servicios />
+		<Novedades />
+	</div>
+</Layout>
+
+<style>
+	body {
+		margin: 0;
+	}
+	html,
+	body {
+		min-height: 100%;
+	}
+
+	#main-content {
+		padding-top: 140px;
+		margin: 0 3rem;
+		transition: padding-top 0.3s ease;
+	}
+
+	#home-hero {
+		display: flex;
+		align-items: stretch;
+		gap: 2rem;
+		max-width: 1200px;
+		margin: auto;
+		padding: 2rem 1rem;
+	}
+
+	.slider-wrapper {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+	.carousel-box {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border-radius: 35px;
+		overflow: hidden;
+		background: #eee;
+		position: relative;
+	}
+	.slide {
+		position: absolute;
+		inset: 0;
+		display: none;
+		justify-content: center;
+		align-items: center;
+	}
+	.slide.active {
+		display: flex;
+	}
+	.slide img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 35px;
+	}
+	.caption {
+		position: absolute;
+		bottom: 20px;
+		left: 20px;
+		background: rgba(255, 255, 255, 0.8);
+		padding: 0.5rem 1rem;
+		border-radius: 10px;
+		font-weight: bold;
+		color: #333;
+	}
+	.carousel-dots-outside {
+		margin-top: 0.5rem;
+		display: flex;
+		justify-content: center;
+		gap: 0.6rem;
+	}
+	.carousel-dots-outside .dot {
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: #ccc;
+		cursor: pointer;
+		transition: background 0.3s;
+	}
+	.carousel-dots-outside .dot.active {
+		background: darkorange;
+	}
+
+	/* — CARD LATERAL CON NOTCH — */
+	.hero-card.custom-bg-card {
+		flex: 0 0 300px; /* ancho fijo de 300px */
+		display: flex;
+		justify-content: center;
+		align-items: flex-end;
+		padding-bottom: 2rem;
+		position: relative;
+		overflow: hidden;
+		border-radius: 35px;
+		background-image: url("/images/card_home.jpg");
+		background-size: cover;
+		background-position: center;
+	}
+	.hero-card.custom-bg-card::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: rgba(0, 33, 66, 0.3);
+		z-index: 0;
+	}
+	.card-shape {
+		position: absolute;
+		width: calc(100% - 2rem);
+		max-width: 280px;
+		height: 14rem; /* altura fija para mantener tu contenido */
+		bottom: 1rem; /* siempre 1rem del fondo de la card */
+		left: 1rem;
+		background: white;
+		border-radius: 23px;
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+		z-index: 1;
+		/* máscara perforada para el notch */
+		-webkit-mask-image: radial-gradient(
+			circle 50px at center top,
+			transparent 50px,
+			black 51px
+		);
+		mask-image: radial-gradient(
+			circle 50px at center top,
+			transparent 50px,
+			black 51px
+		);
+		-webkit-mask-mode: alpha;
+		mask-mode: alpha;
+	}
+
+	.card-inner {
+		position: relative;
+		z-index: 2;
+		width: calc(100% - 2rem);
+		max-width: 280px;
+		margin: 0 auto;
+		padding: 2.5rem 1.5rem 0.5rem;
+		text-align: center;
+	}
+	.card-logo {
+		position: absolute;
+		/* 1rem (bottom) + 360px (alto del shape) - 40px (radio del logo) */
+		bottom: calc(1rem + 14rem - 40px);
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 2;
+		width: 80px;
+		height: 80px;
+		background: #d6d6d6;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	}
+	.card-logo img {
+		width: 48px;
+		height: 48px;
+		object-fit: contain;
+	}
+	.card-inner h3 {
+		color: #002e6e;
+		font-size: 1rem;
+		font-weight: 700;
+		margin-bottom: 0;
+	}
+	.card-inner p {
+		font-size: 0.9rem;
+		color: #333;
+		line-height: 1.4;
+		margin-bottom: 0.6rem;
+	}
+	.cta-button {
+		background: orange;
+		color: white;
+		font-weight: bold;
+		text-decoration: none;
+		padding: 0.6rem 1.2rem;
+		border-radius: 2rem;
+		display: inline-block;
+		transition: background 0.3s ease;
+	}
+	.cta-button:hover {
+		background: darkorange;
+	}
+
+	/* ==============
+   RESPONSIVE
+   ============== */
+	/* Tablets y pantallas medianas */
+	@media (max-width: 992px) {
+		#home-hero {
+			flex-direction: column;
+			gap: 1rem;
+			padding: 1.5rem 1rem;
+			margin: 2rem auto;
+		}
+		.carousel-box {
+			height: auto;
+			aspect-ratio: 16/9;
+		}
+		.slide img {
+			width: 100%;
+			height: auto;
+			object-fit: contain;
+			border-radius: 12px;
+		}
+		.hero-card.custom-bg-card {
+			justify-content: flex-start;
+			align-items: flex-start;
+			padding-top: 2rem;
+			padding-bottom: 2rem;
+		}
+		.card-inner {
+			position: relative;
+			z-index: 2;
+			width: calc(100% - 2rem);
+			max-width: 280px;
+			margin: 9rem 0 0 1rem;
+			padding: 0;
+			text-align: center;
+		}
+		.card-shape {
+			left: 1rem;
+			right: 1rem;
+		}
+		.card-logo {
+			bottom: calc(1rem + 14rem - 40px);
+			left: calc(1rem + 140px);
+			transform: translate(-50%);
+		}
+	}
+
+	@media (max-width: 700px) {
+		#main-content {
+			margin: 0 1rem;
+		}
+		/* Centrar todo dentro de la tarjeta */
+		.hero-card.custom-bg-card {
+			justify-content: center; /* mueve la forma blanca verticalmente al centro */
+			align-items: center; /* idem para el logo y contenido */
+			padding-bottom: 1rem; /* ajusta el espacio inferior si lo necesitas */
+		}
+
+		/* El recorte (notch) se centra horizontalmente */
+		.card-shape {
+			left: 50% !important;
+			right: auto !important;
+			transform: translateX(-50%);
+			width: 90%; /* o el % que prefieras */
+			max-width: 300px; /* para no expandirlo demasiado */
+		}
+
+		/* El logo también se centra sobre el notch */
+		.card-logo {
+			left: 50% !important;
+			transform: translate(-50%);
+			/* bottom queda igual, mantiene la separación vertical */
+		}
+
+		/* El interior del card, centrado bajo el notch */
+		.card-inner {
+			margin: 6rem 0 auto; /* auto left/right centra el bloque */
+			padding-top: 2rem; /* separa de la parte recortada */
+		}
+	}
+
+	/* Móviles (smartphones) */
+	@media (max-width: 600px) {
+		.slider-wrapper,
+		.hero-card {
+			width: 100%;
+			flex: none;
+		}
+
+		.carousel-dots-outside {
+			gap: 0.4rem;
+		}
+		.hero-card.custom-bg-card {
+			min-height: 300px;
+			padding-bottom: 1rem;
+		}
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const slides = document.querySelectorAll<HTMLDivElement>(".slide");
+		const dots = document.querySelectorAll<HTMLSpanElement>(".dot");
+
+		let currentIndex = 0;
+		let timer: number;
+
+		const interval = 5000;
+
+		function showSlide(index: number): void {
+			slides.forEach((slide, i) => {
+				slide.classList.toggle("active", i === index);
+				dots[i].classList.toggle("active", i === index);
+			});
+			currentIndex = index;
+		}
+
+		function nextSlide(): void {
+			const next = (currentIndex + 1) % slides.length;
+			showSlide(next);
+		}
+
+		function resetTimer(): void {
+			clearInterval(timer);
+			timer = window.setInterval(nextSlide, interval);
+		}
+
+		dots.forEach((dot, i) => {
+			dot.addEventListener("click", () => {
+				showSlide(i);
+				resetTimer();
+			});
+		});
+
+		showSlide(currentIndex);
+		timer = window.setInterval(nextSlide, interval);
+	});
+</script>

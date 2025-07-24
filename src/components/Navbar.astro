@@ -1,0 +1,233 @@
+<nav id="navbar">
+	<div class="navbar-content">
+		<div class="logo">
+			<img src="/images/logo-sanjusto.webp" alt="Logo" />
+			<p>
+				Cooperativa de Servicios Públicos,<br />Sociales, de Asistencia
+				Social<br />y Vivienda de San Justo Ltda.
+			</p>
+		</div>
+
+		<ul class="nav-links">
+			<li class="nav-item">
+				<a href="/">Inicio</a>
+			</li>
+			<li class="nav-item">
+				<a href="/servicios">Servicios</a>
+			</li>
+			<li class="nav-item dropdown">
+				<a href="#">Nuestra Cooperativa</a>
+				<ul class="dropdown-menu">
+					<li><a href="/origen">Origen</a></li>
+					<li><a href="/mision-y-vision">Misión y visión</a></li>
+					<li><a href="/nuestros-valores">Nuestros valores</a></li>
+				</ul>
+			</li>
+			<li class="nav-item">
+				<a href="/contacto">Contacto</a>
+			</li>
+		</ul>
+	</div>
+</nav>
+
+<style>
+	:root {
+		--navbar-expanded-height: 80px;
+		--navbar-compact-height: 56px;
+		--transition-time: 0.3s;
+	}
+
+	#navbar {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background: white;
+		z-index: 1000;
+		transition:
+			padding-top 0.3s ease,
+			height 0.3s ease,
+			padding-bottom 0.3s ease;
+		box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.navbar-content {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0 2rem;
+		height: var(--navbar-expanded-height);
+		transition: all var(--transition-time) ease;
+	}
+
+	#navbar.compact .navbar-content {
+		padding: 0.2rem 1rem;
+		height: var(--navbar-compact-height);
+	}
+
+	.logo {
+		display: flex;
+		flex-direction: row;
+	}
+
+	@keyframes fade-out-scale {
+		from {
+			opacity: 1;
+			transform: scale(1);
+		}
+		to {
+			opacity: 0;
+			transform: scale(0.8);
+		}
+	}
+
+	@keyframes fade-in-scale {
+		from {
+			opacity: 0;
+			transform: scale(0.8);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.logo p {
+		max-width: 14rem;
+		margin-left: 1.5rem;
+		font-size: 0.9rem;
+		opacity: 1;
+		transform: scale(1);
+		font-weight: 500;
+		text-align: center;
+	}
+
+	#navbar.compact .logo img {
+		height: 28px;
+	}
+
+	#navbar.compact .logo p {
+		animation: fade-out-scale var(--transition-time) ease forwards;
+	}
+
+	/* 4) Al volver a modo normal: reaparece con fade-in-scale */
+	#navbar:not(.compact) .logo p {
+		animation: fade-in-scale var(--transition-time) ease forwards;
+	}
+
+	.logo img {
+		margin: auto;
+		height: 60px;
+		transition: height var(--transition-time) ease;
+	}
+
+	.nav-links {
+		list-style: none;
+		display: flex;
+		gap: 1.5rem;
+		margin: 0;
+		padding: 0;
+	}
+
+	.nav-item {
+		position: relative;
+	}
+
+	.nav-item > a {
+		text-decoration: none;
+		color: #333;
+		font-weight: 500;
+		padding: 0.5rem;
+	}
+
+	.dropdown-menu {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background: white;
+		border: 1px solid #ddd;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		padding: 0.5rem 0;
+		list-style: none;
+		display: none;
+		min-width: 160px;
+		z-index: 1000;
+	}
+
+	.dropdown-menu li a {
+		display: block;
+		padding: 0.5rem 1rem;
+		color: #333;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	.dropdown-menu li a:hover {
+		background-color: #f5f5f5;
+	}
+
+	.dropdown:hover .dropdown-menu {
+		display: block;
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const navbar = document.getElementById("navbar");
+		const infoBar = document.getElementById("info-bar");
+		if (!navbar || !infoBar) return;
+
+		const threshold = 120;
+		let isCompact = false;
+
+		const updateLayout = () => {
+			const scrollY = window.scrollY;
+
+			if (scrollY > threshold && !isCompact) {
+				navbar.classList.add("compact");
+				isCompact = true;
+			} else if (scrollY <= threshold && isCompact) {
+				navbar.classList.remove("compact");
+				isCompact = false;
+			}
+
+			// Si estamos arriba del todo, dar tiempo a que se muestre infoBar (por su transición)
+			const delay = scrollY === 0 ? 100 : 0;
+
+			setTimeout(() => {
+				const infoBarVisible = !infoBar.classList.contains("hidden");
+				const infoHeight = infoBarVisible ? infoBar.offsetHeight : 0;
+				navbar.style.paddingTop = `${infoHeight}px`;
+
+				const mainContent = document.getElementById("main-content");
+				if (mainContent) {
+					const navbarContent =
+						navbar.querySelector(".navbar-content");
+					const navbarHeight =
+						navbarContent instanceof HTMLElement
+							? navbarContent.offsetHeight
+							: 0;
+
+					mainContent.style.paddingTop = `${infoHeight + navbarHeight}px`;
+				}
+			}, delay);
+		};
+
+		updateLayout();
+
+		window.addEventListener("scroll", updateLayout);
+		window.addEventListener("resize", updateLayout);
+
+		const observer = new MutationObserver(() => {
+			requestAnimationFrame(updateLayout);
+		});
+		observer.observe(infoBar, {
+			attributes: true,
+			attributeFilter: ["class"],
+		});
+
+		window.addEventListener("layoutUpdate", () => {
+			requestAnimationFrame(updateLayout);
+		});
+	});
+</script>

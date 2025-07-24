@@ -1,0 +1,101 @@
+<section class="services">
+	<h2>Servicios que brindamos</h2>
+	<div class="service-grid">
+		<div class="service-card">
+			<img src="/images/icons/agua.svg" alt="Agua potable" />
+			<h3>Agua Potable</h3>
+			<p>
+				Suministro de agua segura y mantenimiento de redes sanitarias.
+			</p>
+		</div>
+		<div class="service-card">
+			<img src="/images/icons/energia.svg" alt="Energía eléctrica" />
+			<h3>Energía Eléctrica</h3>
+			<p>
+				Distribución eficiente y soporte técnico ante cortes o reclamos.
+			</p>
+		</div>
+		<div class="service-card">
+			<img src="/images/icons/internet.svg" alt="Internet" />
+			<h3>Internet</h3>
+			<p>
+				Conectividad de alta velocidad con planes accesibles para todos.
+			</p>
+		</div>
+		<div class="service-card">
+			<img src="/images/icons/sepelio.svg" alt="Sepelio" />
+			<h3>Servicio de Sepelio</h3>
+			<p>
+				Cobertura total con acompañamiento y asistencia a las familias.
+			</p>
+		</div>
+		<div class="service-card">
+			<img src="/images/icons/cloaca.svg" alt="Cloaca" />
+			<h3>Red Cloacal</h3>
+			<p>
+				Instalación y mantenimiento del sistema de desagüe cloacal
+				domiciliario.
+			</p>
+		</div>
+	</div>
+</section>
+
+<style>
+	/* Sección de servicios */
+	.services {
+		padding: 60px 20px;
+		text-align: center;
+	}
+
+	.services h2 {
+		font-size: 2.5rem;
+		margin-bottom: 40px;
+		color: #004481;
+	}
+
+	/* Grid de tarjetas */
+	.service-grid {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 2rem;
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	/* Tarjeta individual */
+	.service-card {
+		flex: 1 1 250px; /* mínimo 250px, crece si hay espacio */
+		max-width: 300px;
+		background-color: #ffffff;
+		padding: 30px 20px;
+		border-radius: 1rem;
+		box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+		transition:
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
+		text-align: center;
+	}
+
+	.service-card:hover {
+		transform: translateY(-10px);
+		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+	}
+
+	.service-card img {
+		width: 60px;
+		margin-bottom: 20px;
+	}
+
+	.service-card h3 {
+		font-size: 1.3rem;
+		margin-bottom: 10px;
+		color: #222;
+	}
+
+	.service-card p {
+		color: #555;
+		font-size: 0.95rem;
+		line-height: 1.4;
+	}
+</style>
