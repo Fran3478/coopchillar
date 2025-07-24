@@ -96,12 +96,22 @@ import Novedades from "../components/Novedades.astro";
 	.slide {
 		position: absolute;
 		inset: 0;
-		display: none;
+		display: flex;
 		justify-content: center;
 		align-items: center;
+		opacity: 0;
+		transition:
+			opacity 0.8s ease,
+			transform 0.8s ease;
+		transform: translateX(50px);
+		pointer-events: none;
 	}
+
 	.slide.active {
-		display: flex;
+		opacity: 1;
+		transform: translateX(0);
+		z-index: 1;
+		pointer-events: auto;
 	}
 	.slide img {
 		width: 100%;
