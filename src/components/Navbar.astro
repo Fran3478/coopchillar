@@ -8,7 +8,13 @@
 			</p>
 		</div>
 
-		<ul class="nav-links">
+		<button class="hamburger" id="hamburger" aria-label="Menú">
+			<span></span>
+			<span></span>
+			<span></span>
+		</button>
+
+		<ul class="nav-links" id="nav-links">
 			<li class="nav-item">
 				<a href="/">Inicio</a>
 			</li>
@@ -169,6 +175,84 @@
 	.dropdown:hover .dropdown-menu {
 		display: block;
 	}
+
+	.hamburger {
+		display: none;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 24px;
+		height: 18px;
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		margin-left: auto;
+	}
+
+	.hamburger span {
+		display: block;
+		height: 3px;
+		background: #333;
+		border-radius: 2px;
+		transition: all 0.3s ease;
+	}
+
+	@media (max-width: 1120px) {
+		.hamburger {
+			display: flex;
+		}
+
+		.nav-links {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			background: white;
+			flex-direction: column;
+			align-items: start;
+			padding: 0 2rem;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+			/* Animación */
+			opacity: 0;
+			max-height: 0;
+			overflow: hidden;
+			transition:
+				max-height 0.4s ease,
+				opacity 0.4s ease,
+				padding 0.3s ease;
+			pointer-events: none;
+		}
+
+		.nav-links.show {
+			opacity: 1;
+			max-height: 500px;
+			padding: 1rem 2rem;
+			pointer-events: auto;
+		}
+
+		.nav-item {
+			width: 100%;
+		}
+
+		.nav-item > a {
+			width: 100%;
+			padding: 1rem 0;
+			display: block;
+		}
+
+		.dropdown-menu {
+			position: relative;
+			box-shadow: none;
+			border: none;
+			display: none;
+			padding-left: 1rem;
+		}
+
+		.dropdown:hover .dropdown-menu {
+			display: block;
+		}
+	}
 </style>
 
 <script>
@@ -230,4 +314,13 @@
 			requestAnimationFrame(updateLayout);
 		});
 	});
+
+	const hamburger = document.getElementById("hamburger");
+	const navLinks = document.getElementById("nav-links");
+
+	if (hamburger && navLinks) {
+		hamburger.addEventListener("click", () => {
+			navLinks.classList.toggle("show");
+		});
+	}
 </script>
