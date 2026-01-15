@@ -1,0 +1,979 @@
+---
+import Layout from "../layouts/Layout.astro";
+import FormularioFacturacionModal from "../components/FormularioFacturacionModal.astro";
+
+const TENANT_ID = Number(import.meta.env.PUBLIC_TENANT_ID) || 1;
+const API_BASE = `${Astro.url.origin}/v1/public/tenants/${TENANT_ID}`;
+---
+
+<Layout
+	title="Contacto - Cooperativa Ltda. de Agua Potable y Otros Servicios Públicos de Chillar"
+>
+	<div id="main-content">
+		<main class="content contact">
+			<header class="hero">
+				<h1>Contacto</h1>
+				<p>
+					Estamos para ayudarte. Elegí el canal que te resulte más
+					cómodo o dejanos tu mensaje para que podamos responderte.
+				</p>
+			</header>
+
+			<section class="contact-grid">
+				<article class="card info-card">
+					<div class="card-head">
+						<h2>Información de contacto</h2>
+					</div>
+
+					<ul class="info-list">
+						<li class="item-multi">
+							<span class="i" aria-hidden="true">
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.8"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path
+										d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 3 5.18 2 2 0 0 1 5.11 3h3a2 2 0 0 1 2 1.72c.12.86.3 1.7.54 2.5a2 2 0 0 1-.45 2.11L9.1 10.9a16 16 0 0 0 4 4l1.57-1.1a2 2 0 0 1 2.11-.45c.8.24 1.64.42 2.5.54A2 2 0 0 1 22 16.92z"
+									></path>
+								</svg>
+							</span>
+
+							<strong>Teléfonos:</strong>
+
+							<div class="value multi">
+								<a href="tel:02281497288"
+									>Oficinas Administrativas</a
+								>
+								<a href="tel:02281497120">Estudios Canal 2</a>
+								<a href="tel:02281533312"
+									>Emergencias Agua Potable</a
+								>
+							</div>
+						</li>
+
+						<li class="item-multi">
+							<span class="i" aria-hidden="true">
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.8"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path d="M4 4h16v16H4z"></path>
+									<path d="m22 6-10 7L2 6"></path>
+								</svg>
+							</span>
+
+							<strong>Emails:</strong>
+
+							<div class="value multi">
+								<a href="mailto:clapotable@clapo.com.ar"
+									>clapotable@clapo.com.ar</a
+								>
+								<a href="mailto:administracion@clapo.com.ar"
+									>administracion@clapo.com.ar</a
+								>
+							</div>
+						</li>
+
+						<li class="item-multi">
+							<span class="i" aria-hidden="true">
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.8"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<circle cx="12" cy="12" r="9"></circle>
+									<path d="M12 7v6l4 2"></path>
+								</svg>
+							</span>
+
+							<strong>Horarios:</strong>
+
+							<div class="value multi">
+								<span class="line">
+									Lunes a viernes <span class="sep">•</span> 08:00
+									a 12:30
+								</span>
+							</div>
+						</li>
+
+						<li class="addr">
+							<span class="i" aria-hidden="true">
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.8"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path
+										d="M12 21s7-4.44 7-11a7 7 0 1 0-14 0c0 6.56 7 11 7 11z"
+									></path>
+									<circle cx="12" cy="10" r="2.5"></circle>
+								</svg>
+							</span>
+							<strong>Dirección:</strong>
+							<span class="value"
+								>M. T. Cortazar N° 1163, Chillar, Pcia. de
+								Buenos Aires</span
+							>
+						</li>
+					</ul>
+
+					<div class="note">
+						<strong>Tip:</strong> Si es un reclamo urgente, te recomendamos
+						llamarnos al número de <strong>emergencias</strong>.
+					</div>
+				</article>
+
+				<aside class="card cta-ebilling">
+					<div class="card-head">
+						<h2>Facturación electrónica</h2>
+					</div>
+
+					<p class="lead">
+						¿Ya sos asociado? Adherite a la <strong
+							>Facturación Electrónica</strong
+						>
+						y ayudanos a reducir el uso de papel.
+					</p>
+
+					<button class="btn primary" data-open="ebilling-modal">
+						Adherirme ahora
+					</button>
+
+					<p class="mini">
+						Te va a llevar solo un minuto. Si necesitás ayuda,
+						escribinos desde la sección de mensaje.
+					</p>
+				</aside>
+
+				<article class="card map-card">
+					<div class="card-head">
+						<h2>Cómo llegar</h2>
+					</div>
+
+					<div class="map-wrap">
+						<iframe
+							title="Mapa - Cooperativa Chillar"
+							src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d943.447531844325!2d-59.985266298982474!3d-37.31014324398397!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9593f95312a66d85%3A0x93fdb1808851afd7!2sCooperativa%20Ltda.%20Agua%20Potable%20y%20Otros%20Servicios%20Publicos%20Chillar!5e0!3m2!1ses!2sar!4v1768334095773!5m2!1ses!2sar"
+							width="100%"
+							height="320"
+							style="border:0;"
+							loading="lazy"
+							allowfullscreen
+							referrerpolicy="no-referrer-when-downgrade"
+						></iframe>
+					</div>
+				</article>
+
+				<article class="card form-card">
+					<div class="card-head">
+						<h2>Dejanos tu mensaje</h2>
+					</div>
+
+					<form id="contact-form" data-api-base={API_BASE} novalidate>
+						<div class="form-grid">
+							<label class="field">
+								<span>N° de socio</span>
+								<input name="socioNumero" inputmode="numeric" />
+							</label>
+
+							<label class="field">
+								<span>DNI</span>
+								<input name="dni" inputmode="numeric" />
+							</label>
+
+							<label class="field">
+								<span>Nombre *</span>
+								<input name="nombre" required />
+							</label>
+
+							<label class="field">
+								<span>Apellido</span>
+								<input name="apellido" />
+							</label>
+
+							<label class="field">
+								<span>Teléfono</span>
+								<input
+									name="telefono"
+									type="tel"
+									inputmode="tel"
+									placeholder="+54 9 11 1234-5678"
+									aria-describedby="help-contact-method"
+								/>
+							</label>
+
+							<label class="field">
+								<span>Email</span>
+								<input
+									name="email"
+									type="email"
+									placeholder="tucorreo@ejemplo.com"
+									aria-describedby="help-contact-method"
+								/>
+							</label>
+
+							<div id="help-contact-method" class="help-row">
+								Debés completar <strong>teléfono o email</strong
+								> (al menos uno).
+							</div>
+
+							<label class="field col-2">
+								<span>Categoría *</span>
+								<select name="categoria" required>
+									<option value="">— Elegir —</option>
+									<option value="reclamo">Reclamo</option>
+									<option value="consulta">Consulta</option>
+									<option value="recomendacion"
+										>Recomendación</option
+									>
+									<option value="otro">Otro</option>
+								</select>
+							</label>
+
+							<label class="field col-2">
+								<span>Detalle *</span>
+								<textarea
+									name="detalle"
+									rows="6"
+									required
+									placeholder="Contanos el motivo y la información relevante…"
+								></textarea>
+							</label>
+						</div>
+
+						<div
+							id="contact-hint"
+							class="hint"
+							hidden
+							aria-live="polite"
+							role="status"
+						>
+						</div>
+
+						<div class="form-actions">
+							<button class="btn primary" type="submit"
+								>Enviar</button
+							>
+						</div>
+					</form>
+				</article>
+			</section>
+
+			<section class="cta">
+				<div class="cta-inner">
+					<h3>¿Necesitás ayuda rápida?</h3>
+					<p>
+						Podés escribirnos por Whatsapp o enviarnos un email. Si
+						ya sos asociado, también podés adhertirte a la
+						facturación electrónica desde esta misma página.
+					</p>
+
+					<div class="cta-actions">
+						<a class="btn" href="https://wa.me/543498420403"
+							>Escribir</a
+						>
+						<a
+							class="btn btn--ghost"
+							href="mailto:cspsanjusto@gmail.com">Enviar email</a
+						>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<FormularioFacturacionModal />
+</Layout>
+
+<style is:global>
+	:root {
+		--brand: #06752e;
+		--accent: #ffcd34;
+
+		--text: #111827;
+		--muted: #4b5563;
+		--bg: #f6f7fb;
+		--card: #ffffff;
+		--border: rgba(17, 24, 39, 0.08);
+
+		--brand-ghost: color-mix(in oklab, var(--brand), white 92%);
+		--accent-ghost: color-mix(in oklab, var(--accent), white 82%);
+	}
+
+	#main-content {
+		padding-top: clamp(96px, 12vw, 160px);
+		transition: padding-top 0.3s ease;
+		background: var(--bg);
+	}
+
+	.content.contact {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: clamp(1rem, 4vw, 2rem);
+		color: var(--text);
+		line-height: 1.65;
+		font-size: clamp(1rem, 1.2vw + 0.75rem, 1.1rem);
+	}
+
+	.hero {
+		text-align: center;
+		margin-bottom: clamp(1.8rem, 5vw, 3.2rem);
+	}
+
+	.hero h1 {
+		font-size: clamp(1.9rem, 4vw, 2.8rem);
+		color: var(--brand);
+		margin: 0 0 0.6rem;
+		letter-spacing: -0.02em;
+	}
+
+	.hero p {
+		max-width: 760px;
+		margin: 0 auto;
+		color: var(--muted);
+		font-size: clamp(1rem, 1vw + 0.7rem, 1.15rem);
+	}
+
+	.contact-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.2rem;
+	}
+
+	@media (min-width: 980px) {
+		.contact-grid {
+			grid-template-columns: 1fr 1fr;
+			grid-auto-rows: minmax(min-content, auto);
+		}
+		.map-card,
+		.form-card {
+			grid-column: 1 / -1;
+		}
+	}
+
+	/* Cards base */
+	.contact .card {
+		background: var(--card);
+		border: 1px solid var(--border);
+		border-radius: 18px;
+		padding: clamp(1.1rem, 3vw, 1.6rem);
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+	}
+
+	/* Variantes */
+	.info-card {
+		background: linear-gradient(
+			135deg,
+			color-mix(in oklab, var(--brand), white 92%),
+			rgba(255, 255, 255, 0.92)
+		);
+		border-left: 6px solid color-mix(in oklab, var(--brand), white 65%);
+	}
+
+	.cta-ebilling {
+		background: linear-gradient(
+			135deg,
+			color-mix(in oklab, var(--accent), white 80%),
+			rgba(255, 255, 255, 0.92)
+		);
+		border-left: 6px solid var(--accent);
+		display: flex;
+		flex-direction: column;
+		gap: 0.7rem;
+	}
+
+	.map-card {
+		background: linear-gradient(
+			135deg,
+			color-mix(in oklab, var(--brand), white 94%),
+			rgba(255, 255, 255, 0.95)
+		);
+		border-left: 6px solid color-mix(in oklab, var(--accent), white 55%);
+	}
+
+	.form-card {
+		background: var(--card);
+		border-left: 6px solid rgba(17, 24, 39, 0.06);
+	}
+
+	.card-head {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		margin-bottom: 0.9rem;
+	}
+
+	/* Títulos card */
+	.info-card h2,
+	.map-card h2,
+	.form-card h2,
+	.cta-ebilling h2 {
+		margin: 0;
+		color: color-mix(in oklab, var(--brand), black 12%);
+		font-size: clamp(1.25rem, 2.2vw + 0.7rem, 1.65rem);
+		border-left: 5px solid var(--accent);
+		padding-left: 0.95rem;
+	}
+
+	/* Info list */
+	.info-list {
+		list-style: none;
+		margin: 0.2rem 0 0;
+		padding: 0;
+		display: grid;
+		gap: 0.65rem;
+	}
+
+	.info-list li {
+		display: grid;
+		grid-template-columns: 28px auto 1fr;
+		align-items: start;
+		column-gap: 0.55rem;
+		background: rgba(255, 255, 255, 0.7);
+		border: 1px solid rgba(17, 24, 39, 0.06);
+		border-radius: 14px;
+		padding: 0.75rem 0.85rem;
+	}
+
+	/* Iconos sobrios */
+	.info-list .i {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		color: color-mix(in oklab, var(--brand), black 10%);
+	}
+
+	.info-list .i svg {
+		width: 18px;
+		height: 18px;
+		display: block;
+	}
+
+	.info-list strong {
+		min-width: max-content;
+		color: color-mix(in oklab, var(--brand), black 15%);
+	}
+
+	.info-list .value,
+	.info-list a {
+		display: block;
+		word-break: break-word;
+		color: #111827;
+		text-decoration: none;
+	}
+
+	.info-list a:hover {
+		text-decoration: underline;
+	}
+
+	/* items con multiples líneas (varios teléfonos/emails/horarios) */
+	.info-list li.item-multi {
+		grid-template-columns: 28px auto 1fr;
+		align-items: start;
+	}
+
+	.info-list .value.multi {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	.info-list .value.multi a,
+	.info-list .value.multi .line {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.sep {
+		opacity: 0.6;
+	}
+
+	.note {
+		margin-top: 1rem;
+		padding: 0.95rem 1rem;
+		border-radius: 16px;
+		background: var(--brand-ghost);
+		border: 1px solid color-mix(in oklab, var(--brand), white 84%);
+		color: #374151;
+	}
+
+	.lead {
+		margin: 0;
+		color: #374151;
+	}
+
+	.mini {
+		margin: 0.2rem 0 0;
+		color: #60646c;
+		font-size: 0.95rem;
+	}
+
+	.map-wrap {
+		border-radius: 14px;
+		overflow: hidden;
+		border: 1px solid rgba(17, 24, 39, 0.06);
+		background: rgba(255, 255, 255, 0.7);
+	}
+
+	/* Form */
+	.form-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+		margin-top: 0.2rem;
+	}
+
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		position: relative;
+	}
+
+	.field > span {
+		color: #374151;
+		font-weight: 700;
+		font-size: 0.95rem;
+	}
+
+	.field.col-2 {
+		grid-column: 1 / -1;
+	}
+
+	.field input,
+	.field select,
+	.field textarea {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 0.65rem 0.8rem;
+		border: 1px solid rgba(17, 24, 39, 0.12);
+		border-radius: 12px;
+		font: inherit;
+		background: rgba(255, 255, 255, 0.75);
+		outline: none;
+		transition:
+			box-shadow 0.15s ease,
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+
+	.field input,
+	.field select {
+		height: 44px;
+	}
+
+	.field textarea {
+		min-height: 150px;
+		resize: vertical;
+	}
+
+	.field input:focus,
+	.field select:focus,
+	.field textarea:focus {
+		border-color: color-mix(in oklab, var(--brand), white 35%);
+		box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand), white 78%);
+		background: #fff;
+	}
+
+	.help-row {
+		grid-column: 1 / -1;
+		margin-top: -0.35rem;
+		color: #60646c;
+		font-size: 0.95rem;
+	}
+
+	.hint {
+		margin: 0.75rem 0 0;
+		padding: 0.8rem 0.95rem;
+		border: 1px solid rgba(17, 24, 39, 0.12);
+		border-radius: 0.75rem;
+		background: rgba(255, 255, 255, 0.85);
+		color: #111827;
+	}
+
+	.hint[hidden],
+	.hint:empty {
+		display: none !important;
+	}
+
+	.hint.err {
+		background: #fef2f2;
+		border-color: #fecaca;
+		color: #991b1b;
+	}
+
+	.hint.ok {
+		background: #effaf0;
+		border-color: #c6f6d5;
+		color: #166534;
+	}
+
+	.is-invalid {
+		border-color: #ef4444 !important;
+		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+	}
+
+	.err-tip {
+		margin-top: 0.2rem;
+		color: #b91c1c;
+		font-size: 0.85rem;
+		line-height: 1.2;
+		min-height: 18px;
+	}
+
+	.form-card label::after,
+	.ebilling-form label::after {
+		content: "";
+		display: block;
+		min-height: 18px;
+	}
+
+	.form-card label.has-msg::after,
+	.ebilling-form label.has-msg::after {
+		content: none;
+	}
+
+	/* Botones */
+	.btn {
+		appearance: none;
+		text-decoration: none;
+		border: 1px solid rgba(17, 24, 39, 0.12);
+		background: rgba(255, 255, 255, 0.8);
+		color: #111827;
+		padding: 0.65rem 1rem;
+		border-radius: 999px;
+		font-weight: 900;
+		cursor: pointer;
+		transition:
+			transform 0.15s ease,
+			opacity 0.15s ease,
+			background 0.15s ease,
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.btn:hover {
+		transform: translateY(-1px);
+		opacity: 0.96;
+	}
+
+	.btn.primary {
+		background: var(--brand);
+		color: #fff;
+		border-color: color-mix(in oklab, var(--brand), black 10%);
+		box-shadow: 0 10px 22px rgba(6, 117, 46, 0.12);
+	}
+
+	.btn.primary:hover {
+		box-shadow: 0 14px 28px rgba(6, 117, 46, 0.18);
+	}
+
+	.btn.btn--ghost {
+		background: transparent;
+		color: var(--brand);
+		border-color: color-mix(in oklab, var(--brand), white 55%);
+	}
+
+	.btn.btn--ghost:hover {
+		background: var(--brand-ghost);
+		box-shadow: none;
+	}
+
+	.form-actions {
+		display: flex;
+		gap: 0.6rem;
+		justify-content: flex-end;
+		margin-top: 0.9rem;
+		flex-wrap: wrap;
+	}
+
+	/* CTA final */
+	.cta {
+		margin-top: clamp(1.6rem, 5vw, 2.8rem);
+	}
+
+	.cta-inner {
+		border-radius: 18px;
+		padding: clamp(1.1rem, 4vw, 2rem);
+		background: linear-gradient(
+			135deg,
+			color-mix(in oklab, var(--brand), white 90%),
+			color-mix(in oklab, var(--accent), white 84%)
+		);
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+		border: 1px solid color-mix(in oklab, var(--brand), white 82%);
+	}
+
+	.cta-inner h3 {
+		margin: 0 0 0.5rem;
+		color: var(--brand);
+		font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+	}
+
+	.cta-inner p {
+		margin: 0 0 1.2rem;
+		color: #374151;
+	}
+
+	.cta-actions {
+		display: flex;
+		gap: 0.8rem;
+		flex-wrap: wrap;
+	}
+
+	@media (max-width: 520px) {
+		.form-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<script>
+	// (tu script completo, sin cambios)
+	const form = document.getElementById("contact-form");
+	const hint = document.getElementById("contact-hint");
+	if (hint) hint.hidden = true;
+
+	function setHint(text = "", kind = "") {
+		if (!hint) return;
+		hint.textContent = text || "";
+		hint.classList.remove("err", "ok");
+		if (kind) hint.classList.add(kind);
+		hint.toggleAttribute("hidden", !text);
+	}
+
+	const isEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+
+	const digitsOnly = (s) => (s || "").toString().replace(/\D/g, "");
+
+	function isPhoneValid(phone) {
+		const d = digitsOnly(phone);
+		return d.length >= 8 && d.length <= 15;
+	}
+
+	function mark(el, ok, msg = "") {
+		if (!el) return;
+		const label = el.closest("label");
+		el.classList.toggle("is-invalid", !ok);
+
+		let tip = label?.querySelector(".err-tip");
+		if (!ok && msg) {
+			if (!tip) {
+				tip = document.createElement("small");
+				tip.className = "err-tip";
+				label?.appendChild(tip);
+			}
+			tip.textContent = msg;
+			label?.classList.add("has-msg");
+			el.setAttribute("aria-invalid", "true");
+		} else {
+			tip?.remove();
+			label?.classList.remove("has-msg");
+			el.removeAttribute("aria-invalid");
+		}
+	}
+
+	function clearFieldError(el) {
+		if (!el) return;
+		el.classList.remove("is-invalid");
+		el.removeAttribute("aria-invalid");
+		const label = el.closest("label");
+		label?.classList.remove("has-msg");
+		const tip = label?.querySelector(".err-tip");
+		if (tip) tip.remove();
+	}
+
+	function bindPerFieldCleanup(f) {
+		if (!f) return;
+		f.querySelectorAll("input, textarea, select").forEach((ctrl) => {
+			["input", "change"].forEach((evt) => {
+				ctrl.addEventListener(evt, () => clearFieldError(ctrl));
+			});
+		});
+	}
+
+	function resetFormUI(f) {
+		if (!f) return;
+		f.reset();
+		f.querySelectorAll(".is-invalid").forEach((el) => clearFieldError(el));
+		f.querySelectorAll(".err-tip").forEach((n) => n.remove());
+	}
+
+	bindPerFieldCleanup(form);
+
+	form?.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		setHint("", "");
+
+		const fd = new FormData(form);
+
+		const socioNumero = (fd.get("socioNumero") || "").toString().trim();
+		const dni = (fd.get("dni") || "").toString().trim();
+		const nombre = (fd.get("nombre") || "").toString().trim();
+		const apellido = (fd.get("apellido") || "").toString().trim();
+		const telefono = (fd.get("telefono") || "").toString().trim();
+		const email = (fd.get("email") || "").toString().trim();
+		const categoria = (fd.get("categoria") || "").toString().trim();
+		const detalle = (fd.get("detalle") || "").toString().trim();
+
+		const nombreEl = form.querySelector('[name="nombre"]');
+		const apellidoEl = form.querySelector('[name="apellido"]');
+		const dniEl = form.querySelector('[name="dni"]');
+		const detalleEl = form.querySelector('[name="detalle"]');
+		const telEl = form.querySelector('[name="telefono"]');
+		const emailEl = form.querySelector('[name="email"]');
+		const catEl = form.querySelector('[name="categoria"]');
+
+		let ok = true;
+
+		const vNombre = nombre.length >= 3;
+		mark(nombreEl, vNombre, "Ingresá tu nombre (mín. 3 caracteres)");
+		ok = ok && vNombre;
+
+		if (apellido) {
+			const vApe = apellido.length >= 3;
+			mark(apellidoEl, vApe, "Ingresá tu apellido (mín. 3 caracteres)");
+			ok = ok && vApe;
+		} else {
+			clearFieldError(apellidoEl);
+		}
+
+		if (dni) {
+			const vDni = dni.replace(/\D/g, "").length >= 7;
+			mark(dniEl, vDni, "DNI/CUIT inválido (mín. 7 dígitos)");
+			ok = ok && vDni;
+		} else {
+			clearFieldError(dniEl);
+		}
+
+		const vDetalle = detalle.length >= 5;
+		mark(detalleEl, vDetalle, "Contanos un poco más (mín. 5 caracteres)");
+		ok = ok && vDetalle;
+
+		const vCat = !!categoria;
+		mark(catEl, vCat, "Elegí una categoría");
+		ok = ok && vCat;
+
+		const hasTel = !!telefono;
+		const hasEmail = !!email;
+
+		if (!hasTel && !hasEmail) {
+			mark(telEl, false, "Ingresá teléfono o email (al menos uno)");
+			mark(emailEl, false, "Ingresá teléfono o email (al menos uno)");
+			ok = false;
+		} else {
+			if (hasTel) {
+				const vTel = isPhoneValid(telefono);
+				mark(telEl, vTel, "Teléfono inválido (8 a 15 dígitos)");
+				ok = ok && vTel;
+			} else {
+				clearFieldError(telEl);
+			}
+
+			if (hasEmail) {
+				const vEmail = isEmail(email);
+				mark(emailEl, vEmail, "Email inválido");
+				ok = ok && vEmail;
+			} else {
+				clearFieldError(emailEl);
+			}
+		}
+
+		if (!ok) {
+			setHint("Revisá los campos marcados en rojo.", "err");
+			return;
+		}
+
+		const apiBase =
+			form.dataset.apiBase || location.origin + "/v1/public/tenants/1";
+		const CONTACT_URL = `${apiBase}/contacts`;
+
+		const payload = {
+			socioNumero: socioNumero || null,
+			dni: dni || null,
+			nombre,
+			apellido: apellido || null,
+			telefono: telefono || null,
+			email: email || null,
+			categoria,
+			detalle,
+		};
+
+		try {
+			const res = await fetch(CONTACT_URL, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+
+			if (!res.ok) {
+				let msg = `Error ${res.status}`;
+				try {
+					const j = await res.json();
+					const err = j?.error ?? j;
+
+					if (Array.isArray(err?.details)) {
+						const map = {
+							socioNumero: "socioNumero",
+							dni: "dni",
+							nombre: "nombre",
+							apellido: "apellido",
+							telefono: "telefono",
+							email: "email",
+							categoria: "categoria",
+							detalle: "detalle",
+						};
+
+						for (const d of err.details) {
+							const key =
+								d.field ||
+								(Array.isArray(d.path) ? d.path.at(-1) : "");
+							const el = form.querySelector(
+								`[name="${map[key] || key}"]`
+							);
+							if (el)
+								mark(el, false, d.message || "Dato inválido");
+						}
+						msg = err.details[0]?.message || err.message || msg;
+					} else if (err?.message) {
+						msg = err.message;
+					}
+				} catch {}
+
+				setHint(msg, "err");
+				return;
+			}
+
+			await res.json();
+			resetFormUI(form);
+			setHint("¡Gracias! Tu mensaje fue enviado.", "ok");
+		} catch (e) {
+			console.error(e);
+			setHint(
+				"No se pudo enviar el mensaje. Probá de nuevo en unos minutos.",
+				"err"
+			);
+		}
+	});
+</script>

@@ -1,0 +1,559 @@
+---
+const TENANT_ID = Number(import.meta.env.PUBLIC_TENANT_ID) || 1;
+const origin = Astro.url.origin;
+const apiBase = `${origin}/v1/public/tenants/${TENANT_ID}`;
+const MODAL_ID = "ebilling-modal";
+---
+
+<div
+	id={MODAL_ID}
+	class="ebilling-modal"
+	data-api-base={apiBase}
+	aria-hidden="true"
+>
+	<div
+		class="ebilling-dialog"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="eb-title"
+		tabindex="-1"
+	>
+		<button class="eb-close" aria-label="Cerrar">×</button>
+
+		<h2 id="eb-title">Adherite a la Facturación Electrónica</h2>
+		<p class="eb-sub">
+			Si ya sos asociado, completá el siguiente formulario para recibir
+			tus facturas por correo electrónico.
+		</p>
+
+		<form
+			id="ebilling-form"
+			class="eb-form"
+			data-api-base={apiBase}
+			novalidate
+		>
+			<div class="eb-row">
+				<label
+					>Nombre *
+					<input type="text" name="nombre" required />
+				</label>
+				<label
+					>Apellido *
+					<input type="text" name="apellido" required />
+				</label>
+			</div>
+
+			<div class="eb-row">
+				<label
+					>Número de abonado *
+					<input type="text" name="abonadoNumero" required />
+				</label>
+				<label
+					>DNI / CUIT *
+					<input type="text" name="dniCuit" required />
+				</label>
+			</div>
+
+			<div class="eb-row">
+				<label
+					>Email *
+					<input type="email" name="email" required />
+				</label>
+				<label
+					>Teléfono (opcional)
+					<input type="tel" name="telefono" />
+				</label>
+			</div>
+
+			<button type="submit" class="eb-submit">Enviar solicitud</button>
+			<p id="eb-hint" class="hint" hidden></p>
+		</form>
+	</div>
+</div>
+
+<style>
+	:root {
+		/* mismos tokens que venimos usando */
+		--brand: #06752e;
+		--accent: #ffcd34;
+
+		--text: #111827;
+		--muted: #4b5563;
+		--border: rgba(17, 24, 39, 0.1);
+		--card: #ffffff;
+
+		--brand-ghost: color-mix(in oklab, var(--brand), white 92%);
+		--accent-ghost: color-mix(in oklab, var(--accent), white 82%);
+	}
+
+	/* overlay */
+	.ebilling-modal {
+		position: fixed;
+		inset: 0;
+		z-index: 2000;
+		display: grid;
+		place-items: center;
+
+		/* overlay más “elegante” */
+		background: rgba(17, 24, 39, 0.55);
+		backdrop-filter: blur(4px);
+
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.18s ease;
+		padding: 1rem;
+	}
+
+	.ebilling-modal.open {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	/* dialog */
+	.ebilling-dialog {
+		position: relative; /* para ubicar bien el close */
+		background: var(--card);
+		width: min(720px, 100%);
+		max-height: 95vh;
+		overflow: auto;
+
+		border-radius: 18px;
+		padding: 1.25rem 1.25rem 1.5rem;
+
+		border: 1px solid var(--border);
+		box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+
+		/* animación de entrada */
+		transform: translateY(10px) scale(0.985);
+		opacity: 0;
+		transition:
+			transform 0.18s ease,
+			opacity 0.18s ease;
+	}
+
+	.ebilling-modal.open .ebilling-dialog {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
+
+	/* header */
+	#eb-title {
+		margin: 0;
+		color: color-mix(in oklab, var(--brand), black 10%);
+		font-size: clamp(1.25rem, 2.2vw + 0.6rem, 1.7rem);
+		letter-spacing: -0.01em;
+	}
+
+	.eb-sub {
+		color: var(--muted);
+		margin: 0.35rem 0 0;
+	}
+
+	/* close button */
+	.eb-close {
+		position: absolute;
+		right: 0.85rem;
+		top: 0.85rem;
+
+		width: 40px;
+		height: 40px;
+		border-radius: 999px;
+
+		border: 1px solid rgba(17, 24, 39, 0.1);
+		background: rgba(255, 255, 255, 0.85);
+		color: rgba(17, 24, 39, 0.7);
+
+		display: grid;
+		place-items: center;
+		font-size: 1.35rem;
+		line-height: 1;
+		cursor: pointer;
+
+		transition:
+			transform 0.15s ease,
+			background 0.15s ease,
+			opacity 0.15s ease,
+			border-color 0.15s ease;
+	}
+
+	.eb-close:hover {
+		transform: translateY(-1px);
+		background: #fff;
+		border-color: rgba(17, 24, 39, 0.16);
+		opacity: 0.95;
+	}
+
+	/* form layout */
+	.eb-form {
+		display: grid;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+
+	.eb-row {
+		display: grid;
+		gap: 0.75rem;
+		grid-template-columns: 1fr;
+	}
+
+	@media (min-width: 720px) {
+		.eb-row {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	.eb-row label {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		position: relative;
+
+		font-weight: 800;
+		color: #374151;
+	}
+
+	/* inputs */
+	.eb-form input {
+		height: 44px;
+		box-sizing: border-box;
+
+		padding: 0.65rem 0.8rem;
+		border: 1px solid rgba(17, 24, 39, 0.12);
+		border-radius: 12px;
+		font: inherit;
+
+		background: rgba(255, 255, 255, 0.75);
+		outline: none;
+
+		transition:
+			box-shadow 0.15s ease,
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+
+	.eb-form input:focus {
+		border-color: color-mix(in oklab, var(--brand), white 35%);
+		box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand), white 78%);
+		background: #fff;
+	}
+
+	/* validación / errores */
+	.is-invalid {
+		border-color: #ef4444 !important;
+		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+	}
+
+	.form-card label::after,
+	.ebilling-form label::after {
+		content: "";
+		display: block;
+		min-height: 18px;
+	}
+
+	.form-card label.has-msg::after,
+	.ebilling-form label.has-msg::after {
+		content: none;
+	}
+
+	.err-tip {
+		margin-top: 0.1rem;
+		color: #b91c1c;
+		font-size: 0.85rem;
+		line-height: 1.2;
+		min-height: 18px;
+	}
+
+	/* hint (usa tu misma clase hint que ya venís usando) */
+	.hint {
+		margin-top: 0.5rem;
+		padding: 0.7rem 0.85rem;
+		border-radius: 12px;
+		border: 1px solid rgba(17, 24, 39, 0.12);
+		background: rgba(255, 255, 255, 0.85);
+		font-weight: 800;
+		color: #111827;
+	}
+
+	.hint[hidden] {
+		display: none;
+	}
+
+	.hint.err {
+		background: #fef2f2;
+		border-color: #fecaca;
+		color: #991b1b;
+	}
+
+	.hint.ok {
+		background: #effaf0;
+		border-color: #c6f6d5;
+		color: #166534;
+	}
+
+	/* submit */
+	.eb-submit {
+		margin-top: 0.2rem;
+
+		border: 1px solid color-mix(in oklab, var(--brand), black 12%);
+		background: var(--brand);
+		color: #fff;
+
+		padding: 0.75rem 1rem;
+		border-radius: 999px;
+		font-weight: 900;
+		cursor: pointer;
+
+		box-shadow: 0 12px 26px rgba(6, 117, 46, 0.14);
+
+		transition:
+			transform 0.15s ease,
+			opacity 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.eb-submit:hover {
+		transform: translateY(-1px);
+		opacity: 0.96;
+		box-shadow: 0 16px 34px rgba(6, 117, 46, 0.18);
+	}
+
+	.eb-submit:active {
+		transform: translateY(0);
+	}
+
+	/* opcional: un borde/acento arriba para “branding” (sutil) */
+	.ebilling-dialog::before {
+		content: "";
+		position: absolute;
+		left: 0;
+		top: 0;
+		right: 0;
+		height: 6px;
+		background: linear-gradient(
+			90deg,
+			var(--brand),
+			color-mix(in oklab, var(--accent), var(--brand) 20%),
+			var(--accent)
+		);
+		border-top-left-radius: 18px;
+		border-top-right-radius: 18px;
+	}
+</style>
+
+<script>
+	const modal = document.getElementById("ebilling-modal");
+	const dialog = modal?.querySelector(".ebilling-dialog");
+	const closeBtn = modal?.querySelector(".eb-close");
+	const form = document.getElementById("ebilling-form");
+	const hint = document.getElementById("eb-hint");
+
+	let _scrollY = 0;
+
+	function getScrollbarWidth() {
+		const docEl = document.documentElement;
+		return window.innerWidth - docEl.clientWidth;
+	}
+
+	function lockScroll() {
+		_scrollY = window.scrollY || window.pageYOffset || 0;
+		const sbw = getScrollbarWidth();
+		const body = document.body;
+
+		body.style.position = "fixed";
+		body.style.top = `-${_scrollY}px`;
+		body.style.left = "0";
+		body.style.right = "0";
+		body.style.width = "100%";
+		body.style.overflow = "hidden";
+		if (sbw > 0) body.style.paddingRight = `${sbw}px`;
+	}
+
+	function unlockScroll() {
+		const body = document.body;
+		body.style.position = "";
+		body.style.top = "";
+		body.style.left = "";
+		body.style.right = "";
+		body.style.width = "";
+		body.style.overflow = "";
+		body.style.paddingRight = "";
+		window.scrollTo(0, _scrollY);
+	}
+
+	function openModal() {
+		modal?.classList.add("open");
+		modal?.setAttribute("aria-hidden", "false");
+		lockScroll();
+		dialog?.focus();
+	}
+	function closeModal() {
+		modal?.classList.remove("open");
+		modal?.setAttribute("aria-hidden", "true");
+		unlockScroll();
+	}
+	document.querySelectorAll('[data-open="ebilling-modal"]').forEach((btn) => {
+		btn.addEventListener("click", (e) => {
+			e.preventDefault();
+			openModal();
+		});
+	});
+	modal?.addEventListener("click", (e) => {
+		if (e.target === modal) closeModal();
+	});
+	closeBtn?.addEventListener("click", closeModal);
+	document.addEventListener("keydown", (e) => {
+		if (e.key === "Escape") closeModal();
+	});
+
+	function setHint(text = "", kind = "") {
+		hint.textContent = text || "";
+		hint.hidden = !text;
+		hint.classList.remove("err", "ok");
+		if (kind) hint.classList.add(kind);
+	}
+	const isEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+
+	function mark(el, ok, msg = "") {
+		const label = el.closest("label");
+		el.classList.toggle("is-invalid", !ok);
+
+		let tip = label?.querySelector(".err-tip");
+		if (!ok && msg) {
+			if (!tip) {
+				tip = document.createElement("small");
+				tip.className = "err-tip";
+				label?.appendChild(tip);
+			}
+			tip.textContent = msg;
+			label?.classList.add("has-msg");
+		} else {
+			tip?.remove();
+			label?.classList.remove("has-msg");
+		}
+	}
+
+	function clearFieldError(el) {
+		el.classList.remove("is-invalid");
+		el.removeAttribute("aria-invalid");
+		const tip = el.parentElement.querySelector(".err-tip");
+		if (tip) tip.remove();
+	}
+	function bindPerFieldCleanup(f) {
+		f.querySelectorAll("input").forEach((ctrl) => {
+			["input", "change"].forEach((evt) =>
+				ctrl.addEventListener(evt, () => clearFieldError(ctrl))
+			);
+		});
+	}
+	function resetFormUI(f) {
+		f.reset();
+		f.querySelectorAll(".is-invalid").forEach(clearFieldError);
+		f.querySelectorAll(".err-tip").forEach((n) => n.remove());
+	}
+
+	bindPerFieldCleanup(form);
+
+	form?.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		setHint("", "");
+
+		const fd = new FormData(form);
+		const abonadoNumero = (fd.get("abonadoNumero") || "").toString().trim();
+		const dniCuit = (fd.get("dniCuit") || "").toString().trim();
+		const nombre = (fd.get("nombre") || "").toString().trim();
+		const apellido = (fd.get("apellido") || "").toString().trim();
+		const email = (fd.get("email") || "").toString().trim();
+		const telefono = (fd.get("telefono") || "").toString().trim();
+
+		const abonadoEl = form.querySelector('[name="abonadoNumero"]');
+		const dniEl = form.querySelector('[name="dniCuit"]');
+		const nombreEl = form.querySelector('[name="nombre"]');
+		const apeEl = form.querySelector('[name="apellido"]');
+		const emailEl = form.querySelector('[name="email"]');
+		const telEl = form.querySelector('[name="telefono"]');
+
+		let ok = true;
+		const vAb = abonadoNumero.length > 0;
+		mark(abonadoEl, vAb, "Obligatorio");
+		ok &&= vAb;
+		const vD = dniCuit.replace(/\D/g, "").length >= 7;
+		mark(dniEl, vD, "Mín. 7 dígitos");
+		ok &&= vD;
+		const vN = nombre.length >= 3;
+		mark(nombreEl, vN, "Mín. 3 caracteres");
+		ok &&= vN;
+		const vA = apellido.length >= 3;
+		mark(apeEl, vA, "Mín. 3 caracteres");
+		ok &&= vA;
+		const vE = isEmail(email);
+		mark(emailEl, vE, "Email inválido");
+		ok &&= vE;
+
+		if (!ok) {
+			setHint("Revisá los campos marcados en rojo.", "err");
+			return;
+		}
+
+		const apiBase =
+			form.dataset.apiBase || location.origin + "/v1/public/tenants/1";
+		const URL = `${apiBase}/ebilling-requests`;
+		const payload = {
+			abonadoNumero,
+			dniCuit,
+			nombre,
+			apellido,
+			email,
+			telefono: telefono || null,
+		};
+
+		try {
+			const res = await fetch(URL, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+			if (!res.ok) {
+				let msg = `Error ${res.status}`;
+				try {
+					const j = await res.json();
+					const err = j?.error ?? j;
+					if (Array.isArray(err?.details)) {
+						const map = {
+							abonadoNumero: "abonadoNumero",
+							dniCuit: "dniCuit",
+							nombre: "nombre",
+							apellido: "apellido",
+							email: "email",
+							telefono: "telefono",
+						};
+						for (const d of err.details) {
+							const key =
+								d.field ||
+								(Array.isArray(d.path) ? d.path.at(-1) : "");
+							const el = form.querySelector(
+								`[name="${map[key] || key}"]`
+							);
+							if (el)
+								mark(el, false, d.message || "Dato inválido");
+						}
+						msg = err.details[0]?.message || err.message || msg;
+					} else if (err?.message) {
+						msg = err.message;
+					}
+				} catch {}
+				setHint(msg, "err");
+				return;
+			}
+			await res.json();
+			resetFormUI(form);
+			setHint("¡Solicitud enviada! Gracias por adherirte.", "ok");
+			setTimeout(closeModal, 900);
+		} catch (e) {
+			console.error(e);
+			setHint(
+				"No se pudo enviar la solicitud. Probá de nuevo en unos minutos.",
+				"err"
+			);
+		}
+	});
+</script>

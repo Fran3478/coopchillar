@@ -1,0 +1,499 @@
+---
+export const prerender = false;
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+
+const DEFAULT_FOLDER = "gallery";
+const RESOURCE_TYPE = "image";
+---
+
+<DashboardLayout title="Galería de imágenes">
+	<section class="page">
+		<header class="page-head">
+			<div class="titles">
+				<h1>Galería</h1>
+				<p class="subtitle">
+					Subí imágenes, gestioná metadatos, estados y álbumes.
+				</p>
+			</div>
+
+			<div class="actions">
+				<div class="filters">
+					<input id="q" class="inp" placeholder="Buscar…" />
+					<select id="f-status" class="inp">
+						<option value="">Estado: todos</option>
+						<option value="draft">Borrador</option>
+						<option value="published">Publicado</option>
+						<option value="archived">Archivado</option>
+					</select>
+					<input
+						id="f-album"
+						class="inp"
+						placeholder="Álbum (opcional)"
+					/>
+					<button id="btn-reload" class="btn">Filtrar</button>
+				</div>
+
+				<button id="btn-new" class="btn primary"
+					>+ Agregar imagen</button
+				>
+			</div>
+		</header>
+
+		<div
+			id="cfg-media"
+			data-folder={DEFAULT_FOLDER}
+			data-resource-type={RESOURCE_TYPE}
+		>
+		</div>
+
+		<div id="cards" class="cards"></div>
+
+		<div class="foot-actions">
+			<button id="btn-load-more" class="btn ghost" hidden
+				>Cargar más</button
+			>
+		</div>
+
+		<div id="status" class="status"></div>
+	</section>
+
+	<dialog id="dlg-edit" class="modal">
+		<form id="form-edit" method="dialog">
+			<h3 id="dlg-title">Nueva imagen</h3>
+
+			<div id="upload-block" class="grid2">
+				<label class="field">
+					<span>Imagen</span>
+					<input id="file" type="file" accept="image/*" />
+					<small class="hint">Podés subir una imagen nueva.</small>
+				</label>
+
+				<label class="field">
+					<span>URL</span>
+					<input id="url" type="url" placeholder="https://…" />
+					<small class="hint"
+						>Se completa al subir a Cloudinary. También podés pegar
+						una URL.</small
+					>
+				</label>
+			</div>
+
+			<small id="edit-note" class="hint" hidden>
+				En edición no se puede cambiar la imagen. Solo podés modificar
+				el estado, el álbum y los metadatos.
+			</small>
+
+			<div id="meta-block" class="grid2">
+				<label class="field">
+					<span>Álbum</span>
+					<input
+						id="album"
+						placeholder="ej: eventos, portada, noticias"
+					/>
+				</label>
+
+				<label class="field">
+					<span>Estado</span>
+					<select id="estado">
+						<option value="draft">Borrador</option>
+						<option value="published">Publicado</option>
+						<option value="archived">Archivado</option>
+					</select>
+				</label>
+
+				<label class="field" style="grid-column: 1 / -1;">
+					<span>Texto alternativo</span>
+					<input id="alt" placeholder="Texto alternativo accesible" />
+				</label>
+
+				<label class="field" style="grid-column: 1 / -1;">
+					<span>Descripción</span>
+					<textarea
+						id="descripcion"
+						rows="3"
+						placeholder="Descripción corta de la imagen"></textarea>
+				</label>
+			</div>
+
+			<div class="modal-actions">
+				<button type="button" id="btn-upload" class="btn"
+					>Subir/Actualizar imagen</button
+				>
+				<div class="grow"></div>
+				<button type="button" id="btn-cancel" class="btn"
+					>Cancelar</button
+				>
+				<button type="submit" id="btn-save" class="btn primary"
+					>Guardar</button
+				>
+			</div>
+		</form>
+	</dialog>
+
+	<dialog id="dlg-view" class="modal">
+		<div class="dlg-head">
+			<h3>Detalle</h3>
+			<button class="btn ghost" id="btn-close-view">Cerrar</button>
+		</div>
+		<div id="view-body" class="view-body"></div>
+	</dialog>
+
+	<dialog id="dlg-del" class="modal confirm">
+		<div class="dlg-head">
+			<h3>Eliminar imagen</h3>
+		</div>
+		<p id="del-msg">¿Seguro que querés eliminar esta imagen?</p>
+		<div class="modal-actions">
+			<button class="btn ghost" id="btn-cancel-del">Cancelar</button>
+			<button class="btn danger" id="btn-confirm-del">Eliminar</button>
+		</div>
+	</dialog>
+
+	<style is:global>
+		:root {
+			--brand: #002e6e;
+			--accent: #ff8c00;
+			--bg: #f5f6f8;
+			--card: #fff;
+			--border: #e6e8ec;
+			--text: #1f2328;
+			--muted: #60646c;
+			--ring: rgba(0, 46, 110, 0.18);
+		}
+		.page {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 1rem;
+		}
+		.page-head {
+			display: flex;
+			gap: 1rem;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0.85rem 1rem;
+			margin: 0.25rem 0 1rem;
+			background: color-mix(in oklab, var(--card) 85%, var(--bg));
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+		}
+		.titles h1 {
+			margin: 0 0 0.25rem;
+			font-size: 1.25rem;
+			color: var(--brand);
+		}
+		.subtitle {
+			margin: 0;
+			color: var(--muted);
+			font-size: 0.95rem;
+		}
+		.actions {
+			display: flex;
+			gap: 0.75rem;
+			align-items: center;
+			flex-wrap: wrap;
+		}
+		.filters {
+			display: flex;
+			gap: 0.5rem;
+			flex-wrap: wrap;
+		}
+		.inp {
+			border: 1px solid var(--border);
+			border-radius: 0.55rem;
+			padding: 0.5rem 0.7rem;
+			background: #fff;
+		}
+		.btn {
+			appearance: none;
+			border: 1px solid var(--border);
+			background: var(--card);
+			color: var(--text);
+			padding: 0.6rem 0.95rem;
+			border-radius: 0.65rem;
+			font-weight: 600;
+			cursor: pointer;
+			transition: 0.15s;
+		}
+		.btn:hover {
+			transform: translateY(-1px);
+		}
+		.btn:focus-visible {
+			outline: none;
+			box-shadow: 0 0 0 4px var(--ring);
+		}
+		.btn.primary {
+			background: var(--accent);
+			border-color: color-mix(in oklab, var(--accent), black 10%);
+			color: #fff;
+		}
+		.btn.ghost {
+			background: transparent;
+		}
+		.btn.danger {
+			background: #ff4157;
+			color: #fff;
+			border-color: #d92e3e;
+		}
+		.cards {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+			gap: 14px;
+		}
+		.card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			overflow: hidden;
+			display: grid;
+			box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+			transition:
+				transform 0.12s ease,
+				box-shadow 0.12s ease;
+		}
+		.card:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+		}
+		.card .thumb {
+			height: 150px;
+			background: #f4f5f7;
+			display: grid;
+			place-items: center;
+			overflow: hidden;
+		}
+		.card img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+		.card .body {
+			padding: 0.7rem 0.75rem 0.8rem;
+		}
+		.chips {
+			display: flex;
+			gap: 0.4rem;
+			flex-wrap: wrap;
+			margin: 0 0 0.4rem;
+		}
+		.chip {
+			border: 1px solid var(--border);
+			border-radius: 999px;
+			font-size: 0.78rem;
+			padding: 0.15rem 0.5rem;
+			color: var(--muted);
+		}
+		.row {
+			display: flex;
+			gap: 0.5rem;
+			align-items: center;
+		}
+		.grow {
+			flex: 1 1 auto;
+		}
+		.status {
+			position: fixed;
+			right: 18px;
+			bottom: 18px;
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 0.5rem 0.75rem;
+			color: var(--muted);
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+			min-width: 160px;
+			display: none;
+		}
+		.status.show {
+			display: inline-block;
+		}
+		.status.ok {
+			border-color: color-mix(in oklab, var(--accent), white 60%);
+			color: var(--text);
+		}
+		.status.err {
+			border-color: #ff4157;
+			color: #b31b2c;
+		}
+		.foot-actions {
+			display: flex;
+			justify-content: center;
+			margin: 14px 0;
+		}
+		/* Modales */
+		.modal {
+			border: none;
+			border-radius: 14px;
+			max-width: 760px;
+			width: calc(100% - 32px);
+			padding: 0;
+		}
+		.modal::backdrop {
+			background: rgba(0, 0, 0, 0.3);
+		}
+		.modal form {
+			padding: 1rem;
+		}
+		.dlg-head {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+			justify-content: space-between;
+			padding: 1rem;
+		}
+		.grid2 {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 0.75rem;
+		}
+		@media (max-width: 680px) {
+			.grid2 {
+				grid-template-columns: 1fr;
+			}
+		}
+		.field {
+			display: grid;
+			gap: 0.35rem;
+		}
+		.field input,
+		.field textarea,
+		.field select {
+			border: 1px solid var(--border);
+			border-radius: 0.55rem;
+			padding: 0.55rem 0.7rem;
+			background: #fff;
+		}
+		.hint {
+			color: var(--muted);
+			font-size: 0.85rem;
+		}
+		.modal-actions {
+			display: flex;
+			gap: 0.5rem;
+			align-items: center;
+			margin-top: 0.75rem;
+		}
+		.view-body {
+			padding: 0 1rem 1rem;
+			display: grid;
+			gap: 0.5rem;
+		}
+		.view-kv {
+			display: grid;
+			grid-template-columns: 140px 1fr;
+			gap: 0.5rem;
+		}
+
+		.card.clickable {
+			cursor: pointer;
+		}
+
+		.card .body {
+			padding: 0.7rem 0.75rem 1rem;
+		}
+
+		.row {
+			display: flex;
+			gap: 0.5rem;
+			align-items: center;
+			flex-wrap: wrap;
+		}
+
+		.btn {
+			white-space: nowrap;
+		}
+
+		#edit-note:not([hidden]) {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.5rem;
+		}
+
+		#edit-note {
+			margin: 0.75rem 0 1.25rem;
+			padding: 0.75rem 1rem;
+			border-radius: 0.65rem;
+			background: #eef6ff;
+			border: 1px solid #b8d4ff;
+			color: #003d88;
+			font-size: 0.9rem;
+			line-height: 1.4;
+		}
+		#edit-note::before {
+			content: "ℹ️";
+			font-size: 1.1rem;
+			line-height: 1;
+			margin-top: 1px;
+		}
+
+		#edit-note[hidden] {
+			display: none !important;
+		}
+
+		.modal.confirm {
+			max-width: 520px;
+			width: calc(100% - 32px);
+			padding: 0;
+			border-radius: 14px;
+			overflow: hidden;
+			box-shadow: 0 14px 34px rgba(0, 0, 0, 0.15);
+		}
+
+		.modal.confirm .dlg-head {
+			padding: 1rem 1.25rem;
+			/* border-bottom: 1px solid var(--border); */
+		}
+		.modal.confirm .dlg-head h3 {
+			margin: 0;
+			font-size: 1.125rem;
+			color: var(--text);
+		}
+
+		.modal.confirm #del-msg {
+			margin: 0;
+			padding: 1rem 1.25rem;
+			color: var(--text);
+		}
+
+		.modal.confirm #del-msg {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.75rem;
+
+			background: #fff5f5;
+			border: 1px solid #ffd2d2;
+			color: #7a1f1f;
+			margin: 1rem 1.25rem;
+			padding: 0.85rem 1rem;
+			border-radius: 0.7rem;
+			line-height: 1.45;
+		}
+
+		.modal.confirm .modal-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.5rem;
+			padding: 0.75rem 1.25rem 1.25rem;
+			/* border-top: 1px solid var(--border); */
+		}
+
+		.modal.confirm .btn {
+			white-space: nowrap;
+		}
+
+		.modal.confirm .btn.ghost {
+			background: #fff;
+		}
+
+		.modal.confirm .btn.danger {
+			background: #ff4157;
+			border-color: #d92e3e;
+			color: #fff;
+		}
+		.modal.confirm .btn:hover {
+			transform: translateY(-1px);
+		}
+	</style>
+
+	<script type="module" src="/src/scripts/gallery-admin.ts"></script>
+</DashboardLayout>

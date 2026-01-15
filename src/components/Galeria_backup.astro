@@ -1,0 +1,478 @@
+---
+export interface ImageItem {
+	src: string;
+	alt?: string;
+	description?: string;
+	shape?: "auto" | "wide" | "tall" | "square";
+}
+
+interface Props {
+	images: ImageItem[];
+
+	columns?: { mobile?: number; tablet?: number; desktop?: number };
+
+	maxVisible?: { mobile?: number; tablet?: number; desktop?: number };
+
+	gapX?: number;
+	gapY?: number;
+	maxWidth?: string;
+
+	thumbWidth?: number;
+}
+
+const {
+	images,
+	columns = { mobile: 1, tablet: 2, desktop: 3 },
+	maxVisible = { mobile: 2, tablet: 4, desktop: 6 },
+	gapX = 8,
+	gapY = 8,
+	maxWidth = "1200px",
+	thumbWidth = 140,
+} = Astro.props;
+
+const pattern: Array<"wide" | "tall" | "square"> = [
+	"tall",
+	"wide",
+	"square",
+	"wide",
+	"tall",
+	"square",
+];
+const pickShape = (i: number, s?: ImageItem["shape"]) =>
+	s && s !== "auto" ? s : pattern[i % pattern.length];
+
+const hideFrom = {
+	mobile: (maxVisible.mobile ?? 2) + 1,
+	tablet: (maxVisible.tablet ?? 4) + 1,
+	desktop: (maxVisible.desktop ?? 6) + 1,
+};
+---
+
+<section class="g-wrap">
+	<div
+		class="g-cols"
+		data-cols-mobile={columns.mobile ?? 1}
+		data-cols-tablet={columns.tablet ?? 2}
+		data-cols-desktop={columns.desktop ?? 3}
+		style={`--gap-x:${gapX}px; --gap-y:${gapY}px; --maxw:${maxWidth};`}
+	>
+		{
+			images.map((img, i) => (
+				<figure
+					class={`g-item g-${pickShape(i, img.shape)}`}
+					data-index={i}
+					data-src={img.src}
+					data-alt={img.alt ?? ""}
+					data-desc={img.description ?? ""}
+				>
+					<img
+						src={img.src}
+						alt={img.alt ?? ""}
+						loading="lazy"
+						decoding="async"
+					/>
+				</figure>
+			))
+		}
+	</div>
+
+	<div class="lb hidden" aria-hidden="true" role="dialog" aria-modal="true">
+		<div class="lb-backdrop" data-action="close"></div>
+		<div class="lb-dialog" role="document">
+			<button
+				class="lb-close"
+				type="button"
+				aria-label="Cerrar"
+				data-action="close">×</button
+			>
+
+			<div class="lb-stage">
+				<button
+					class="lb-nav lb-prev desktop-only"
+					type="button"
+					aria-label="Anterior"
+					data-action="prev">‹</button
+				>
+				<div class="lb-media">
+					<img class="lb-img" alt="" />
+				</div>
+				<button
+					class="lb-nav lb-next desktop-only"
+					type="button"
+					aria-label="Siguiente"
+					data-action="next">›</button
+				>
+			</div>
+
+			<div class="lb-meta">
+				<div class="lb-title"></div>
+				<div class="lb-desc"></div>
+			</div>
+
+			<div class="lb-thumbs">
+				<button
+					class="lb-th-btn desktop-only"
+					data-action="thumb-prev"
+					aria-label="Miniaturas anteriores">‹</button
+				>
+				<div class="lb-th-strip" style={`--thumb-w:${thumbWidth}px;`}>
+					{
+						images.map((img, i) => (
+							<button
+								class="lb-th"
+								data-idx={i}
+								title={img.alt ?? ""}
+							>
+								<img
+									src={img.src}
+									alt={img.alt ?? ""}
+									loading="lazy"
+								/>
+							</button>
+						))
+					}
+				</div>
+				<button
+					class="lb-th-btn desktop-only"
+					data-action="thumb-next"
+					aria-label="Miniaturas siguientes">›</button
+				>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.g-wrap {
+		width: 100%;
+		padding: 1rem 0;
+	}
+	.g-cols {
+		max-width: var(--maxw, 1200px);
+		margin: 0 auto;
+		padding: 0 1rem;
+		column-gap: var(--gap-x, 8px);
+		column-fill: balance;
+		column-count: attr(data-cols-mobile number, 1);
+	}
+	@media (min-width: 640px) {
+		.g-cols {
+			column-count: attr(data-cols-tablet number, 2);
+		}
+	}
+	@media (min-width: 1024px) {
+		.g-cols {
+			column-count: attr(data-cols-desktop number, 3);
+		}
+	}
+
+	.g-item {
+		display: block;
+		break-inside: avoid;
+		margin: 0 0 var(--gap-y, 8px);
+		background: #f2f2f2;
+		cursor: zoom-in;
+	}
+	@media (max-width: 639.98px) {
+		.g-item:nth-child(n + {{hideFrom.mobile}}) {
+			display: none;
+		}
+	}
+	@media (min-width: 640px) and (max-width: 1023.98px) {
+		.g-item:nth-child(n + {{hideFrom.tablet}}) {
+			display: none;
+		}
+	}
+	@media (min-width: 1024px) {
+		.g-item:nth-child(n + {{hideFrom.desktop}}) {
+			display: none;
+		}
+	}
+
+	.g-item img {
+		width: 100%;
+		height: 100%;
+		display: block;
+		object-fit: cover;
+	}
+	.g-wide {
+		aspect-ratio: 16/9;
+	}
+	.g-tall {
+		aspect-ratio: 4/5;
+	}
+	.g-square {
+		aspect-ratio: 1/1;
+	}
+
+	.lb.hidden {
+		display: none;
+	}
+	.lb {
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+	}
+	.lb-backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.6);
+		backdrop-filter: blur(2px);
+	}
+
+	.lb-dialog {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		align-items: center;
+		justify-content: center;
+		padding: 16px;
+		pointer-events: none;
+	}
+
+	.lb-stage {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		pointer-events: none;
+	}
+	.lb-media {
+		pointer-events: auto;
+		max-width: min(92vw, 1200px);
+		max-height: 72vh;
+		background: #111;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+	}
+	.lb-img {
+		max-width: 100%;
+		max-height: 72vh;
+		object-fit: contain;
+	}
+
+	.lb-meta {
+		pointer-events: auto;
+		width: min(92vw, 1200px);
+		background: #fff;
+		color: #222;
+		padding: 12px 14px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+	}
+	.lb-title {
+		font:
+			600 15px/1.3 system-ui,
+			-apple-system,
+			Segoe UI,
+			Roboto,
+			sans-serif;
+		margin-bottom: 6px;
+	}
+	.lb-desc {
+		font:
+			400 14px/1.5 system-ui,
+			-apple-system,
+			Segoe UI,
+			Roboto,
+			sans-serif;
+		color: #444;
+		max-height: 18vh;
+		overflow: auto;
+	}
+
+	.desktop-only {
+		display: none;
+	}
+	@media (min-width: 768px) {
+		.desktop-only {
+			display: inline-block;
+		}
+	}
+
+	.lb-nav {
+		pointer-events: auto;
+		background: rgba(255, 255, 255, 0.92);
+		border: 0;
+		cursor: pointer;
+		width: 42px;
+		height: 60px;
+		font-size: 28px;
+		line-height: 60px;
+		text-align: center;
+		color: #222;
+		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+	}
+
+	.lb-close {
+		position: absolute;
+		top: 8px;
+		right: 14px;
+		pointer-events: auto;
+		background: transparent;
+		border: 0;
+		color: #fff;
+		font-size: 34px;
+		line-height: 1;
+		cursor: pointer;
+	}
+
+	.lb-thumbs {
+		pointer-events: auto;
+		width: min(92vw, 1200px);
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.lb-th-btn {
+		display: none;
+		background: rgba(255, 255, 255, 0.92);
+		border: 0;
+		cursor: pointer;
+		width: 34px;
+		height: 48px;
+		font-size: 22px;
+		color: #222;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	}
+	@media (min-width: 768px) {
+		.lb-th-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+
+	.lb-th-strip {
+		position: relative;
+		overflow: auto;
+		white-space: nowrap;
+		scrollbar-width: thin;
+		-webkit-overflow-scrolling: touch;
+		flex: 1;
+		display: flex;
+		gap: 8px;
+		padding: 4px;
+	}
+	.lb-th {
+		border: 0;
+		background: #000;
+		padding: 0;
+		cursor: pointer;
+		flex: 0 0 var(--thumb-w, 140px);
+		aspect-ratio: 3/2;
+		overflow: hidden;
+		opacity: 0.85;
+		transition:
+			opacity 0.15s ease,
+			transform 0.15s ease;
+	}
+	.lb-th img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+	.lb-th[aria-current="true"] {
+		outline: 2px solid #fff;
+		opacity: 1;
+		transform: translateY(-1px);
+	}
+
+	.no-scroll {
+		overflow: hidden;
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const cards = Array.from(
+			document.querySelectorAll<HTMLElement>(".g-item")
+		);
+		const modal = document.querySelector<HTMLElement>(".lb");
+		const imgEl = modal!.querySelector<HTMLImageElement>(".lb-img")!;
+		const titleEl = modal!.querySelector<HTMLElement>(".lb-title")!;
+		const descEl = modal!.querySelector<HTMLElement>(".lb-desc")!;
+		const strip = modal!.querySelector<HTMLElement>(".lb-th-strip")!;
+		const thumbBtns = Array.from(
+			modal!.querySelectorAll<HTMLButtonElement>(".lb-th")
+		);
+		let current = -1;
+
+		function openAt(i: number) {
+			const el = cards[i];
+			if (!el) return;
+			const src = el.dataset.src || "";
+			const alt = el.dataset.alt || "";
+			const desc = el.dataset.desc || "";
+
+			imgEl.src = src;
+			imgEl.alt = alt;
+			titleEl.textContent = alt;
+			descEl.textContent = desc;
+
+			thumbBtns.forEach((b) => b.removeAttribute("aria-current"));
+			const activeThumb = thumbBtns[i];
+			if (activeThumb) {
+				activeThumb.setAttribute("aria-current", "true");
+				const diff =
+					activeThumb.offsetLeft -
+					(strip.clientWidth / 2 - activeThumb.clientWidth / 2);
+				strip.scrollTo({ left: diff, behavior: "smooth" });
+			}
+
+			modal!.classList.remove("hidden");
+			modal!.setAttribute("aria-hidden", "false");
+			document.documentElement.classList.add("no-scroll");
+			current = i;
+		}
+		function close() {
+			modal!.classList.add("hidden");
+			modal!.setAttribute("aria-hidden", "true");
+			imgEl.src = "";
+			document.documentElement.classList.remove("no-scroll");
+			current = -1;
+		}
+		function prev() {
+			if (current < 0) return;
+			openAt((current - 1 + cards.length) % cards.length);
+		}
+		function next() {
+			if (current < 0) return;
+			openAt((current + 1) % cards.length);
+		}
+
+		cards.forEach((el, i) => el.addEventListener("click", () => openAt(i)));
+
+		modal!.addEventListener("click", (e) => {
+			const btn = e.target as HTMLElement;
+			const action = btn.dataset.action;
+			if (action === "close") close();
+			if (action === "prev") prev();
+			if (action === "next") next();
+			if (action === "thumb-prev")
+				strip.scrollBy({
+					left: -strip.clientWidth,
+					behavior: "smooth",
+				});
+			if (action === "thumb-next")
+				strip.scrollBy({ left: strip.clientWidth, behavior: "smooth" });
+		});
+
+		window.addEventListener("keydown", (e) => {
+			if (modal!.classList.contains("hidden")) return;
+			if (e.key === "Escape") close();
+			if (e.key === "ArrowLeft") prev();
+			if (e.key === "ArrowRight") next();
+		});
+
+		thumbBtns.forEach((b) => {
+			b.addEventListener("click", () => {
+				const idx = Number(b.dataset.idx || -1);
+				if (idx >= 0) openAt(idx);
+			});
+		});
+	});
+</script>

@@ -1,0 +1,372 @@
+---
+interface BaseItem {
+	slug: string;
+	title: string;
+	imageUrl?: string;
+	date?: string;
+	category?: string;
+}
+
+interface NovedadItem extends BaseItem {
+	kind?: "noticia" | "novedad";
+	externalUrl?: string;
+}
+
+const { novedades = [] } = Astro.props as { novedades: NovedadItem[] };
+
+function fmt(d?: string) {
+	if (!d) return "";
+	const dt = new Date(d);
+	return new Intl.DateTimeFormat("es-AR", {
+		day: "2-digit",
+		month: "short",
+	}).format(dt);
+}
+
+const imgOr = (fallback: string) => (url?: string) => url || fallback;
+const fallbackNews = "/images/logo.webp";
+const safeNewsImg = imgOr(fallbackNews);
+---
+
+<div class="news-carousel" id="news-carousel">
+	<div class="carousel-wrapper">
+		{
+			novedades.map((n) => (
+				<div class="news-highlight">
+					<img
+						src={safeNewsImg(n.imageUrl)}
+						alt={n.title}
+						class="news-image"
+					/>
+					<div class="news-overlay">
+						<div class="news-card">
+							<p class="news-title">{n.title}</p>
+							<div class="news-footer">
+								<span>{fmt(n.date)}</span>
+
+								{n.kind === "noticia" ? (
+									<a href={`/noticias/${n.slug}`}>
+										Conoce más <span>&rarr;</span>
+									</a>
+								) : n.externalUrl ? (
+									<a
+										href={n.externalUrl}
+										target="_blank"
+										rel="noopener"
+									>
+										Conoce más <span>&rarr;</span>
+									</a>
+								) : null}
+							</div>
+						</div>
+					</div>
+				</div>
+			))
+		}
+	</div>
+
+	{
+		novedades.length === 0 && (
+			<div class="empty-box">
+				<span class="empty-icon" aria-hidden="true">
+					🗞️
+				</span>
+				<p class="empty-title">Aún no hay novedades</p>
+				<p class="empty-sub">
+					Cuando publiques una novedad, aparecerá aquí como destacada.
+				</p>
+			</div>
+		)
+	}
+
+	{
+		novedades.length > 1 && (
+			<div class="news-arrows">
+				<button class="arrow-btn" id="prev">
+					&#x276E;
+				</button>
+				<button class="arrow-btn" id="next">
+					&#x276F;
+				</button>
+			</div>
+		)
+	}
+</div>
+
+<style>
+	.news-carousel {
+		flex: 1 1 65%;
+		max-width: 60%;
+		position: relative;
+		overflow: hidden;
+		border-radius: 16px;
+		aspect-ratio: 16 / 9;
+		background: #f3f4f6;
+	}
+
+	.carousel-wrapper {
+		display: flex;
+		height: 100%;
+		transition: transform 0.6s ease-in-out;
+	}
+
+	.news-highlight {
+		min-width: 100%;
+		position: relative;
+		height: 100%;
+	}
+
+	.news-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		display: block;
+		border-radius: 0;
+		background: #f3f4f6;
+	}
+
+	.news-overlay {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+	}
+
+	.news-card {
+		position: absolute;
+		bottom: 1rem;
+		right: 1rem;
+		background-color: #06752e;
+		color: #fff;
+		padding: 1.5rem;
+		border-radius: 20px;
+		width: 340px;
+		max-width: 340px;
+		min-width: 340px;
+
+		z-index: 2;
+	}
+
+	.news-title {
+		font-size: 1rem;
+		line-height: 1.4;
+	}
+
+	.news-footer {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.85rem;
+		font-weight: 600;
+	}
+
+	.news-footer a {
+		color: white;
+		text-decoration: none;
+	}
+
+	.news-arrows {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0 0.5rem;
+		z-index: 3;
+		pointer-events: none;
+	}
+
+	.arrow-btn {
+		pointer-events: auto;
+		background: #06752e;
+		border: none;
+		color: #fff;
+		font-size: 1.2rem;
+		width: 42px;
+		height: 42px;
+		border-radius: 50%;
+		cursor: pointer;
+		transition:
+			background 0.3s ease;
+			transform 0.1s ease;
+		box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+	}
+
+	.arrow-btn:hover {
+		background: #1bae70;
+		transform: translateY(-1px);
+	}
+
+	.arrow-btn:active {
+		transform: translateY(0);
+	}
+
+	.empty-box {
+		box-sizing: border-box;
+		width: 100%;
+		min-height: 220px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.25rem;
+		background: #f7f8fb;
+		border: 1px dashed #d8dbe5;
+		border-radius: 15px;
+		text-align: center;
+		color: #556;
+		padding: 1.25rem;
+	}
+
+	.empty-icon {
+		font-size: 28px;
+		opacity: 0.7;
+	}
+
+	.empty-title {
+		margin: 0.25rem 0 0;
+		font-weight: 700;
+		color: #223;
+	}
+
+	.empty-sub {
+		margin: 0;
+		font-size: 0.9rem;
+		color: #667;
+	}
+
+	@media (max-width: 1070px) {
+		.news-carousel {
+			max-width: 100%;
+		}
+	}
+	@media (max-width: 720px) {
+		.news-carousel {
+			aspect-ratio: auto;
+			overflow-x: hidden;
+			overflow-y: visible;
+		}
+
+		.carousel-wrapper {
+			height: auto;
+			align-items: stretch;
+		}
+
+		.news-highlight {
+			display: flex;
+			flex-direction: column;
+			height: auto;
+			min-height: 0;
+		}
+
+		.news-image {
+			width: 100%;
+			height: auto;
+			aspect-ratio: 16 / 9;
+			object-fit: cover;
+			display: block;
+		}
+
+		.news-overlay {
+			position: static;
+			inset: auto;
+			display: flex;
+			flex: 1 1 auto;
+			min-height: 0;
+		}
+
+		.news-card {
+			position: static;
+			width: 100%;
+			max-width: none;
+			min-width: 0;
+			border-radius: 0 0 16px 16px;
+			padding: 1rem 1.25rem;
+			display: flex;
+			flex-direction: column;
+			flex: 1 1 auto;
+			min-height: 92px;
+		}
+		.news-footer {
+			margin-top: auto;
+		}
+	}
+</style>
+
+<script>
+	const wrapper = document.querySelector(".news-carousel .carousel-wrapper");
+	const slides = document.querySelectorAll(".news-carousel .news-highlight");
+	const prevBtn = document.getElementById("prev");
+	const nextBtn = document.getElementById("next");
+
+	let index = 0;
+	let autoSlideInterval = null;
+
+	function updateCarousel() {
+		if (!wrapper) return;
+		const offset = -index * 100;
+		wrapper.style.transform = `translateX(${offset}%)`;
+	}
+
+	function nextSlide() {
+		const total = slides.length;
+		if (!total) return;
+		index = (index + 1) % total;
+		updateCarousel();
+	}
+
+	function prevSlide() {
+		const total = slides.length;
+		if (!total) return;
+		index = (index - 1 + total) % total;
+		updateCarousel();
+	}
+
+	function startAutoSlide() {
+		if (slides.length > 1 && autoSlideInterval === null) {
+			autoSlideInterval = window.setInterval(nextSlide, 8000);
+		}
+	}
+
+	function resetAutoSlide() {
+		if (autoSlideInterval !== null) {
+			window.clearInterval(autoSlideInterval);
+			autoSlideInterval = null;
+		}
+		startAutoSlide();
+	}
+
+	nextBtn?.addEventListener("click", () => {
+		nextSlide();
+		resetAutoSlide();
+	});
+
+	prevBtn?.addEventListener("click", () => {
+		prevSlide();
+		resetAutoSlide();
+	});
+
+	let startX = 0;
+	let isDragging = false;
+
+	wrapper?.addEventListener("touchstart", (e) => {
+		startX = e.touches[0].clientX;
+		isDragging = true;
+	});
+
+	wrapper?.addEventListener("touchmove", (e) => {
+		if (!isDragging) return;
+		const diffX = e.touches[0].clientX - startX;
+		if (Math.abs(diffX) > 50) {
+			diffX < 0 ? nextSlide() : prevSlide();
+			resetAutoSlide();
+			isDragging = false;
+		}
+	});
+
+	wrapper?.addEventListener("touchend", () => {
+		isDragging = false;
+	});
+
+	updateCarousel();
+	startAutoSlide();
+</script>

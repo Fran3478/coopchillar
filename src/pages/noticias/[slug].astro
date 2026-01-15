@@ -1,0 +1,306 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+
+const TENANT_ID = Number(import.meta.env.PUBLIC_TENANT_ID) || 1;
+const origin = Astro.url.origin;
+const apiBase = `${origin}/v1/public/tenants/${TENANT_ID}`;
+
+const slug = Astro.params.slug as string;
+
+function fmtDate(iso?: string) {
+	if (!iso) return "";
+	try {
+		return new Date(iso).toLocaleDateString("es-AR", {
+			day: "2-digit",
+			month: "long",
+			year: "numeric",
+		});
+	} catch {
+		return "";
+	}
+}
+
+function renderBlocks(blocksJson: any): string {
+	const blocks = blocksJson?.blocks || [];
+	const html: string[] = [];
+	for (const b of blocks) {
+		const t = b.type;
+		const d = b.data || {};
+		if (t === "paragraph") {
+			html.push(`<p>${d.text ?? ""}</p>`);
+		} else if (t === "header") {
+			const lvl = Math.min(Math.max(Number(d.level || 2), 1), 6);
+			html.push(`<h${lvl}>${d.text ?? ""}</h${lvl}>`);
+		} else if (t === "list") {
+			const tag = d.style === "ordered" ? "ol" : "ul";
+			const items = Array.isArray(d.items)
+				? d.items.map((it: string) => `<li>${it}</li>`).join("")
+				: "";
+			html.push(`<${tag}>${items}</${tag}>`);
+		} else if (t === "image") {
+			const url = d.file?.url || d.url;
+			const cap = d.caption
+				? `<figcaption>${d.caption}</figcaption>`
+				: "";
+			if (url)
+				html.push(
+					`<figure><img src="${url}" alt="${d.caption || ""}" />${cap}</figure>`
+				);
+		}
+	}
+	return html.join("\n");
+}
+
+let post: any = null;
+let notFound = false;
+
+try {
+	const res = await fetch(`${apiBase}/posts/${encodeURIComponent(slug)}`);
+	if (res.ok) {
+		post = await res.json();
+		if (post?.tipo !== "noticia") notFound = true;
+	} else {
+		notFound = true;
+	}
+} catch {
+	notFound = true;
+}
+
+const html = post ? renderBlocks(post.blocksJson) : "";
+---
+
+<Layout title={post?.titulo ? `${post.titulo} · Noticias` : "Noticia"}>
+	<div id="main-content">
+		<main class="wrap">
+			{
+				notFound ? (
+					<section class="notfound">
+						<h1>No encontrada</h1>
+						<p>La noticia solicitada no existe o fue movida.</p>
+						<p>
+							<a class="kbtn" href="/noticias">
+								Volver a noticias
+							</a>
+						</p>
+					</section>
+				) : (
+					<>
+						<header class="head">
+							<h1 class="title">{post.titulo}</h1>
+							<div class="meta">
+								<time datetime={post.publicadoEn || ""}>
+									{fmtDate(post.publicadoEn)}
+								</time>
+							</div>
+							{post.excerpt && <p class="lead">{post.excerpt}</p>}
+						</header>
+
+						{post.portadaUrl ? (
+							<figure class="hero">
+								<img
+									src={post.portadaUrl}
+									alt={post.titulo || "Portada"}
+								/>
+							</figure>
+						) : null}
+
+						<article class="article">
+							<section class="content" set:html={html} />
+						</article>
+
+						<p class="back">
+							<a href="/noticias" class="kbtn">
+								← Volver a noticias
+							</a>
+						</p>
+					</>
+				)
+			}
+		</main>
+	</div>
+
+	<style>
+		:root {
+			--brand: #0b2a66;
+			--accent: #ff8c00;
+			--border: #e6e8ec;
+			--muted: #6b7280;
+			--text: #0f172a;
+			--article-max: 1000px;
+		}
+		#main-content {
+			padding-top: 160px;
+			margin: 0 1rem;
+			transition: padding-top 0.3s ease;
+			overflow-x: hidden;
+		}
+
+		.wrap {
+			max-width: 1024px;
+			margin: 0 auto;
+		}
+
+		:root {
+			--brand: #0b2a66;
+			--accent: #ff8c00;
+			--border: #e6e8ec;
+			--muted: #6b7280;
+			--text: #0f172a;
+		}
+
+		.head {
+			text-align: initial;
+			margin: 0 0 50px;
+			padding-top: 4px;
+		}
+		.title {
+			margin: 3rem 0 0.5rem;
+			font-weight: 800;
+			color: var(--text);
+			letter-spacing: -0.015em;
+			font-size: clamp(1.8rem, 3.2vw + 1rem, 2.6rem);
+			line-height: 1.15;
+			text-align: center;
+		}
+		.meta {
+			color: var(--muted);
+			font-size: 0.95rem;
+			margin: 0.4rem auto 0.6rem;
+			max-width: var(--article-max);
+			text-align: left;
+		}
+		.lead {
+			margin: 0.25rem auto 1.1rem;
+			max-width: var(--article-max);
+			color: #374151;
+			font-size: clamp(1.05rem, 0.4vw + 1rem, 1.2rem);
+			line-height: 1.6;
+		}
+
+		.hero {
+			margin: 0 0 14px;
+		}
+		.hero img {
+			display: block;
+			width: 100%;
+			height: auto;
+			object-fit: cover;
+			border-radius: 12px;
+			aspect-ratio: 16 / 9;
+		}
+
+		.article {
+			display: block;
+		}
+		.content {
+			max-width: var(--article-max);
+			margin: 5rem auto;
+			padding: 0 16px;
+			font-size: 1.06rem;
+			line-height: 1.8;
+			color: #1f2937;
+		}
+		.content :where(h2, h3, h4) {
+			color: var(--text);
+			margin: 1.25em 0 0.5em;
+			line-height: 1.25;
+		}
+		.content :where(img, video, iframe, embed, object) {
+			max-width: 100%;
+			height: auto;
+			display: block;
+		}
+		.content p {
+			margin: 0.9em 0;
+		}
+		.content ul,
+		.content ol {
+			padding-left: 1.25rem;
+			margin: 0.8rem 0;
+		}
+		.content figure {
+			max-width: 100%;
+			margin-left: 0;
+			margin-right: 0;
+		}
+		.content figure img {
+			max-width: 100%;
+			border-radius: 8px;
+		}
+		.content figcaption {
+			color: var(--muted);
+			font-size: 0.9rem;
+			text-align: center;
+			margin-top: 0.25rem;
+		}
+
+		.notfound h1 {
+			color: var(--brand);
+		}
+		.notfound p {
+			color: var(--muted);
+		}
+
+		.kbtn {
+			display: inline-block;
+			text-decoration: none;
+			font-weight: 600;
+			background: #fff;
+			border: 1px solid var(--border);
+			color: #111827;
+			padding: 0.45rem 0.75rem;
+			border-radius: 0.55rem;
+		}
+		.back {
+			margin: 10px 2px 0;
+			text-align: center;
+		}
+		@media (min-width: 768px) {
+			.content figure {
+				margin-left: calc(
+					-1 * min(32px, (100vw - var(--article-max)) / 2)
+				);
+				margin-right: calc(
+					-1 * min(32px, (100vw - var(--article-max)) / 2)
+				);
+			}
+
+			.content figure img {
+				width: 100%;
+				max-width: 100%;
+			}
+		}
+		@media (min-width: 900px) {
+			:global(.content figure) {
+				margin-left: -24px;
+				margin-right: -24px;
+			}
+		}
+
+		:global(.content figure) {
+			margin: 1.1rem 0;
+			max-width: 100%;
+		}
+
+		:global(.content img) {
+			max-width: 100%;
+			height: auto;
+			display: block;
+			margin: 0 auto;
+			border-radius: 8px;
+		}
+
+		:global(.content) {
+			overflow-wrap: anywhere;
+		}
+
+		:global(.content iframe),
+		:global(.content video),
+		:global(.content embed),
+		:global(.content object) {
+			max-width: 100%;
+			display: block;
+		}
+	</style>
+</Layout>

@@ -2,8 +2,9 @@
 import InfoBar from "../components/InfoBar.astro";
 import NavBar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
+import WhatsappFloat from "../components/WhatsappFloat.astro";
 
-interface Porps {
+interface Props {
 	title: string;
 }
 
@@ -15,7 +16,7 @@ const { title } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/svg+xml" href="/images/logo.webp" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<script
@@ -24,9 +25,13 @@ const { title } = Astro.props;
 	</head>
 	<body>
 		<div class="main-wrapper">
-			<InfoBar />
+			<!-- <InfoBar /> -->
 			<NavBar />
 			<slot />
+			<WhatsappFloat
+				phone="54934XXXXXXXX"
+				message="Hola! Quería hacer una consulta."
+			/>
 		</div>
 		<Footer />
 	</body>
@@ -44,10 +49,5 @@ const { title } = Astro.props;
 	}
 	.main-wrapper {
 		flex: 1;
-	}
-	@media (max-width: 720px) {
-		#info-bar {
-			display: none;
-		}
 	}
 </style>

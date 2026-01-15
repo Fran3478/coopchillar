@@ -1,0 +1,484 @@
+---
+export interface ImageItem {
+	src: string;
+	alt?: string;
+	description?: string;
+}
+
+interface Props {
+	images: ImageItem[];
+	maxVisible?: number;
+	maxWidth?: string;
+	gap?: number;
+	modalTopPadding?: number;
+	thumbWidth?: number;
+}
+
+const {
+	images,
+	maxVisible = 10,
+	maxWidth = "1200px",
+	gap = 12,
+	modalTopPadding = 80,
+	thumbWidth = 140,
+} = Astro.props;
+
+const visibleIdx = Array.from(
+	{ length: Math.min(maxVisible, images.length) },
+	(_, i) => i
+);
+---
+
+<section class="gal masonry">
+	<div
+		class="cols"
+		style={`--gap:${gap}px; --maxw:${maxWidth}; --cols-m:1; --cols-t:2; --cols-d:3;`}
+	>
+		{
+			visibleIdx.map((idx) => {
+				const img = images[idx];
+				return (
+					<figure class="card" data-idx={idx}>
+						<img
+							src={img.src}
+							alt={img.alt ?? ""}
+							loading="lazy"
+							decoding="async"
+						/>
+					</figure>
+				);
+			})
+		}
+	</div>
+
+	<div
+		class="lb hidden"
+		aria-hidden="true"
+		role="dialog"
+		aria-modal="true"
+		style={`--lb-top:${modalTopPadding}px; --thumb-w:${thumbWidth}px;`}
+	>
+		<div class="backdrop" data-action="close"></div>
+
+		<div class="dialog">
+			<button
+				class="close"
+				type="button"
+				aria-label="Cerrar"
+				data-action="close">×</button
+			>
+
+			<div class="card-white">
+				<div class="stage">
+					<button class="nav prev desktop-only" data-action="prev"
+						>‹</button
+					>
+					<div class="media"><img class="big" alt="" /></div>
+					<button class="nav next desktop-only" data-action="next"
+						>›</button
+					>
+				</div>
+				<div class="meta">
+					<div class="title"></div>
+					<div class="desc"></div>
+				</div>
+			</div>
+
+			<div class="thumbs">
+				<button class="th-btn desktop-only" data-action="thumb-prev"
+					>‹</button
+				>
+				<div class="th-strip">
+					{
+						images.map((img, i) => (
+							<button
+								class="th"
+								data-idx={i}
+								data-alt={img.alt ?? ""}
+								data-desc={img.description ?? ""}
+								type="button"
+							>
+								<img
+									src={img.src}
+									alt={img.alt ?? ""}
+									loading="lazy"
+								/>
+							</button>
+						))
+					}
+				</div>
+
+				<button class="th-btn desktop-only" data-action="thumb-next"
+					>›</button
+				>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.gal.masonry .cols {
+		max-width: var(--maxw, 1200px);
+		margin: 0 auto;
+		padding: 0 1rem;
+		column-gap: var(--gap, 12px);
+		column-fill: balance;
+		column-count: var(--cols-m, 1);
+	}
+	@media (min-width: 640px) {
+		.gal.masonry .cols {
+			column-count: var(--cols-t, 2);
+		}
+	}
+	@media (min-width: 1024px) {
+		.gal.masonry .cols {
+			column-count: var(--cols-d, 3);
+		}
+	}
+
+	.gal.masonry .card {
+		break-inside: avoid;
+		margin: 0 0 var(--gap, 12px);
+	}
+	.gal.masonry img {
+		width: 100%;
+		height: auto;
+		display: block;
+		object-fit: cover;
+		cursor: pointer;
+	}
+
+	.gal.masonry .cols:hover .card {
+		opacity: 0.6;
+		filter: saturate(0.9);
+		transition:
+			opacity 0.15s,
+			transform 0.15s,
+			filter 0.15s;
+	}
+	.gal.masonry .cols:hover .card:hover {
+		opacity: 1;
+		transform: scale(1.02);
+		z-index: 2;
+	}
+
+	.lb.hidden {
+		display: none;
+	}
+	.lb {
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+	}
+	.backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.65);
+		backdrop-filter: blur(2px);
+	}
+	.dialog {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		align-items: center;
+		justify-content: center;
+		padding: var(--lb-top, 80px) 16px 20px;
+		pointer-events: none;
+	}
+
+	.card-white {
+		pointer-events: auto;
+		background: #fff;
+		border-radius: 14px;
+		overflow: hidden;
+		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+		max-width: min(92vw, 1200px);
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+	.stage {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.media {
+		flex: 1;
+		background: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.big {
+		max-width: 100%;
+		max-height: 65vh;
+		object-fit: contain;
+	}
+	.meta {
+		padding: 12px 14px;
+		border-top: 1px solid #eee;
+	}
+	.title {
+		font-weight: 600;
+		margin-bottom: 6px;
+	}
+	.desc {
+		color: #444;
+		max-height: 18vh;
+		overflow: auto;
+	}
+
+	.close {
+		position: absolute;
+		top: calc(var(--lb-top, 80px) - 44px);
+		right: 22px;
+		background: #fff;
+		border: 0;
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+		font-size: 22px;
+		font-weight: bold;
+		cursor: pointer;
+	}
+
+	.desktop-only {
+		display: none;
+	}
+	@media (min-width: 768px) {
+		.desktop-only {
+			display: inline-block;
+		}
+	}
+	.nav {
+		pointer-events: auto;
+		background: rgba(255, 255, 255, 0.92);
+		border: 0;
+		cursor: pointer;
+		width: 42px;
+		height: 60px;
+		font-size: 28px;
+		line-height: 60px;
+		color: #222;
+		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+	}
+
+	.thumbs {
+		pointer-events: auto;
+		width: min(92vw, 1200px);
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.th-btn {
+		display: none;
+		background: rgba(255, 255, 255, 0.92);
+		border: 0;
+		width: 34px;
+		height: 48px;
+		font-size: 22px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+	}
+	@media (min-width: 768px) {
+		.th-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+	.th-strip {
+		flex: 1;
+		display: flex;
+		gap: 8px;
+		padding: 4px;
+		overflow: auto;
+		white-space: nowrap;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+	}
+	.th {
+		flex: 0 0 var(--thumb-w, 140px);
+		aspect-ratio: 3/2;
+		border: 0;
+		padding: 0;
+		cursor: pointer;
+		overflow: hidden;
+		opacity: 0.9;
+	}
+	.th img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+	.th[aria-current="true"] {
+		outline: 2px solid #333;
+		opacity: 1;
+	}
+
+	html.no-scroll,
+	body.no-scroll {
+		overflow: hidden !important;
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const root =
+			document.querySelector(".gal.masonry") ||
+			document.querySelector(".gal.collage");
+		if (!root) return;
+
+		const modal = root.querySelector(".lb");
+		const big = modal.querySelector(".big");
+		const titleEl = modal.querySelector(".title");
+		const descEl = modal.querySelector(".desc");
+		const strip = modal.querySelector(".th-strip");
+		const thumbs = Array.from(modal.querySelectorAll(".th"));
+
+		const data = thumbs.map((b) => {
+			const img = b.querySelector("img");
+			return {
+				src: img ? img.src : "",
+				alt: b.dataset.alt || "",
+				description: b.dataset.desc || "",
+			};
+		});
+
+		const gridItems = Array.from(root.querySelectorAll(".card, .slot"));
+
+		let current = -1;
+		let savedScrollY = 0;
+
+		function lockScroll() {
+			savedScrollY = window.scrollY || document.documentElement.scrollTop;
+			document.documentElement.classList.add("modal-open", "no-scroll");
+			document.body.classList.add("no-scroll");
+			document.body.style.position = "fixed";
+			document.body.style.top = `-${savedScrollY}px`;
+			document.body.style.left = "0";
+			document.body.style.right = "0";
+		}
+		function unlockScroll() {
+			document.documentElement.classList.remove(
+				"modal-open",
+				"no-scroll"
+			);
+			document.body.classList.remove("no-scroll");
+			document.body.style.position = "";
+			document.body.style.top = "";
+			document.body.style.left = "";
+			document.body.style.right = "";
+			window.scrollTo(0, savedScrollY);
+		}
+
+		function renderAt(i) {
+			const it = data[i];
+			if (!it) return;
+			big.src = it.src;
+			big.alt = it.alt || "";
+			titleEl.textContent = it.alt || "";
+			descEl.textContent = it.description || "";
+
+			thumbs.forEach((b) => b.removeAttribute("aria-current"));
+			const active = modal.querySelector(`.th[data-idx="${i}"]`);
+			if (active) {
+				active.setAttribute("aria-current", "true");
+				const left =
+					active.offsetLeft -
+					(strip.clientWidth / 2 - active.clientWidth / 2);
+				strip.scrollTo({ left, behavior: "smooth" });
+			}
+			current = i;
+		}
+
+		function openAt(i) {
+			modal.classList.remove("hidden");
+			lockScroll();
+			renderAt(i);
+		}
+		function close() {
+			modal.classList.add("hidden");
+			big.src = "";
+			unlockScroll();
+			current = -1;
+		}
+		function prev() {
+			if (current < 0) return;
+			renderAt((current - 1 + data.length) % data.length);
+		}
+		function next() {
+			if (current < 0) return;
+			renderAt((current + 1) % data.length);
+		}
+
+		gridItems.forEach((el) =>
+			el.addEventListener("click", () => {
+				const idx = Number(el.getAttribute("data-idx") || 0);
+				openAt(idx);
+			})
+		);
+
+		modal.addEventListener("click", (e) => {
+			const t = e.target;
+			if (!(t instanceof HTMLElement)) return;
+
+			if (t.tagName === "BUTTON")
+				(t as HTMLButtonElement).type = "button";
+
+			if (
+				t.classList.contains("backdrop") ||
+				t.dataset.action === "close"
+			) {
+				close();
+				return;
+			}
+			if (t.dataset.action === "prev") {
+				e.preventDefault();
+				prev();
+				return;
+			}
+			if (t.dataset.action === "next") {
+				e.preventDefault();
+				next();
+				return;
+			}
+			if (t.dataset.action === "thumb-prev") {
+				e.preventDefault();
+				strip.scrollBy({
+					left: -strip.clientWidth,
+					behavior: "smooth",
+				});
+				return;
+			}
+			if (t.dataset.action === "thumb-next") {
+				e.preventDefault();
+				strip.scrollBy({ left: strip.clientWidth, behavior: "smooth" });
+				return;
+			}
+
+			if (t.closest(".card-white") || t.closest(".thumbs"))
+				e.stopPropagation();
+		});
+
+		window.addEventListener("keydown", (e) => {
+			if (modal.classList.contains("hidden")) return;
+			if (e.key === "Escape") close();
+			if (e.key === "ArrowLeft") prev();
+			if (e.key === "ArrowRight") next();
+		});
+
+		thumbs.forEach((b) =>
+			b.addEventListener("click", (e) => {
+				e.stopPropagation();
+				e.preventDefault();
+				const idx = Number(b.getAttribute("data-idx") || -1);
+				if (idx >= 0) renderAt(idx);
+			})
+		);
+	});
+</script>

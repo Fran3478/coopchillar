@@ -1,0 +1,98 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+	title="Adherite a la Facturación Electrónica - Cooperativa Ltda. de Agua Potable y Otros Servicios Públicos de Chillar"
+>
+	<div>
+		<main>
+			<section class="form-section">
+				<h1>Adherite a la Facturación Electrónica</h1>
+				<p>
+					Completá el siguiente formulario para adherirte y comenzar a
+					recibir tu factura por correo electrónico.
+				</p>
+
+				<form
+					class="form-facturacion"
+					method="post"
+					data-netlify="true"
+					name="facturacion-electronica"
+				>
+					<label>
+						Nombre y apellido
+						<input type="text" name="nombre" required />
+					</label>
+					<label>
+						Número de abonado
+						<input type="text" name="abonado" required />
+					</label>
+					<label>
+						DNI o CUIT
+						<input type="text" name="documento" required />
+					</label>
+					<label>
+						Correo electrónico
+						<input type="email" name="email" required />
+					</label>
+					<button type="submit">Enviar solicitud</button>
+				</form>
+			</section>
+		</main>
+	</div>
+</Layout>
+
+<style>
+	#main-content {
+		padding-top: 160px;
+		margin: 0 1rem;
+		transition: padding-top 0.3s ease;
+	}
+	.content {
+		padding: 2rem 1rem;
+		max-width: 800px;
+		margin: 0 auto;
+		line-height: 1.6;
+		font-size: 1.1rem;
+		color: #333;
+	}
+	.form-section {
+		padding: 2rem;
+		max-width: 600px;
+		margin: auto;
+	}
+
+	.form-facturacion {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.form-facturacion label {
+		display: flex;
+		flex-direction: column;
+		font-weight: 500;
+	}
+
+	.form-facturacion input {
+		padding: 0.5rem;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+
+	.form-facturacion button {
+		padding: 0.75rem;
+		border: none;
+		background-color: #3b82f6;
+		color: white;
+		border-radius: 4px;
+		cursor: pointer;
+		font-weight: bold;
+		transition: background-color 0.3s ease;
+	}
+
+	.form-facturacion button:hover {
+		background-color: #2563eb;
+	}
+</style>

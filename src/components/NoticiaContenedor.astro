@@ -1,0 +1,41 @@
+---
+import NovedadesCarousel from "./NovedadesCarousel.astro";
+import NoticiasSidebar from "./NoticiasList.astro";
+
+interface Item {
+	slug: string;
+	title: string;
+	imageUrl?: string;
+	date?: string;
+	category?: string;
+	kind?: "noticia" | "novedad";
+	externalUrl?: string;
+}
+
+const { novedades = [], noticias = [] } = Astro.props as {
+	novedades: Item[];
+	noticias: Item[];
+};
+---
+
+<div class="noticias-y-blog">
+	<NovedadesCarousel novedades={novedades} />
+	<NoticiasSidebar noticias={noticias} />
+</div>
+
+<style>
+	.noticias-y-blog {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 2rem;
+		max-width: 1600px;
+		margin: 0 auto;
+		align-items: flex-start;
+	}
+
+	@media (max-width: 1070px) {
+		.noticias-y-blog {
+			flex-direction: column;
+		}
+	}
+</style>

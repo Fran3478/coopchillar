@@ -1,0 +1,887 @@
+---
+export const prerender = false;
+import DashboardLayout from "../../../layouts/DashboardLayout.astro";
+---
+
+<DashboardLayout title="Contactos">
+	<section class="page">
+		<header class="page-head">
+			<div class="titles">
+				<h1>Contactos</h1>
+				<p class="subtitle">
+					Consultas del formulario y adhesiones a facturación
+					electrónica.
+				</p>
+			</div>
+		</header>
+
+		<article class="table-card">
+			<div class="toolbar">
+				<input
+					id="c-q"
+					class="inp"
+					placeholder="Buscar por nombre, email, detalle…"
+				/>
+				<select id="c-cat" class="inp">
+					<option value="">Todas las categorías</option>
+					<option value="reclamo">Reclamo</option>
+					<option value="consulta">Consulta</option>
+					<option value="recomendacion">Recomendación</option>
+					<option value="otro">Otro</option>
+				</select>
+				<select id="c-status" class="inp">
+					<option value="">Todos los estados</option>
+					<option value="pending">Pendientes</option>
+					<option value="resolved">Resueltos</option>
+				</select>
+				<div class="spacer"></div>
+			</div>
+
+			<table class="tbl">
+				<thead>
+					<tr>
+						<th>Nombre</th>
+						<th class="hidem">Categoría</th>
+						<th class="hidem">Email</th>
+						<th class="hidem">Teléfono</th>
+						<th class="hidem">Estado</th>
+						<th class="hidem">Resuelto por</th>
+						<th style="width:1%"></th>
+					</tr>
+				</thead>
+				<tbody id="c-rows">
+					<tr><td colspan="7" class="empty">Cargando…</td></tr>
+				</tbody>
+			</table>
+
+			<div class="pager">
+				<button
+					id="c-prev"
+					class="btn ghost"
+					type="button"
+					aria-disabled="true"
+					disabled>← Anterior</button
+				>
+				<span id="c-info" class="muted"></span>
+				<button
+					id="c-next"
+					class="btn ghost"
+					type="button"
+					aria-disabled="true"
+					disabled>Siguiente →</button
+				>
+			</div>
+		</article>
+
+		<article class="table-card">
+			<div class="toolbar">
+				<input
+					id="e-q"
+					class="inp"
+					placeholder="Buscar por abonado, nombre, email…"
+				/>
+				<select id="e-status" class="inp">
+					<option value="">Todos los estados</option>
+					<option value="pending">Pendientes</option>
+					<option value="resolved">Resueltos</option>
+				</select>
+				<div class="spacer"></div>
+			</div>
+
+			<table class="tbl">
+				<thead>
+					<tr>
+						<th>Abonado Nº</th>
+						<th>Nombre</th>
+						<th class="hidem">DNI/CUIT</th>
+						<th class="hidem">Email</th>
+						<th class="hidem">Teléfono</th>
+						<th class="hidem">Estado</th>
+						<th style="width:1%"></th>
+					</tr>
+				</thead>
+				<tbody id="e-rows">
+					<tr><td colspan="7" class="empty">Cargando…</td></tr>
+				</tbody>
+			</table>
+
+			<div class="pager">
+				<button
+					id="e-prev"
+					class="btn ghost"
+					type="button"
+					aria-disabled="true"
+					disabled>← Anterior</button
+				>
+				<span id="e-info" class="muted"></span>
+				<button
+					id="e-next"
+					class="btn ghost"
+					type="button"
+					aria-disabled="true"
+					disabled>Siguiente →</button
+				>
+			</div>
+		</article>
+
+		<div id="status" class="status" role="status" aria-live="polite"></div>
+	</section>
+
+	<dialog id="contactModal" class="modal">
+		<div class="card">
+			<h3>Detalle de contacto</h3>
+			<div id="contactDetail" class="detail"></div>
+			<footer class="modal-actions">
+				<button class="btn primary" type="button" id="closeContactModal"
+					>Cerrar</button
+				>
+			</footer>
+		</div>
+	</dialog>
+
+	<dialog id="ebillingModal" class="modal">
+		<div class="card">
+			<h3>Detalle de adhesión</h3>
+			<div id="ebillingDetail" class="detail"></div>
+			<footer class="modal-actions">
+				<button
+					class="btn primary"
+					type="button"
+					id="closeEbillingModal">Cerrar</button
+				>
+			</footer>
+		</div>
+	</dialog>
+
+	<style>
+		.page {
+			max-width: 1100px;
+			margin: 0 auto;
+			padding: 1rem;
+		}
+		.page-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+			background: color-mix(in oklab, #fff 92%, var(--bg));
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			padding: 0.9rem 1rem;
+			margin-bottom: 1rem;
+		}
+		.titles h1 {
+			margin: 0.05rem 0;
+			color: var(--brand);
+			font-size: 1.25rem;
+		}
+		.subtitle {
+			margin: 0;
+			color: var(--muted);
+		}
+
+		.toolbar {
+			display: flex;
+			gap: 0.6rem;
+			align-items: center;
+			margin: 0 0 0.8rem 0;
+		}
+		.spacer {
+			flex: 1;
+		}
+		.inp {
+			border: 1px solid var(--border);
+			border-radius: 0.55rem;
+			padding: 0.55rem 0.7rem;
+			font: inherit;
+			background: #fff;
+			min-width: 220px;
+		}
+		.inp:focus {
+			outline: none;
+			box-shadow: 0 0 0 4px var(--ring);
+		}
+
+		.table-card {
+			background: transparent;
+			border: 0;
+			border-radius: 0;
+			padding: 0;
+			overflow: visible;
+		}
+
+		.btn {
+			appearance: none;
+			border: 1px solid var(--border);
+			background: #fff;
+			color: #111;
+			padding: 0.5rem 0.8rem;
+			border-radius: 0.55rem;
+			font-weight: 600;
+			cursor: pointer;
+		}
+		.btn.primary {
+			background: var(--accent);
+			color: #fff;
+			border-color: color-mix(in oklab, var(--accent), black 10%);
+		}
+		.btn.ghost:hover {
+			background: #eef2f7;
+		}
+
+		:global(.tbl) {
+			width: 100%;
+			border-collapse: separate;
+			border-spacing: 0;
+			background: #fff;
+			border: 1px solid var(--border, #e5e7eb);
+			border-radius: 14px;
+			overflow: hidden;
+		}
+		:global(.tbl thead th) {
+			text-align: left;
+			padding: 12px 16px;
+			font-weight: 700;
+			color: var(--brand, #0b2a66);
+			background: #f8fafc;
+			border-bottom: 1px solid var(--border, #e5e7eb);
+			white-space: nowrap;
+		}
+		:global(.tbl tbody td) {
+			padding: 14px 18px;
+			vertical-align: middle;
+			border-bottom: 1px solid #e9eef5;
+			word-wrap: break-word;
+		}
+		:global(.tbl tbody tr:hover td) {
+			background: #fbfdff;
+		}
+		:global(.tbl tbody tr:last-child td) {
+			border-bottom: 0;
+		}
+		.empty {
+			text-align: center;
+			color: var(--muted);
+			padding: 2rem 0;
+		}
+
+		:global(.badge) {
+			display: inline-block;
+			padding: 4px 8px;
+			border-radius: 999px;
+			font-weight: 700;
+			font-size: 0.82rem;
+			border: 1px solid transparent;
+		}
+		:global(.badge.is-pending) {
+			background: #fff7ed;
+			color: #9a3412;
+			border-color: #fed7aa;
+		}
+		:global(.badge.is-resolved) {
+			background: #ecfdf5;
+			color: #065f46;
+			border-color: #bbf7d0;
+		}
+
+		:global(th:last-child) {
+			text-align: right;
+		}
+		:global(.td.actions) {
+			white-space: nowrap;
+			text-align: right;
+			padding-right: 16px;
+			width: 1%;
+		}
+		:global(.row-actions) {
+			display: inline-flex;
+			gap: 8px;
+			align-items: center;
+			flex-wrap: wrap;
+			justify-content: flex-end;
+		}
+		:global(.kbtn) {
+			appearance: none;
+			border: 1px solid #e5e7eb;
+			background: #fff;
+			color: #111827;
+			padding: 6px 10px;
+			border-radius: 8px;
+			font-weight: 700;
+			cursor: pointer;
+			text-decoration: none;
+			line-height: 1;
+		}
+		:global(.kbtn:hover) {
+			filter: brightness(0.98);
+		}
+		:global(.kbtn.ghost) {
+			background: #f8fafc;
+		}
+		:global(.kbtn.danger) {
+			border-color: #fca5a5;
+			color: #991b1b;
+		}
+		:global(.kbtn.success) {
+			border-color: #86efac;
+			color: #166534;
+		}
+		:global(.kbtn.solid) {
+			color: #fff;
+			border-color: transparent;
+		}
+		:global(.kbtn.danger.solid) {
+			background: #ef4444;
+		}
+		:global(.kbtn.success.solid) {
+			background: #10b981;
+		}
+
+		.pager {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+			justify-content: center;
+			padding: 0.9rem 0;
+		}
+		.muted {
+			color: var(--muted);
+		}
+		.pager .btn:disabled,
+		.pager .btn[disabled] {
+			opacity: 0.5;
+			cursor: not-allowed;
+			pointer-events: none;
+			filter: none;
+			background: #f3f4f6;
+			border-color: #e5e7eb;
+			color: #9ca3af;
+			box-shadow: none;
+		}
+
+		.modal {
+			border: none;
+			padding: 0;
+			background: transparent;
+			width: auto;
+			max-width: 96vw;
+		}
+		.modal[open] {
+			display: grid;
+			place-items: center;
+		}
+		.modal::backdrop {
+			background: rgba(0, 0, 0, 0.35);
+			backdrop-filter: blur(2px);
+		}
+		.modal .card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			padding: 1rem;
+			box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+			width: min(560px, 96vw);
+			max-width: 560px;
+		}
+		.modal h3 {
+			margin: 0 0 0.5rem;
+			color: var(--brand);
+		}
+		.detail {
+			display: grid;
+			gap: 0.4rem;
+		}
+		.detail .row {
+			display: grid;
+			grid-template-columns: 140px 1fr;
+			gap: 0.5rem;
+		}
+		.detail .row b {
+			color: var(--muted);
+			font-weight: 700;
+		}
+		.modal-actions {
+			display: flex;
+			gap: 0.6rem;
+			justify-content: flex-end;
+			margin-top: 0.8rem;
+		}
+
+		@media (max-width: 820px) {
+			.inp {
+				min-width: 130px;
+			}
+			.hidem {
+				display: none;
+			}
+			:global(.row-actions) {
+				justify-content: flex-start;
+			}
+			.detail .row {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		.status {
+			position: fixed;
+			right: 18px;
+			bottom: 18px;
+			z-index: 70;
+			display: none;
+			min-width: 180px;
+			background: var(--card);
+			color: var(--text);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 0.55rem 0.8rem;
+			box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+			font-weight: 600;
+		}
+		.status.show {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+		.status.ok {
+			border-color: color-mix(in oklab, var(--accent), white 60%);
+		}
+		.status.err {
+			background: #fff1f2;
+			color: #7f1d1d;
+			border-color: #fecaca;
+		}
+		.status.err::before {
+			content: "⚠";
+			font-size: 1rem;
+			line-height: 1;
+			opacity: 0.9;
+		}
+	</style>
+
+	<script type="module">
+		import {
+			apiGet,
+			apiPut,
+			getErrorInfo,
+			toErrorText,
+		} from "/src/lib/api";
+		import { makeToaster } from "/src/lib/admin-uploader";
+
+		const toast = makeToaster("status", { okMs: 1600, errMs: 5000 });
+
+		let cPage = 1,
+			cPageSize = 10,
+			cTotal = 0;
+		let cItems = [];
+		let cQ = "",
+			cCat = "",
+			cStatus = "";
+
+		const cRows = document.getElementById("c-rows");
+		const cInfo = document.getElementById("c-info");
+		const cPrev = document.getElementById("c-prev");
+		const cNext = document.getElementById("c-next");
+		const cQEl = document.getElementById("c-q");
+		const cCatEl = document.getElementById("c-cat");
+		const cStatusEl = document.getElementById("c-status");
+
+		let ePage = 1,
+			ePageSize = 10,
+			eTotal = 0;
+		let eItems = [];
+		let eQ = "",
+			eStatus = "";
+
+		const eRows = document.getElementById("e-rows");
+		const eInfo = document.getElementById("e-info");
+		const ePrev = document.getElementById("e-prev");
+		const eNext = document.getElementById("e-next");
+		const eQEl = document.getElementById("e-q");
+		const eStatusEl = document.getElementById("e-status");
+
+		const contactModal = document.getElementById("contactModal");
+		const contactDetail = document.getElementById("contactDetail");
+		const closeContactModal = document.getElementById("closeContactModal");
+
+		const ebillingModal = document.getElementById("ebillingModal");
+		const ebillingDetail = document.getElementById("ebillingDetail");
+		const closeEbillingModal =
+			document.getElementById("closeEbillingModal");
+
+		const badge = (s) => {
+			const map = { pending: "is-pending", resolved: "is-resolved" };
+			const label = s === "resolved" ? "Resuelto" : "Pendiente";
+			return `<span class="badge ${map[s] || "is-pending"}">${label}</span>`;
+		};
+		const fullName = (n, a) => (n || "") + (a ? " " + a : "");
+		const escapeHtml = (str) =>
+			(str || "").replace(
+				/[&<>\"']/g,
+				(m) =>
+					({
+						"&": "&amp;",
+						"<": "&lt;",
+						">": "&gt;",
+						'"': "&quot;",
+						"'": "&#039;",
+					})[m]
+			);
+
+		function debounce(fn, ms = 300) {
+			let t;
+			return (...a) => {
+				clearTimeout(t);
+				t = setTimeout(() => fn(...a), ms);
+			};
+		}
+
+		async function loadContacts() {
+			try {
+				cRows.innerHTML = `<tr><td colspan="7" class="empty">Cargando…</td></tr>`;
+				const qs = new URLSearchParams({
+					page: String(cPage),
+					pageSize: String(cPageSize),
+					...(cQ ? { q: cQ } : {}),
+					...(cCat ? { categoria: cCat } : {}),
+					...(cStatus ? { status: cStatus } : {}),
+				}).toString();
+				const res = await apiGet(`/v1/contacts?${qs}`);
+				if (!res.ok) throw new Error(await res.text());
+				const data = await res.json();
+
+				cTotal = data.total || 0;
+				cItems = Array.isArray(data.items) ? data.items : [];
+
+				if (!cItems.length) {
+					cRows.innerHTML = `<tr><td colspan="7" class="empty">Sin resultados</td></tr>`;
+				} else {
+					cRows.innerHTML = cItems.map(renderContactRow).join("");
+
+					cRows
+						.querySelectorAll(".c-view")
+						.forEach((btn) =>
+							btn.addEventListener("click", () =>
+								openContactModal(btn.dataset.id)
+							)
+						);
+					cRows
+						.querySelectorAll(".c-resolve")
+						.forEach((btn) =>
+							btn.addEventListener("click", () =>
+								onContactStatus(btn.dataset.id, "resolved")
+							)
+						);
+					cRows
+						.querySelectorAll(".c-reopen")
+						.forEach((btn) =>
+							btn.addEventListener("click", () =>
+								onContactStatus(btn.dataset.id, "pending")
+							)
+						);
+				}
+
+				const maxPage = Math.max(1, Math.ceil(cTotal / cPageSize));
+				const first = cTotal ? (cPage - 1) * cPageSize + 1 : 0;
+				const last = Math.min(cPage * cPageSize, cTotal);
+				cInfo.textContent = cTotal
+					? `${first}-${last} de ${cTotal}`
+					: "0 resultados";
+
+				const prevDisabled = cPage <= 1;
+				const nextDisabled = cPage >= maxPage;
+				cPrev.disabled = prevDisabled;
+				cNext.disabled = nextDisabled;
+				cPrev.setAttribute("aria-disabled", String(prevDisabled));
+				cNext.setAttribute("aria-disabled", String(nextDisabled));
+			} catch (e) {
+				console.error(e);
+				cRows.innerHTML = `<tr><td colspan="7" class="empty">Error cargando</td></tr>`;
+			}
+		}
+
+		function renderContactRow(c) {
+			const nombre = fullName(c.nombre, c.apellido);
+			const cat = c.categoria || "—";
+			const email = c.email || "—";
+			const tel = c.telefono || "—";
+			const st = c.status || "pending";
+			const handled =
+				c.handledByUserId != null ? `#${c.handledByUserId}` : "—";
+
+			const actions =
+				st === "pending"
+					? `<button class="kbtn success solid c-resolve" data-id="${c.id}">Resolver</button>`
+					: `<button class="kbtn ghost c-reopen" data-id="${c.id}">Reabrir</button>`;
+
+			return `<tr>
+        <td>${escapeHtml(nombre || "—")}</td>
+        <td class="hidem">${escapeHtml(cat)}</td>
+        <td class="hidem">${escapeHtml(email)}</td>
+        <td class="hidem">${escapeHtml(tel)}</td>
+        <td class="hidem">${badge(st)}</td>
+        <td class="hidem">${escapeHtml(handled)}</td>
+        <td class="td actions">
+          <div class="row-actions">
+            <button class="kbtn c-view" data-id="${c.id}">Ver</button>
+            ${actions}
+          </div>
+        </td>
+      </tr>`;
+		}
+
+		async function onContactStatus(id, status) {
+			const ok = confirm(
+				status === "resolved"
+					? "¿Marcar como resuelto?"
+					: "¿Reabrir contacto?"
+			);
+			if (!ok) return;
+			try {
+				toast.show("Actualizando…");
+				const r = await apiPut(`/v1/contacts/${id}/status`, { status });
+				if (!r.ok) {
+					const { text } = await getErrorInfo(r);
+					return toast.show(text || "No se pudo actualizar", "err");
+				}
+				await loadContacts();
+				toast.show("Actualizado ✅", "ok");
+			} catch (err) {
+				console.error(err);
+				toast.show(toErrorText(err), "err");
+			}
+		}
+
+		function openContactModal(id) {
+			const c = cItems.find((x) => String(x.id) === String(id));
+			if (!c) return;
+			const rows = [
+				["Nombre", fullName(c.nombre, c.apellido) || "—"],
+				["Categoría", c.categoria || "—"],
+				["Email", c.email || "—"],
+				["Teléfono", c.telefono || "—"],
+				["Socio Nº", c.socioNumero ?? "—"],
+				["DNI", c.dni ?? "—"],
+				["Estado", c.status === "resolved" ? "Resuelto" : "Pendiente"],
+				[
+					"Resuelto por",
+					c.handledByUserId != null ? `#${c.handledByUserId}` : "—",
+				],
+				["Detalle", c.detalle || "—"],
+			];
+			contactDetail.innerHTML = rows
+				.map(
+					([k, v]) =>
+						`<div class="row"><b>${k}</b><div>${escapeHtml(String(v))}</div></div>`
+				)
+				.join("");
+			contactModal.showModal();
+		}
+
+		async function loadEbilling() {
+			try {
+				eRows.innerHTML = `<tr><td colspan="7" class="empty">Cargando…</td></tr>`;
+				const qs = new URLSearchParams({
+					page: String(ePage),
+					pageSize: String(ePageSize),
+					...(eQ ? { q: eQ } : {}),
+					...(eStatus ? { status: eStatus } : {}),
+				}).toString();
+
+				const res = await apiGet(`/v1/ebilling-requests?${qs}`);
+				if (!res.ok) throw new Error(await res.text());
+				const data = await res.json();
+
+				eTotal = data.total || 0;
+				eItems = Array.isArray(data.items) ? data.items : [];
+
+				if (!eItems.length) {
+					eRows.innerHTML = `<tr><td colspan="7" class="empty">Sin resultados</td></tr>`;
+				} else {
+					eRows.innerHTML = eItems.map(renderEbillingRow).join("");
+
+					eRows
+						.querySelectorAll(".e-view")
+						.forEach((btn) =>
+							btn.addEventListener("click", () =>
+								openEbillingModal(btn.dataset.id)
+							)
+						);
+					eRows
+						.querySelectorAll(".e-resolve")
+						.forEach((btn) =>
+							btn.addEventListener("click", () =>
+								onEbillingStatus(btn.dataset.id, "resolved")
+							)
+						);
+					eRows
+						.querySelectorAll(".e-reopen")
+						.forEach((btn) =>
+							btn.addEventListener("click", () =>
+								onEbillingStatus(btn.dataset.id, "pending")
+							)
+						);
+				}
+
+				const maxPage = Math.max(1, Math.ceil(eTotal / ePageSize));
+				const first = eTotal ? (ePage - 1) * ePageSize + 1 : 0;
+				const last = Math.min(ePage * ePageSize, eTotal);
+				eInfo.textContent = eTotal
+					? `${first}-${last} de ${eTotal}`
+					: "0 resultados";
+
+				const prevDisabled = ePage <= 1;
+				const nextDisabled = ePage >= maxPage;
+				ePrev.disabled = prevDisabled;
+				eNext.disabled = nextDisabled;
+				ePrev.setAttribute("aria-disabled", String(prevDisabled));
+				eNext.setAttribute("aria-disabled", String(nextDisabled));
+			} catch (e) {
+				console.error(e);
+				eRows.innerHTML = `<tr><td colspan="7" class="empty">Error cargando</td></tr>`;
+			}
+		}
+
+		function renderEbillingRow(r) {
+			const nombre = fullName(r.nombre, r.apellido);
+			const st = r.status || "pending";
+			const actions =
+				st === "pending"
+					? `<button class="kbtn success solid e-resolve" data-id="${r.id}">Resolver</button>`
+					: `<button class="kbtn ghost e-reopen" data-id="${r.id}">Reabrir</button>`;
+
+			return `<tr>
+        <td>${escapeHtml(r.abonadoNumero ?? "—")}</td>
+        <td>${escapeHtml(nombre || "—")}</td>
+        <td class="hidem">${escapeHtml(r.dniCuit ?? "—")}</td>
+        <td class="hidem">${escapeHtml(r.email || "—")}</td>
+        <td class="hidem">${escapeHtml(r.telefono || "—")}</td>
+        <td class="hidem">${badge(st)}</td>
+        <td class="td actions">
+          <div class="row-actions">
+            <button class="kbtn e-view" data-id="${r.id}">Ver</button>
+            ${actions}
+          </div>
+        </td>
+      </tr>`;
+		}
+
+		async function onEbillingStatus(id, status) {
+			const ok = confirm(
+				status === "resolved"
+					? "¿Marcar como resuelto?"
+					: "¿Reabrir solicitud?"
+			);
+			if (!ok) return;
+			try {
+				toast.show("Actualizando…");
+				const r = await apiPut(`/v1/ebilling-requests/${id}/status`, {
+					status,
+				});
+				if (!r.ok) {
+					const { text } = await getErrorInfo(r);
+					return toast.show(text || "No se pudo actualizar", "err");
+				}
+				await loadEbilling();
+				toast.show("Actualizado ✅", "ok");
+			} catch (err) {
+				console.error(err);
+				toast.show(toErrorText(err), "err");
+			}
+		}
+
+		function openEbillingModal(id) {
+			const r = eItems.find((x) => String(x.id) === String(id));
+			if (!r) return;
+			const rows = [
+				["Abonado Nº", r.abonadoNumero ?? "—"],
+				["DNI/CUIT", r.dniCuit ?? "—"],
+				["Nombre", fullName(r.nombre, r.apellido) || "—"],
+				["Email", r.email || "—"],
+				["Teléfono", r.telefono || "—"],
+				["Estado", r.status === "resolved" ? "Resuelto" : "Pendiente"],
+			];
+			ebillingDetail.innerHTML = rows
+				.map(
+					([k, v]) =>
+						`<div class="row"><b>${k}</b><div>${escapeHtml(String(v))}</div></div>`
+				)
+				.join("");
+			ebillingModal.showModal();
+		}
+
+		cQEl?.addEventListener(
+			"input",
+			debounce(() => {
+				cQ = (cQEl.value || "").trim();
+				cPage = 1;
+				loadContacts();
+			}, 300)
+		);
+		cCatEl?.addEventListener("change", () => {
+			cCat = cCatEl.value;
+			cPage = 1;
+			loadContacts();
+		});
+		cStatusEl?.addEventListener("change", () => {
+			cStatus = cStatusEl.value;
+			cPage = 1;
+			loadContacts();
+		});
+		cPrev?.addEventListener("click", () => {
+			if (cPage > 1) {
+				cPage--;
+				loadContacts();
+			}
+		});
+		cNext?.addEventListener("click", () => {
+			const maxPage = Math.max(1, Math.ceil(cTotal / cPageSize));
+			if (cPage < maxPage) {
+				cPage++;
+				loadContacts();
+			}
+		});
+
+		eQEl?.addEventListener(
+			"input",
+			debounce(() => {
+				eQ = (eQEl.value || "").trim();
+				ePage = 1;
+				loadEbilling();
+			}, 300)
+		);
+		eStatusEl?.addEventListener("change", () => {
+			eStatus = eStatusEl.value;
+			ePage = 1;
+			loadEbilling();
+		});
+		ePrev?.addEventListener("click", () => {
+			if (ePage > 1) {
+				ePage--;
+				loadEbilling();
+			}
+		});
+		eNext?.addEventListener("click", () => {
+			const maxPage = Math.max(1, Math.ceil(eTotal / ePageSize));
+			if (ePage < maxPage) {
+				ePage++;
+				loadEbilling();
+			}
+		});
+
+		contactModal?.addEventListener("click", (e) => {
+			if (e.target === contactModal) contactModal.close();
+		});
+		ebillingModal?.addEventListener("click", (e) => {
+			if (e.target === ebillingModal) ebillingModal.close();
+		});
+		closeContactModal?.addEventListener("click", () =>
+			contactModal.close()
+		);
+		closeEbillingModal?.addEventListener("click", () =>
+			ebillingModal.close()
+		);
+
+		loadContacts();
+		loadEbilling();
+	</script>
+</DashboardLayout>

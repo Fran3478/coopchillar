@@ -1,0 +1,456 @@
+---
+export const prerender = false;
+import DashboardLayout from "../../../layouts/DashboardLayout.astro";
+
+const DEFAULT_FOLDER = "posts";
+const RESOURCE_TYPE = "image";
+---
+
+<DashboardLayout title="Nueva noticia">
+	<section class="page">
+		<header class="page-head">
+			<div class="titles">
+				<h1>Nueva noticia</h1>
+				<p class="subtitle">
+					Escribí el contenido, subí imágenes a Cloudinary y guardá.
+				</p>
+			</div>
+			<div class="actions">
+				<!-- <button id="previewBtn" class="btn ghost" type="button"
+					>Vista previa</button
+				> -->
+				<button id="saveBtn" class="btn primary" type="button"
+					>Guardar</button
+				>
+			</div>
+		</header>
+
+		<div
+			id="cfg-post"
+			data-folder={DEFAULT_FOLDER}
+			data-resource-type={RESOURCE_TYPE}
+		>
+		</div>
+
+		<div class="grid">
+			<article class="editor-card">
+				<div
+					id="editorjs"
+					class="editor"
+					data-folder={DEFAULT_FOLDER}
+					data-resource-type={RESOURCE_TYPE}
+				>
+				</div>
+			</article>
+
+			<aside class="side">
+				<div class="card post">
+					<h3>Publicación</h3>
+
+					<label class="field">
+						<span>Título</span>
+						<input id="titulo" placeholder="Título de la noticia" />
+					</label>
+
+					<label class="field">
+						<span>Resumen</span>
+						<textarea
+							id="excerpt"
+							rows="3"
+							placeholder="Resumen breve (opcional)"></textarea>
+					</label>
+
+					<label class="field">
+						<span>Portada</span>
+						<div class="file-row">
+							<input
+								id="portadaUrl"
+								type="url"
+								placeholder="https://…"
+							/>
+							<input
+								id="portadaFile"
+								type="file"
+								accept="image/*"
+							/>
+						</div>
+						<small class="hint"
+							>Podés pegar una URL o subir un archivo.</small
+						>
+					</label>
+
+					<div class="field check-field">
+						<label class="chk" for="destacado">
+							<input id="destacado" type="checkbox" />
+							<span>Destacar (aparece también en el slider)</span>
+						</label>
+					</div>
+
+					<input id="tipo" value="noticia" hidden />
+					<input id="linkUrl" hidden />
+				</div>
+			</aside>
+		</div>
+
+		<div id="status" class="status"></div>
+	</section>
+
+	<style>
+		:root {
+			--brand: #002e6e;
+			--accent: #ff8c00;
+			--bg: #f5f6f8;
+			--card: #fff;
+			--border: #e6e8ec;
+			--text: #1f2328;
+			--muted: #60646c;
+			--ring: rgba(0, 46, 110, 0.18);
+		}
+
+		.page {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 1rem;
+		}
+
+		.page-head {
+			position: static;
+			z-index: 5;
+			display: flex;
+			gap: 1rem;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0.85rem 1rem;
+			margin: 0.25rem 0 1rem;
+			background: color-mix(in oklab, var(--card) 85%, var(--bg));
+			backdrop-filter: saturate(1.2) blur(4px);
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+		}
+		.titles h1 {
+			margin: 0 0 0.25rem;
+			font-size: 1.25rem;
+			color: var(--brand);
+		}
+		.subtitle {
+			margin: 0;
+			color: var(--muted);
+			font-size: 0.95rem;
+		}
+
+		.actions {
+			display: flex;
+			gap: 0.5rem;
+		}
+		.btn {
+			appearance: none;
+			border: 1px solid var(--border);
+			background: var(--card);
+			color: var(--text);
+			padding: 0.6rem 0.95rem;
+			border-radius: 0.65rem;
+			font-weight: 600;
+			cursor: pointer;
+			transition: 0.15s ease;
+		}
+		.btn:hover {
+			transform: translateY(-1px);
+		}
+		.btn:focus-visible {
+			outline: none;
+			box-shadow: 0 0 0 4px var(--ring);
+		}
+		.btn.primary {
+			background: var(--accent);
+			border-color: color-mix(in oklab, var(--accent), black 10%);
+			color: #fff;
+		}
+		.btn.ghost {
+			background: transparent;
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) 360px;
+			align-items: start;
+			gap: 16px;
+		}
+		@media (max-width: 1100px) {
+			.grid {
+				grid-template-columns: 1fr;
+			}
+			.editor-card {
+				order: 1;
+			}
+			.side {
+				order: 2;
+				width: 100%;
+			}
+		}
+
+		.editor-card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			padding: 12px;
+		}
+		.editor {
+			background: #fff;
+			border: 1px dashed #e9ebef;
+			border-radius: 12px;
+			min-height: 520px;
+			padding: 4px;
+		}
+		.card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			padding: 1rem;
+		}
+		.card h3 {
+			margin: 0 0 0.5rem;
+			color: var(--brand);
+			font-size: 1rem;
+		}
+
+		.side {
+			display: grid;
+			gap: 1rem;
+			min-width: 0;
+			container-type: inline-size;
+		}
+		.side .card {
+			overflow: hidden;
+		}
+		.side .field {
+			display: grid;
+			gap: 0.45rem;
+			margin-top: 0.6rem;
+		}
+
+		.side .field input,
+		.side .field textarea,
+		.side .field select {
+			width: 100%;
+			max-width: 100%;
+			min-width: 0;
+			box-sizing: border-box;
+			border: 1px solid var(--border);
+			border-radius: 0.55rem;
+			padding: 0.55rem 0.7rem;
+			font: inherit;
+			background: #fff;
+		}
+		.side .field input:focus,
+		.side .field textarea:focus,
+		.side .field select:focus {
+			outline: none;
+			box-shadow: 0 0 0 4px var(--ring);
+		}
+
+		.file-row {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
+			align-items: center;
+		}
+		.file-row input[type="url"] {
+			min-width: 0;
+		}
+		.file-row input[type="file"] {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		@container (min-width: 520px) {
+			.file-row {
+				grid-template-columns: minmax(0, 1fr) max-content;
+			}
+		}
+		@supports not (container-type: inline-size) {
+			@media (min-width: 900px) {
+				.file-row {
+					grid-template-columns: minmax(0, 1fr) max-content;
+				}
+			}
+		}
+
+		.side .field.check-field {
+			display: block;
+		}
+		.side .field.check-field .chk {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+			justify-content: flex-start;
+			flex-wrap: nowrap;
+			width: 100%;
+		}
+		.side .field.check-field .chk input[type="checkbox"] {
+			margin: 0;
+			flex: 0 0 auto;
+		}
+		.side .field.check-field .chk span {
+			flex: 1 1 auto;
+			min-width: 0;
+			line-height: 1.35;
+			white-space: normal;
+		}
+
+		.side .field > .check-row {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+			justify-content: flex-start;
+			flex-wrap: nowrap;
+			width: 100%;
+			justify-self: start;
+		}
+		.side .field > .check-row input[type="checkbox"] {
+			margin: 0;
+			flex: 0 0 auto;
+		}
+		.side .field > .check-row span {
+			flex: 1 1 auto;
+			min-width: 0;
+			line-height: 1.35;
+		}
+
+		.status {
+			position: fixed;
+			right: 18px;
+			bottom: 18px;
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 0.5rem 0.75rem;
+			color: var(--muted);
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+			min-width: 160px;
+			display: none;
+		}
+		.status.show {
+			display: inline-block;
+		}
+		.status.ok {
+			border-color: color-mix(in oklab, var(--accent), white 60%);
+			color: var(--text);
+		}
+		.status.err {
+			border-color: #ff4157;
+			color: #b31b2c;
+		}
+
+		.codex-editor {
+			--block-gap: 8px;
+		}
+		.codex-editor__redactor {
+			max-width: 860px;
+			margin: 0 auto;
+			padding: 0.5rem 1rem 2rem;
+		}
+		.ce-block {
+			margin: var(--block-gap) 0;
+		}
+		.ce-toolbar__plus,
+		.ce-toolbar__settings-btn {
+			opacity: 0.85;
+		}
+		.ce-toolbar__plus:hover,
+		.ce-toolbar__settings-btn:hover {
+			opacity: 1;
+		}
+		.ce-paragraph[data-placeholder]:empty::before {
+			color: #9aa1ab;
+		}
+		.side .field {
+			justify-items: start;
+		}
+
+		.side .field.check-field .chk {
+			display: grid;
+			grid-template-columns: max-content 1fr;
+			align-items: center;
+			gap: 0.6rem;
+			width: 100%;
+			margin: 0;
+		}
+
+		.side .field.check-field .chk input[type="checkbox"] {
+			margin: 0;
+			flex: 0 0 auto;
+		}
+
+		.side .field.check-field .chk span {
+			min-width: 0;
+			line-height: 1.35;
+			white-space: normal;
+		}
+
+		input.is-invalid,
+		textarea.is-invalid,
+		select.is-invalid {
+			border-color: #ef4444 !important;
+			box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+		}
+	</style>
+
+	<script type="module" src="/src/scripts/content-editor.ts"></script>
+	<script type="module">
+		import {
+			requestSignature,
+			uploadToCloudinary,
+			makeToaster,
+			markInvalid,
+			clearFieldError,
+			bindClearOnInput,
+			clearFileInput,
+			assertImage,
+		} from "/src/lib/admin-uploader";
+		const cfg = document.getElementById("cfg-post");
+		const DEFAULT_FOLDER = cfg?.dataset.folder || "noticias";
+		const RESOURCE_TYPE = cfg?.dataset.resourceType || "image";
+
+		const tituloEl = document.getElementById("titulo");
+		const urlEl = document.getElementById("portadaUrl");
+		const fileEl = document.getElementById("portadaFile");
+
+		bindClearOnInput([tituloEl, urlEl, fileEl]);
+
+		const toast = makeToaster("status", { okMs: 1600, errMs: 5000 });
+
+		fileEl?.addEventListener("change", async (e) => {
+			const file = e.target?.files?.[0];
+			if (!file) return;
+
+			try {
+				assertImage(file, 10);
+			} catch (error) {
+				markInvalid(fileEl, error?.message || "Archivo inválido");
+				clearFileInput(fileEl);
+				return toast.show(error?.message || "Archivo inválido", "err");
+			}
+
+			try {
+				toast.show("Subiendo imagen...");
+
+				const sig = await requestSignature({
+					resourceType: RESOURCE_TYPE,
+					folder: `${DEFAULT_FOLDER}/portadas`,
+					incomingTransform: "c_limit,w_2560/f_webp,q_auto:good",
+				});
+
+				const resp = await uploadToCloudinary(file, sig);
+				if (urlEl) urlEl.value = resp.secure_url;
+				clearFieldError(fileEl);
+				toast.show("Imagen subida✅", "ok");
+			} catch (error) {
+				console.log(error);
+				markInvalid(fileEl, "No se pudo subir la imagen");
+				clearFileInput(fileEl);
+				toast.show("No se pudo subir la imagen", "err");
+			}
+		});
+	</script></DashboardLayout
+>

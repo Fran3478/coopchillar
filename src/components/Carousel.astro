@@ -1,0 +1,387 @@
+<div class="slider-wrapper">
+	<div id="carousel" class="carousel-box carousel-box--fixed-bg">
+		<!-- Fondo fijo (logo) + overlay verdoso por CSS -->
+
+		<div class="slide active">
+			<div class="caption caption--hero">
+				<span class="kicker">Desde 1947</span>
+				<h2>Servicios esenciales para una comunidad en crecimiento.</h2>
+			</div>
+		</div>
+
+		<div class="slide">
+			<div class="caption">
+				<h2>Nueva Oficina Virtual</h2>
+				<p>
+					Descargá tus facturas, conocé tus consumos y aboná tus
+					servicios desde dónde estés. Entrá ahora y registrate...
+				</p>
+			</div>
+		</div>
+
+		<div class="slide">
+			<div class="caption">
+				<h2><em>Una Cooperativa Abierta Para Todos...</em></h2>
+				<p>
+					Queremos que participes y nos ayudes a mejorar cada día,
+					esperamos tus comentarios, no dudes en comunicarte. Estamos
+					para escucharte.
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="carousel-dots-outside">
+		<span class="dot active" data-index="0"></span>
+		<span class="dot" data-index="1"></span>
+		<span class="dot" data-index="2"></span>
+	</div>
+</div>
+
+<style>
+	.slider-wrapper {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.carousel-box {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border-radius: 35px;
+		overflow: hidden;
+		position: relative;
+		isolation: isolate;
+	}
+
+	/* Fondo fijo: logo + overlay verdoso */
+	.carousel-box--fixed-bg::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background-image: url("/images/logo.webp"); /* <-- cambiá la ruta si hace falta */
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover; /* si preferís ver el logo entero, probá: contain */
+		opacity: 0.18; /* visibilidad del logo */
+		z-index: 0;
+	}
+
+	.carousel-box--fixed-bg::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: rgba(0, 120, 70, 0.75); /* overlay verdoso */
+		z-index: 0;
+	}
+
+	.slide {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+		opacity: 0;
+		transition:
+			opacity 0.8s ease,
+			transform 0.8s ease;
+		transform: translateX(50px);
+		pointer-events: none;
+		z-index: 1; /* por encima del fondo/overlay */
+		padding: 1.5rem;
+		text-align: center;
+	}
+
+	.slide.active {
+		opacity: 1;
+		transform: translateX(0);
+		pointer-events: auto;
+	}
+
+	.caption {
+		max-width: min(900px, 92%);
+		color: #fff;
+	}
+
+	.caption--hero {
+		display: grid;
+		gap: 0.9rem;
+	}
+
+	.kicker {
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		opacity: 0.95;
+		font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+	}
+
+	.caption h2 {
+		margin: 0;
+		font-weight: 800;
+		line-height: 1.05;
+		font-size: clamp(1.6rem, 4.2vw, 3.2rem);
+		text-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+	}
+
+	.caption p {
+		margin: 0.6rem auto 0;
+		max-width: 70ch;
+		font-size: clamp(1rem, 1.8vw, 1.25rem);
+		line-height: 1.4;
+		opacity: 0.95;
+		text-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+	}
+
+	.btn {
+		justify-self: center;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.85rem 2.2rem;
+		border-radius: 12px;
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		text-decoration: none;
+		background: rgba(255, 255, 255, 0.92);
+		color: #0a6b3a;
+		border: 1px solid rgba(255, 255, 255, 0.45);
+		backdrop-filter: blur(6px);
+		transition:
+			transform 0.2s ease,
+			background 0.2s ease;
+	}
+
+	.btn:hover {
+		transform: translateY(-2px);
+		background: #fff;
+	}
+
+	.carousel-dots-outside {
+		margin-top: 0.6rem;
+		display: flex;
+		justify-content: center;
+		gap: 0.6rem;
+	}
+
+	.carousel-dots-outside .dot {
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.45);
+		cursor: pointer;
+		transition: background 0.3s;
+	}
+
+	.carousel-dots-outside .dot.active {
+		background: #fff;
+	}
+
+	@media (max-width: 992px) {
+		.carousel-box {
+			border-radius: 18px;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.slider-wrapper {
+			width: 100%;
+			flex: none;
+		}
+		.carousel-dots-outside {
+			gap: 0.4rem;
+		}
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const slides = document.querySelectorAll(".slide");
+		const dots = document.querySelectorAll(".dot");
+
+		let currentIndex = 0;
+		let timer;
+
+		const interval = 5000;
+
+		function showSlide(index) {
+			slides.forEach((slide, i) => {
+				slide.classList.toggle("active", i === index);
+				dots[i].classList.toggle("active", i === index);
+			});
+			currentIndex = index;
+		}
+
+		function nextSlide() {
+			const next = (currentIndex + 1) % slides.length;
+			showSlide(next);
+		}
+
+		function resetTimer() {
+			clearInterval(timer);
+			timer = window.setInterval(nextSlide, interval);
+		}
+
+		dots.forEach((dot, i) => {
+			dot.addEventListener("click", () => {
+				showSlide(i);
+				resetTimer();
+			});
+		});
+
+		showSlide(currentIndex);
+		timer = window.setInterval(nextSlide, interval);
+	});
+</script>
+
+<!-- <div class="slider-wrapper">
+	<div id="carousel" class="carousel-box">
+		<div class="slide active">
+			<img src="/images/slide1.webp" alt="Slide 1" />
+			<div class="caption">Texto de Slide 1</div>
+		</div>
+		<div class="slide">
+			<img src="/images/slide2.webp" alt="Slide 2" />
+			<div class="caption">Texto de Slide 2</div>
+		</div>
+		<div class="slide">
+			<img src="/images/slide3.webp" alt="Slide 3" />
+			<div class="caption">Texto de Slide 3</div>
+		</div>
+	</div>
+	<div class="carousel-dots-outside">
+		<span class="dot active" data-index="0"></span>
+		<span class="dot" data-index="1"></span>
+		<span class="dot" data-index="2"></span>
+	</div>
+</div>
+
+<style>
+	.slider-wrapper {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+	.carousel-box {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border-radius: 35px;
+		overflow: hidden;
+		background: #eee;
+		position: relative;
+	}
+	.slide {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		opacity: 0;
+		transition:
+			opacity 0.8s ease,
+			transform 0.8s ease;
+		transform: translateX(50px);
+		pointer-events: none;
+	}
+
+	.slide.active {
+		opacity: 1;
+		transform: translateX(0);
+		z-index: 1;
+		pointer-events: auto;
+	}
+	.slide img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 35px;
+	}
+	.caption {
+		position: absolute;
+		bottom: 20px;
+		left: 20px;
+		background: rgba(255, 255, 255, 0.8);
+		padding: 0.5rem 1rem;
+		border-radius: 10px;
+		font-weight: bold;
+		color: #333;
+	}
+	.carousel-dots-outside {
+		margin-top: 0.5rem;
+		display: flex;
+		justify-content: center;
+		gap: 0.6rem;
+	}
+	.carousel-dots-outside .dot {
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: #ccc;
+		cursor: pointer;
+		transition: background 0.3s;
+	}
+	.carousel-dots-outside .dot.active {
+		background: darkorange;
+	}
+
+	@media (max-width: 992px) {
+		.carousel-box {
+			height: auto;
+			aspect-ratio: 16/9;
+		}
+		.slide img {
+			width: 100%;
+			height: auto;
+			object-fit: contain;
+			border-radius: 12px;
+		}
+	}
+	@media (max-width: 600px) {
+		.slider-wrapper {
+			width: 100%;
+			flex: none;
+		}
+
+		.carousel-dots-outside {
+			gap: 0.4rem;
+		}
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const slides = document.querySelectorAll<HTMLDivElement>(".slide");
+		const dots = document.querySelectorAll<HTMLDivElement>(".dot");
+
+		let currentIndex = 0;
+		let timer: number;
+
+		const interval = 5000;
+
+		function showSlide(index: number): void {
+			slides.forEach((slide, i) => {
+				slide.classList.toggle("active", i === index);
+				dots[i].classList.toggle("active", i === index);
+			});
+			currentIndex = index;
+		}
+
+		function nextSlide(): void {
+			const next = (currentIndex + 1) % slides.length;
+			showSlide(next);
+		}
+
+		function resetTimer(): void {
+			clearInterval(timer);
+			timer = window.setInterval(nextSlide, interval);
+		}
+
+		dots.forEach((dot, i) => {
+			dot.addEventListener("click", () => {
+				showSlide(i);
+				resetTimer();
+			});
+		});
+
+		showSlide(currentIndex);
+		timer = window.setInterval(nextSlide, interval);
+	});
+</script> -->

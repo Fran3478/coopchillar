@@ -1,0 +1,74 @@
+<section class="form-section">
+	<h2>Adherite a la Facturación Electrónica</h2>
+	<p>
+		Si ya sos asociado, completá el siguiente formulario para comenzar a
+		recibir tus facturas por correo electrónico.
+	</p>
+
+	<form
+		class="form-facturacion"
+		method="POST"
+		data-netlify="true"
+		name="facturacion-electronica"
+	>
+		<input type="hidden" name="form-name" value="facturacion-electronica" />
+		<label>
+			Nombre y apellido
+			<input type="text" name="nombre" required />
+		</label>
+		<label>
+			Número de abonado
+			<input type="text" name="abonado" required />
+		</label>
+		<label>
+			DNI o CUIT
+			<input type="text" name="documento" required />
+		</label>
+		<label>
+			Correo electrónico
+			<input type="email" name="email" required />
+		</label>
+		<button type="submit">Enviar solicitud</button>
+	</form>
+</section>
+
+<style>
+	.form-section {
+		margin-top: 3rem;
+		border-top: 1px solid #ccc;
+		padding-top: 2rem;
+	}
+
+	.form-facturacion {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.form-facturacion label {
+		display: flex;
+		flex-direction: column;
+		font-weight: 500;
+	}
+
+	.form-facturacion input {
+		padding: 0.5rem;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+
+	.form-facturacion button {
+		padding: 0.75rem;
+		border: none;
+		background-color: #3b82f6;
+		color: white;
+		border-radius: 4px;
+		cursor: pointer;
+		font-weight: bold;
+		transition: background-color 0.3s ease;
+	}
+
+	.form-facturacion button:hover {
+		background-color: #2563eb;
+	}
+</style>

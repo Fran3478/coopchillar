@@ -117,7 +117,7 @@
 
 	if (logos) {
 		const originalItems = [...logos.children];
-		const totalToClone = 2; // Clona los ítems dos veces
+		const totalToClone = 2;
 		for (let i = 0; i < totalToClone; i++) {
 			originalItems.forEach((item) => {
 				const clone = item.cloneNode(true);
@@ -127,11 +127,10 @@
 		}
 
 		let position = 0;
-		const speed = 0.5; // pixeles por frame
+		const speed = 0.5;
 
 		function animate() {
 			position -= speed;
-			// Cuando el scroll llega al final de la mitad (original), reiniciamos la posición
 			if (Math.abs(position) >= logos.scrollWidth / (totalToClone + 1)) {
 				position = 0;
 			}

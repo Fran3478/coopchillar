@@ -1,0 +1,570 @@
+---
+export interface ImageItem {
+	src: string;
+	alt?: string;
+	description?: string;
+	shape?: "auto" | "wide" | "tall" | "square";
+}
+
+interface Props {
+	images: ImageItem[];
+	columns?: { mobile?: number; tablet?: number; desktop?: number };
+	maxVisible?: number;
+	gapX?: number;
+	gapY?: number;
+	maxWidth?: string;
+	thumbWidth?: number;
+	modalTopPadding?: number;
+}
+
+const {
+	images,
+	columns = { mobile: 1, tablet: 2, desktop: 3 },
+	maxVisible = 12,
+	gapX = 12,
+	gapY = 12,
+	maxWidth = "1200px",
+	thumbWidth = 140,
+	modalTopPadding = 80,
+} = Astro.props;
+
+const visibleImages = images.slice(0, maxVisible);
+
+const pattern: Array<"wide" | "tall" | "square"> = [
+	"tall",
+	"wide",
+	"square",
+	"wide",
+	"tall",
+	"square",
+];
+
+const pickShape = (i: number, s?: ImageItem["shape"]) =>
+	s && s !== "auto" ? s : pattern[i % pattern.length];
+---
+
+<section class="g-wrap">
+	<div
+		class="g-cols"
+		style={`--gap-x:${gapX}px; --gap-y:${gapY}px; --maxw:${maxWidth}; --cols-m:${columns.mobile ?? 1}; --cols-t:${columns.tablet ?? 2}; --cols-d:${columns.desktop ?? 3};`}
+	>
+		{
+			visibleImages.map((img, i) => (
+				<figure
+					class={`g-item g-${pickShape(i, img.shape)}`}
+					data-idx={i}
+					title={img.alt ?? ""}
+				>
+					<img
+						src={img.src}
+						alt={img.alt ?? ""}
+						loading="lazy"
+						decoding="async"
+					/>
+				</figure>
+			))
+		}
+	</div>
+
+	<div
+		class="lb hidden"
+		aria-hidden="true"
+		role="dialog"
+		aria-modal="true"
+		style={`--thumb-w:${thumbWidth}px; --lb-top:${modalTopPadding}px;`}
+	>
+		<div class="lb-backdrop" data-action="close"></div>
+
+		<div class="lb-dialog" role="document">
+			<button
+				class="lb-close"
+				type="button"
+				aria-label="Cerrar"
+				data-action="close"
+			>
+				×
+			</button>
+
+			<div class="lb-card">
+				<div class="lb-stage">
+					<button
+						class="lb-nav lb-prev desktop-only"
+						type="button"
+						aria-label="Anterior"
+						data-action="prev"
+					>
+						‹
+					</button>
+					<div class="lb-media">
+						<img class="lb-img" alt="" />
+					</div>
+					<button
+						class="lb-nav lb-next desktop-only"
+						type="button"
+						aria-label="Siguiente"
+						data-action="next"
+					>
+						›
+					</button>
+				</div>
+
+				<div class="lb-meta">
+					<div class="lb-title"></div>
+					<div class="lb-desc"></div>
+				</div>
+			</div>
+
+			<div class="lb-thumbs">
+				<button
+					class="lb-th-btn desktop-only"
+					data-action="thumb-prev"
+					aria-label="Miniaturas anteriores"
+					type="button"
+				>
+					‹
+				</button>
+				<div class="lb-th-strip">
+					{
+						images.map((img, i) => (
+							<button
+								class="lb-th"
+								data-idx={i}
+								data-alt={img.alt ?? ""}
+								data-desc={img.description ?? ""}
+								type="button"
+							>
+								<img
+									src={img.src}
+									alt={img.alt ?? ""}
+									loading="lazy"
+								/>
+							</button>
+						))
+					}
+				</div>
+				<button
+					class="lb-th-btn desktop-only"
+					data-action="thumb-next"
+					aria-label="Miniaturas siguientes"
+					type="button"
+				>
+					›
+				</button>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.g-wrap {
+		width: 100%;
+		padding: 1rem 0;
+	}
+	.g-cols {
+		max-width: var(--maxw, 1200px);
+		margin: 0 auto;
+		padding: 0 1rem;
+		column-gap: var(--gap-x, 12px);
+		column-fill: balance;
+		column-count: var(--cols-m, 1);
+	}
+	@media (min-width: 640px) {
+		.g-cols {
+			column-count: var(--cols-t, 2);
+		}
+	}
+	@media (min-width: 1024px) {
+		.g-cols {
+			column-count: var(--cols-d, 3);
+		}
+	}
+
+	.g-item {
+		display: block;
+		break-inside: avoid;
+		margin: 0 0 var(--gap-y, 12px);
+		cursor: pointer;
+		transition:
+			transform 0.15s ease,
+			opacity 0.15s ease,
+			filter 0.15s ease;
+	}
+	.g-item img {
+		width: 100%;
+		height: 100%;
+		display: block;
+		object-fit: cover;
+	}
+
+	.g-cols:hover .g-item {
+		opacity: 0.85;
+		filter: saturate(0.95);
+	}
+	.g-cols:hover .g-item:hover {
+		opacity: 1;
+		transform: scale(1.015);
+		filter: none;
+		z-index: 2;
+	}
+
+	.g-wide {
+		aspect-ratio: 16/9;
+	}
+	.g-tall {
+		aspect-ratio: 4/5;
+	}
+	.g-square {
+		aspect-ratio: 1/1;
+	}
+
+	.lb.hidden {
+		display: none;
+	}
+	.lb {
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+	}
+	.lb-backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.65);
+		backdrop-filter: blur(2px);
+	}
+
+	.lb-dialog {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		align-items: center;
+		justify-content: center;
+		padding: var(--lb-top, 80px) 16px 20px;
+		pointer-events: none;
+	}
+
+	.lb-card {
+		pointer-events: auto;
+		background: #fff;
+		border-radius: 14px;
+		overflow: hidden;
+		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+		max-width: min(92vw, 1200px);
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.lb-stage {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.lb-media {
+		flex: 1;
+		background: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.lb-img {
+		max-width: 100%;
+		max-height: 65vh;
+		object-fit: contain;
+	}
+
+	.lb-meta {
+		padding: 12px 14px;
+		border-top: 1px solid #eee;
+	}
+	.lb-title {
+		font:
+			600 15px/1.3 system-ui,
+			-apple-system,
+			Segoe UI,
+			Roboto,
+			sans-serif;
+		margin-bottom: 6px;
+	}
+	.lb-desc {
+		font:
+			400 14px/1.5 system-ui,
+			-apple-system,
+			Segoe UI,
+			Roboto,
+			sans-serif;
+		color: #444;
+		max-height: 18vh;
+		overflow: auto;
+	}
+
+	.lb-close {
+		position: absolute;
+		top: calc(var(--lb-top, 80px) - 44px);
+		right: 22px;
+		background: #fff;
+		border: 0;
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+		font-size: 22px;
+		font-weight: bold;
+		cursor: pointer;
+	}
+
+	.desktop-only {
+		display: none;
+	}
+	@media (min-width: 768px) {
+		.desktop-only {
+			display: inline-block;
+		}
+	}
+
+	.lb-nav {
+		pointer-events: auto;
+		background: rgba(255, 255, 255, 0.92);
+		border: 0;
+		cursor: pointer;
+		width: 42px;
+		height: 60px;
+		font-size: 28px;
+		line-height: 60px;
+		text-align: center;
+		color: #222;
+		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+	}
+
+	.lb-thumbs {
+		pointer-events: auto;
+		width: min(92vw, 1200px);
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.lb-th-btn {
+		display: none;
+		background: rgba(255, 255, 255, 0.92);
+		border: 0;
+		cursor: pointer;
+		width: 34px;
+		height: 48px;
+		font-size: 22px;
+		color: #222;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	}
+	@media (min-width: 768px) {
+		.lb-th-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+
+	.lb-th-strip {
+		position: relative;
+		overflow: auto;
+		white-space: nowrap;
+		scrollbar-width: thin;
+		-webkit-overflow-scrolling: touch;
+		flex: 1;
+		display: flex;
+		gap: 8px;
+		padding: 4px;
+	}
+	.lb-th {
+		border: 0;
+		background: #000;
+		padding: 0;
+		cursor: pointer;
+		flex: 0 0 var(--thumb-w, 140px);
+		aspect-ratio: 3 / 2;
+		overflow: hidden;
+		opacity: 0.9;
+		transition:
+			opacity 0.15s ease,
+			transform 0.15s ease;
+	}
+	.lb-th img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+	.lb-th[aria-current="true"] {
+		outline: 2px solid #333;
+		opacity: 1;
+		transform: translateY(-1px);
+	}
+
+	html.no-scroll,
+	body.no-scroll {
+		overflow: hidden !important;
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const root = document.querySelector(".g-wrap");
+		if (!root) return;
+
+		const modal = root.querySelector(".lb");
+		const imgEl = modal.querySelector(".lb-img");
+		const titleEl = modal.querySelector(".lb-title");
+		const descEl = modal.querySelector(".lb-desc");
+		const strip = modal.querySelector(".lb-th-strip");
+		const thumbBtns = Array.from(modal.querySelectorAll(".lb-th"));
+		const cards = Array.from(root.querySelectorAll(".g-item"));
+
+		const data = thumbBtns.map((b) => {
+			const img = b.querySelector("img");
+			return {
+				src: img ? img.src : "",
+				alt: b.dataset.alt || "",
+				description: b.dataset.desc || "",
+			};
+		});
+
+		let current = -1;
+		let savedScrollY = 0;
+
+		function lockScroll() {
+			savedScrollY = window.scrollY || document.documentElement.scrollTop;
+			document.documentElement.classList.add("modal-open", "no-scroll");
+			document.body.classList.add("no-scroll");
+			document.body.style.position = "fixed";
+			document.body.style.top = `-${savedScrollY}px`;
+			document.body.style.left = "0";
+			document.body.style.right = "0";
+		}
+
+		function unlockScroll() {
+			document.documentElement.classList.remove(
+				"modal-open",
+				"no-scroll"
+			);
+			document.body.classList.remove("no-scroll");
+			document.body.style.position = "";
+			document.body.style.top = "";
+			document.body.style.left = "";
+			document.body.style.right = "";
+			window.scrollTo(0, savedScrollY);
+		}
+
+		function renderAt(i) {
+			const it = data[i];
+			if (!it) return;
+
+			imgEl.src = it.src;
+			imgEl.alt = it.alt || "";
+			titleEl.textContent = it.alt || "";
+			descEl.textContent = it.description || "";
+
+			thumbBtns.forEach((b) => b.removeAttribute("aria-current"));
+			const activeThumb = modal.querySelector(`.lb-th[data-idx="${i}"]`);
+			if (activeThumb) {
+				activeThumb.setAttribute("aria-current", "true");
+				const diff =
+					activeThumb.offsetLeft -
+					(strip.clientWidth / 2 - activeThumb.clientWidth / 2);
+				strip.scrollTo({ left: diff, behavior: "smooth" });
+			}
+
+			current = i;
+		}
+
+		function openAt(i) {
+			modal.classList.remove("hidden");
+			modal.setAttribute("aria-hidden", "false");
+			lockScroll();
+			renderAt(i);
+		}
+
+		function close() {
+			modal.classList.add("hidden");
+			modal.setAttribute("aria-hidden", "true");
+			imgEl.src = "";
+			unlockScroll();
+			current = -1;
+		}
+
+		function prev() {
+			if (current < 0) return;
+			renderAt((current - 1 + data.length) % data.length);
+		}
+
+		function next() {
+			if (current < 0) return;
+			renderAt((current + 1) % data.length);
+		}
+
+		cards.forEach((el) =>
+			el.addEventListener("click", () => {
+				const idx = Number(el.getAttribute("data-idx") || 0);
+				openAt(idx);
+			})
+		);
+
+		modal.addEventListener("click", (e) => {
+			const t = e.target;
+			if (!(t instanceof HTMLElement)) return;
+
+			if (
+				t.classList.contains("lb-backdrop") ||
+				t.dataset.action === "close"
+			) {
+				close();
+				return;
+			}
+
+			if (t.dataset.action === "prev") {
+				e.preventDefault();
+				prev();
+				return;
+			}
+			if (t.dataset.action === "next") {
+				e.preventDefault();
+				next();
+				return;
+			}
+			if (t.dataset.action === "thumb-prev") {
+				e.preventDefault();
+				strip.scrollBy({
+					left: -strip.clientWidth,
+					behavior: "smooth",
+				});
+				return;
+			}
+			if (t.dataset.action === "thumb-next") {
+				e.preventDefault();
+				strip.scrollBy({
+					left: strip.clientWidth,
+					behavior: "smooth",
+				});
+				return;
+			}
+
+			if (t.closest(".lb-card") || t.closest(".lb-thumbs")) {
+				e.stopPropagation();
+			}
+		});
+
+		window.addEventListener("keydown", (e) => {
+			if (modal.classList.contains("hidden")) return;
+			if (e.key === "Escape") close();
+			if (e.key === "ArrowLeft") prev();
+			if (e.key === "ArrowRight") next();
+		});
+
+		thumbBtns.forEach((b) =>
+			b.addEventListener("click", (e) => {
+				e.stopPropagation();
+				e.preventDefault();
+				const idx = Number(b.getAttribute("data-idx") || -1);
+				if (idx >= 0) renderAt(idx);
+			})
+		);
+	});
+</script>

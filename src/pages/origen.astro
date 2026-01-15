@@ -2,65 +2,393 @@
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Origen">
+<Layout
+	title="Origen - Cooperativa Ltda. de Agua Potable y Otros Servicios Públicos de Chillar"
+>
 	<div id="main-content">
 		<main class="content">
-			<section class="section">
-				<h2>Historia y Trayectoria</h2>
+			<!-- HERO -->
+			<header class="hero">
+				<h1>Nuestra historia</h1>
 				<p>
-					La Cooperativa de San Justo fue creada con el objetivo de
-					brindar soluciones comunitarias ante la necesidad de
-					servicios básicos en la región. Desde sus inicios, adoptó el
-					modelo cooperativo como forma de gestión democrática y
-					participación ciudadana.
+					Fundada el <strong>5 de abril de 1947</strong>, la
+					cooperativa nació para acompañar el crecimiento de Chillar y
+					sumar servicios esenciales con compromiso cooperativo.
 				</p>
+			</header>
+
+			<!-- BLOQUE 1 -->
+			<section class="section">
+				<div class="section-head">
+					<h2>Fundación (1947)</h2>
+				</div>
+
 				<p>
-					A lo largo del tiempo, se ha consolidado como una entidad
-					sólida, incorporando avances tecnológicos, fortaleciendo su
-					estructura y sumando nuevos servicios para mejorar la
-					calidad de vida de sus asociados.
+					El <strong>5 de abril de 1947</strong> se funda la
+					<strong>Cooperativa Eléctrica Limitada de Chillar</strong>,
+					con el objetivo de producir y distribuir energía eléctrica
+					para toda la localidad.
+				</p>
+
+				<p>
+					Desde el inicio, la cooperativa se constituyó como una
+					respuesta comunitaria: organización, esfuerzo colectivo y
+					gestión democrática para mejorar la vida cotidiana.
 				</p>
 			</section>
 
-			<section class="section">
-				<h2>Contexto y Evolución</h2>
+			<blockquote class="quote">
+				Una cooperativa crece cuando crece su comunidad.
+			</blockquote>
+
+			<section class="section section--highlight">
+				<div class="section-head">
+					<h2>Hitos principales</h2>
+				</div>
+
 				<p>
-					Ubicada en el centro-norte de la provincia de Santa Fe, en
-					la localidad de San Justo, la cooperativa forma parte de una
-					tradición regional que valora la autogestión y la equidad en
-					el acceso a los servicios esenciales.
+					A lo largo de las décadas, el objeto social fue ampliándose
+					para incorporar nuevos servicios y responder a necesidades
+					reales.
 				</p>
+
+				<div class="timeline" aria-label="Línea de tiempo">
+					<div class="timeline-item">
+						<span class="timeline-title">28/03/1971</span>
+						<p class="timeline-text">
+							Asamblea Extraordinaria: se modifica el Estatuto
+							para permitir otros servicios (agua, gas, teléfono,
+							pavimento, obras y servicios para el bienestar de la
+							comunidad). La entidad pasa a denominarse
+							<strong
+								>Cooperativa Limitada de Consumo Popular de
+								Electricidad y Servicios Anexos Chillar</strong
+							>.
+						</p>
+					</div>
+
+					<div class="timeline-item">
+						<span class="timeline-title">06/02/1983</span>
+						<p class="timeline-text">
+							Nueva Asamblea Extraordinaria: la distribución
+							eléctrica queda a cargo de la Cooperativa Eléctrica
+							de Azul Limitada, por lo que se ajusta el Estatuto.
+							Se aprueba el nuevo nombre:
+							<strong
+								>Cooperativa Limitada de Agua Potable y Otros
+								Servicios Públicos de Chillar</strong
+							>.
+						</p>
+					</div>
+
+					<div class="timeline-item">
+						<span class="timeline-title">29/04/2005</span>
+						<p class="timeline-text">
+							Modificación del objeto social para incorporar
+							servicios de
+							<strong>telecomunicaciones e Internet</strong>.
+						</p>
+					</div>
+				</div>
+			</section>
+
+			<section class="section">
+				<div class="section-head">
+					<h2>Servicios a lo largo del tiempo</h2>
+				</div>
+
+				<p>En cuanto a los servicios prestados, se destaca:</p>
+
+				<ul class="list" aria-label="Servicios por año">
+					<li><strong>1974:</strong> agua potable.</li>
+					<li><strong>2000:</strong> desagües cloacales.</li>
+					<li><strong>2005:</strong> Internet.</li>
+					<li>
+						<strong>2016:</strong> televisión por cable (adquisición de
+						Canal 4 Video Cable Chillar).
+					</li>
+					<li>Además, eventualmente: pavimento y viviendas.</li>
+				</ul>
+
+				<div class="note">
+					<strong>Hoy:</strong> la cooperativa cuenta con <strong
+						>2865 asociados</strong
+					>
+					y participa institucionalmente en el sector (FEDECAP).
+				</div>
+			</section>
+
+			<section class="cta">
+				<div class="cta-inner">
+					<h3>Conocé nuestra misión y valores</h3>
+					<p>
+						Descubrí qué nos guía y cómo trabajamos para seguir
+						acompañando el desarrollo de Chillar.
+					</p>
+
+					<div class="cta-actions">
+						<a class="btn" href="/mision-y-vision"
+							>Misión y Visión</a
+						>
+						<a class="btn btn--ghost" href="/nuestros-valores"
+							>Nuestros valores</a
+						>
+					</div>
+				</div>
 			</section>
 		</main>
 	</div>
 
 	<style>
+		/* Paleta */
+		:root {
+			--brand: #06752e; /* principal */
+			--accent: #ffcd34; /* secundario */
+
+			--text: #111827;
+			--muted: #4b5563;
+			--card: #ffffff;
+			--bg: #f6f7fb;
+			--border: rgba(17, 24, 39, 0.08);
+
+			--brand-ghost: color-mix(in oklab, var(--brand), white 92%);
+			--accent-ghost: color-mix(in oklab, var(--accent), white 82%);
+		}
+
 		#main-content {
-			padding-top: 160px;
-			margin: 0 1rem;
+			padding-top: clamp(96px, 12vw, 160px);
+			margin: 0;
 			transition: padding-top 0.3s ease;
+			background: var(--bg);
 		}
+
 		.content {
-			padding: 2rem 1rem;
-			max-width: 800px;
+			max-width: 900px;
 			margin: 0 auto;
-			line-height: 1.6;
-			font-size: 1.1rem;
-			color: #333;
+			padding: clamp(1rem, 4vw, 2rem);
+			line-height: 1.65;
+			font-size: clamp(1rem, 1.2vw + 0.75rem, 1.1rem);
+			color: var(--text);
 		}
+
+		.hero {
+			text-align: center;
+			margin-bottom: clamp(2rem, 6vw, 4rem);
+		}
+
+		.hero h1 {
+			font-size: clamp(1.9rem, 4vw, 2.8rem);
+			color: var(--brand);
+			margin: 0 0 0.6rem;
+			letter-spacing: -0.02em;
+		}
+
+		.hero p {
+			max-width: 700px;
+			margin: 0 auto;
+			color: var(--muted);
+			font-size: clamp(1rem, 1vw + 0.7rem, 1.15rem);
+		}
+
 		.section {
-			margin-bottom: 3rem;
-			background-color: #f9f9f9;
-			padding: 2rem;
-			border-radius: 12px;
-			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+			margin-bottom: clamp(1.5rem, 4vw, 3rem);
+			background-color: var(--card);
+			padding: clamp(1.1rem, 4vw, 2rem);
+			border-radius: 16px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+			border: 1px solid var(--border);
 		}
-		h2 {
-			color: #004481;
+
+		.section-head {
+			display: flex;
+			flex-direction: column;
+			gap: 0.6rem;
 			margin-bottom: 1rem;
-			font-size: 1.8rem;
-			border-left: 5px solid #ffcc00;
-			padding-left: 1rem;
+		}
+
+		.badge {
+			display: inline-flex;
+			align-items: center;
+			width: fit-content;
+			font-size: 0.9rem;
+			padding: 0.35rem 0.6rem;
+			border-radius: 999px;
+			background: var(--accent-ghost);
+			color: var(--brand);
+			font-weight: 800;
+		}
+
+		h2 {
+			color: color-mix(in oklab, var(--brand), black 10%);
+			margin: 0;
+			font-size: clamp(1.25rem, 2.2vw + 0.7rem, 1.9rem);
+			border-left: 5px solid var(--accent);
+			padding-left: 0.95rem;
+		}
+
+		.section p {
+			margin: 0.9rem 0 0;
+			color: #1f2937;
+		}
+
+		.section--highlight {
+			background: linear-gradient(
+				135deg,
+				color-mix(in oklab, var(--brand), white 94%),
+				color-mix(in oklab, var(--accent), white 88%)
+			);
+			border-left: 6px solid color-mix(in oklab, var(--brand), white 70%);
+		}
+
+		.quote {
+			margin: clamp(1.8rem, 5vw, 3rem) auto;
+			max-width: 720px;
+			padding: 1.25rem 1.25rem;
+			text-align: center;
+			font-style: italic;
+			color: #1f2937;
+			background: var(--brand-ghost);
+			border: 1px solid color-mix(in oklab, var(--brand), white 82%);
+			border-radius: 16px;
+			position: relative;
+		}
+
+		.quote::before {
+			content: "“";
+			font-size: 3.2rem;
+			color: var(--accent);
+			position: absolute;
+			left: 1rem;
+			top: -0.8rem;
+			line-height: 1;
+		}
+
+		.timeline {
+			margin-top: 1.6rem;
+			display: grid;
+			gap: 1rem;
+		}
+
+		.timeline-item {
+			border-left: 3px solid var(--accent);
+			background: rgba(255, 255, 255, 0.72);
+			border-radius: 12px;
+			padding: 0.9rem 1rem;
+			border: 1px solid color-mix(in oklab, var(--brand), white 88%);
+		}
+
+		.timeline-title {
+			display: inline-block;
+			font-weight: 900;
+			color: color-mix(in oklab, var(--brand), black 10%);
+			margin-bottom: 0.35rem;
+		}
+
+		.timeline-text {
+			margin: 0;
+			color: #374151;
+			font-size: 0.98em;
+		}
+
+		.list {
+			margin: 1rem 0 0;
+			padding-left: 1.1rem;
+			display: grid;
+			gap: 0.55rem;
+			color: #374151;
+		}
+
+		.note {
+			margin-top: 1.1rem;
+			padding: 0.95rem 1rem;
+			border-radius: 16px;
+			background: var(--brand-ghost);
+			border: 1px solid color-mix(in oklab, var(--brand), white 84%);
+			color: #1f2937;
+		}
+
+		.cta {
+			margin-top: clamp(1.5rem, 4vw, 3rem);
+		}
+
+		.cta-inner {
+			border-radius: 18px;
+			padding: clamp(1.1rem, 4vw, 2rem);
+			background: linear-gradient(
+				135deg,
+				color-mix(in oklab, var(--brand), white 90%),
+				color-mix(in oklab, var(--accent), white 85%)
+			);
+			border: 1px solid color-mix(in oklab, var(--brand), white 82%);
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+		}
+
+		.cta-inner h3 {
+			margin: 0 0 0.5rem;
+			color: var(--brand);
+			font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+		}
+
+		.cta-inner p {
+			margin: 0 0 1.2rem;
+			color: #374151;
+		}
+
+		.cta-actions {
+			display: flex;
+			gap: 0.8rem;
+			flex-wrap: wrap;
+		}
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0.75rem 1rem;
+			border-radius: 999px;
+			font-weight: 800;
+			text-decoration: none;
+			background: var(--brand);
+			color: #fff;
+			border: 2px solid var(--brand);
+			transition:
+				transform 0.15s ease,
+				opacity 0.15s ease,
+				box-shadow 0.15s ease;
+		}
+
+		.btn:hover {
+			transform: translateY(-1px);
+			opacity: 0.96;
+			box-shadow: 0 10px 22px rgba(6, 117, 46, 0.18);
+		}
+
+		.btn--ghost {
+			background: transparent;
+			color: var(--brand);
+			border-color: color-mix(in oklab, var(--brand), black 0%);
+		}
+
+		.btn--ghost:hover {
+			background: color-mix(in oklab, var(--brand), white 92%);
+			box-shadow: none;
+		}
+
+		@media (min-width: 768px) {
+			#main-content {
+				margin: 0 1rem;
+			}
+
+			.timeline {
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+
+		@media (max-width: 420px) {
+			h2 {
+				border-left-width: 4px;
+				padding-left: 0.75rem;
+			}
 		}
 	</style>
 </Layout>

@@ -1,0 +1,530 @@
+---
+export const prerender = false;
+
+const TOKEN_LOGIN_ENDPOINT = "/v1/auth/recovery/verify";
+const SET_PWD_ENDPOINT = "/v1/auth/recovery/reset";
+const SUCCESS_REDIRECT = "/admin";
+
+const TENANT_ID = Number(import.meta.env.PUBLIC_TENANT_ID ?? 0);
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Recuperar cuenta</title>
+		<style>
+			:root {
+				--brand: #0b2a66;
+				--accent: #ff8c00;
+				--bg: #f6f7fb;
+				--card: #fff;
+				--border: #e5e7eb;
+				--text: #111827;
+				--muted: #6b7280;
+				--ring: rgba(11, 42, 102, 0.16);
+				--danger: #ef4444;
+				--danger-ink: #7f1d1d;
+				--danger-br: #fecaca;
+				--success: #10b981;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			html,
+			body {
+				margin: 0;
+				min-height: 100%;
+				background: var(--bg);
+				color: var(--text);
+				font-family:
+					system-ui,
+					-apple-system,
+					"Segoe UI",
+					Roboto,
+					Ubuntu,
+					Cantarell,
+					"Noto Sans",
+					sans-serif;
+			}
+			.shell {
+				min-height: 100dvh;
+				display: grid;
+				place-items: center;
+				padding: 24px;
+			}
+			.card {
+				width: min(560px, 96vw);
+				background: var(--card);
+				border: 1px solid var(--border);
+				border-radius: 14px;
+				padding: 20px 18px;
+				box-shadow: 0 24px 48px rgba(0, 0, 0, 0.08);
+			}
+			h1 {
+				margin: 0.25rem 0 0.5rem;
+				font-size: 1.35rem;
+				color: var(--brand);
+			}
+			p.muted {
+				color: var(--muted);
+				margin: 0.25rem 0 1rem;
+			}
+			.field {
+				display: grid;
+				gap: 0.45rem;
+				margin: 0.7rem 0;
+			}
+			.field input {
+				width: 100%;
+				border: 1px solid var(--border);
+				border-radius: 0.55rem;
+				padding: 0.6rem 0.75rem;
+				font: inherit;
+				background: #fff;
+			}
+			.field input:focus {
+				outline: none;
+				box-shadow: 0 0 0 4px var(--ring);
+			}
+			.row {
+				display: flex;
+				gap: 0.6rem;
+				align-items: center;
+			}
+			.row.spread {
+				justify-content: space-between;
+			}
+			.btn {
+				appearance: none;
+				border: 1px solid var(--border);
+				background: #fff;
+				color: #111;
+				padding: 0.56rem 0.85rem;
+				border-radius: 0.6rem;
+				font-weight: 700;
+				cursor: pointer;
+				line-height: 1;
+			}
+			.btn:hover {
+				filter: brightness(0.98);
+			}
+			.btn.primary {
+				background: var(--accent);
+				color: #fff;
+				border-color: color-mix(in oklab, var(--accent), black 10%);
+			}
+			.btn.ghost {
+				background: #f8fafc;
+			}
+			.btn.link {
+				background: transparent;
+				border-color: transparent;
+				color: var(--brand);
+				padding: 0.2rem 0.1rem;
+			}
+			.btn[disabled] {
+				opacity: 0.55;
+				cursor: not-allowed;
+				pointer-events: none;
+			}
+			.small {
+				font-size: 0.92rem;
+				text-decoration: none;
+			}
+			.err-tip {
+				margin-top: 0.25rem;
+				font-size: 0.86rem;
+				color: var(--danger-ink);
+				background: #fff1f2;
+				border: 1px solid var(--danger-br);
+				border-left: 3px solid var(--danger);
+				border-radius: 0.5rem;
+				padding: 0.45rem 0.6rem;
+				font-weight: 600;
+			}
+			.is-invalid {
+				border-color: var(--danger) !important;
+				box-shadow: 0 0 0 3px
+					color-mix(in oklab, var(--danger) 18%, transparent);
+			}
+			.step {
+				display: none;
+			}
+			.step.show {
+				display: block;
+			}
+			.pw-wrap {
+				position: relative;
+			}
+			.pw-toggle {
+				position: absolute;
+				right: 8px;
+				top: 50%;
+				transform: translateY(-50%);
+				border: none;
+				background: transparent;
+				color: var(--muted);
+				cursor: pointer;
+				font-weight: 700;
+			}
+			.status {
+				position: fixed;
+				right: 18px;
+				bottom: 18px;
+				z-index: 50;
+				display: none;
+				min-width: 180px;
+				background: var(--card);
+				color: var(--text);
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				padding: 0.55rem 0.8rem;
+				box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+				font-weight: 600;
+			}
+			.status.show {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+			.status.ok {
+				border-color: color-mix(in oklab, var(--accent), white 60%);
+			}
+			.status.err {
+				background: #fff1f2;
+				color: var(--danger-ink);
+				border-color: var(--danger-br);
+			}
+			.status.err::before {
+				content: "⚠";
+				opacity: 0.9;
+			}
+		</style>
+	</head>
+	<body>
+		<main class="shell">
+			<section
+				class="card"
+				id="recovery"
+				data-tenant={TENANT_ID}
+				data-token-login="/v1/auth/recovery/verify"
+				data-set-pwd="/v1/auth/recovery/reset"
+				data-success-redirect="/admin"
+			>
+				<h1>Recuperar cuenta</h1>
+				<p class="muted">
+					Ingresá tu email y el token que te compartieron. Después vas
+					a definir una contraseña nueva.
+				</p>
+
+				<form id="step1" class="step show" novalidate>
+					<label class="field">
+						<span>Email</span>
+						<input
+							id="email"
+							type="email"
+							placeholder="usuario@dominio.com"
+							autocomplete="email"
+						/>
+						<small class="err-tip" hidden id="err-email"></small>
+					</label>
+					<label class="field">
+						<span>Token</span>
+						<input
+							id="token"
+							inputmode="latin"
+							autocapitalize="off"
+							autocomplete="one-time-code"
+						/>
+						<small class="err-tip" hidden id="err-token"></small>
+					</label>
+
+					<div class="row spread" style="margin-top:.6rem">
+						<a class="btn link small" href="/login"
+							>← Volver a iniciar sesión</a
+						>
+						<button class="btn primary" id="btnStep1" type="submit"
+							>Continuar</button
+						>
+					</div>
+				</form>
+
+				<form id="step2" class="step" novalidate>
+					<p class="muted">
+						Token verificado. Elegí tu nueva contraseña.
+					</p>
+
+					<label class="field">
+						<span>Nueva contraseña</span>
+						<div class="pw-wrap">
+							<input
+								id="password"
+								type="password"
+								autocomplete="new-password"
+								minlength="8"
+							/>
+							<button
+								class="pw-toggle"
+								type="button"
+								aria-label="Mostrar/ocultar"
+								id="togglePw1">👁</button
+							>
+						</div>
+						<small class="err-tip" hidden id="err-pass"></small>
+					</label>
+
+					<label class="field">
+						<span>Confirmar contraseña</span>
+						<div class="pw-wrap">
+							<input
+								id="password2"
+								type="password"
+								autocomplete="new-password"
+								minlength="8"
+							/>
+							<button
+								class="pw-toggle"
+								type="button"
+								aria-label="Mostrar/ocultar"
+								id="togglePw2">👁</button
+							>
+						</div>
+						<small class="err-tip" hidden id="err-pass2"></small>
+					</label>
+
+					<div class="row spread" style="margin-top:.6rem">
+						<button class="btn ghost" type="button" id="backToStep1"
+							>← Cambiar email/token</button
+						>
+						<button class="btn primary" id="btnStep2" type="submit"
+							>Guardar contraseña</button
+						>
+					</div>
+				</form>
+			</section>
+
+			<div id="status" class="status" role="status" aria-live="polite">
+			</div>
+		</main>
+
+		<script type="module">
+			const root = document.getElementById("recovery");
+			const tenantId = Number(root?.dataset.tenant || 0);
+			const tokenLoginEndpoint =
+				root?.dataset.tokenLogin || "/v1/auth/token-login";
+			const setPwdEndpoint =
+				root?.dataset.setPwd || "/v1/auth/set-password";
+			const successRedirect = root?.dataset.successRedirect || "/admin";
+
+			const $ = (id) => document.getElementById(id);
+			const toastEl = $("status");
+			let toastTimer = null;
+			function toast(msg, type = "") {
+				toastEl.textContent = msg;
+				toastEl.className = "status show " + type;
+				clearTimeout(toastTimer);
+				toastTimer = setTimeout(
+					() => {
+						toastEl.className = "status";
+						toastEl.textContent = "";
+					},
+					type === "err" ? 5000 : 1600
+				);
+			}
+			function show(el) {
+				el?.classList.add("show");
+			}
+			function hide(el) {
+				el?.classList.remove("show");
+			}
+			function setErr(el, msg) {
+				el.textContent = msg || "";
+				el.hidden = !msg;
+			}
+			function invalidate(inputEl, tipEl, msg) {
+				inputEl.classList.add("is-invalid");
+				setErr(tipEl, msg);
+			}
+			function clearInvalid(inputEl, tipEl) {
+				inputEl.classList.remove("is-invalid");
+				setErr(tipEl, "");
+			}
+
+			const step1 = $("step1"),
+				step2 = $("step2");
+			const emailEl = $("email"),
+				tokenEl = $("token");
+			const errEmail = $("err-email"),
+				errToken = $("err-token");
+			const passEl = $("password"),
+				pass2El = $("password2");
+			const errPass = $("err-pass"),
+				errPass2 = $("err-pass2");
+			const btnStep1 = $("btnStep1"),
+				btnStep2 = $("btnStep2");
+			const backBtn = $("backToStep1");
+			const togglePw1 = $("togglePw1"),
+				togglePw2 = $("togglePw2");
+
+			let RECOVERY_TOKEN = "";
+
+			const params = new URLSearchParams(location.search);
+			if (params.get("email")) emailEl.value = params.get("email");
+			if (params.get("token")) tokenEl.value = params.get("token");
+
+			[
+				[emailEl, errEmail],
+				[tokenEl, errToken],
+				[passEl, errPass],
+				[pass2El, errPass2],
+			].forEach(([i, tip]) =>
+				i?.addEventListener("input", () => clearInvalid(i, tip))
+			);
+
+			togglePw1?.addEventListener("click", () => {
+				passEl.type = passEl.type === "password" ? "text" : "password";
+			});
+			togglePw2?.addEventListener("click", () => {
+				pass2El.type =
+					pass2El.type === "password" ? "text" : "password";
+			});
+
+			step1?.addEventListener("submit", async (e) => {
+				e.preventDefault();
+				clearInvalid(emailEl, errEmail);
+				clearInvalid(tokenEl, errToken);
+
+				const email = (emailEl.value || "").trim();
+				const token = (tokenEl.value || "").trim();
+
+				if (!email) {
+					invalidate(emailEl, errEmail, "El email es obligatorio");
+					return emailEl.focus();
+				}
+				if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+					invalidate(emailEl, errEmail, "Email inválido");
+					return emailEl.focus();
+				}
+				if (!token) {
+					invalidate(tokenEl, errToken, "Ingresá tu token");
+					return tokenEl.focus();
+				}
+				if (!tenantId) {
+					toast("Configuración inválida (tenant)", "err");
+					return;
+				}
+
+				btnStep1.disabled = true;
+				try {
+					toast("Verificando token…");
+					const res = await fetch(tokenLoginEndpoint, {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ email, tenantId, token }),
+					});
+					if (!res.ok) {
+						const text = await safeText(res);
+						invalidate(
+							tokenEl,
+							errToken,
+							text || "Token inválido o vencido"
+						);
+						toast("No se pudo verificar el token", "err");
+						return;
+					}
+					const data = await res.json().catch(() => ({}));
+					RECOVERY_TOKEN = data?.recoveryToken || "";
+					if (!RECOVERY_TOKEN) {
+						toast(
+							"Respuesta inválida del servidor (sin recoveryToken)",
+							"err"
+						);
+						return;
+					}
+					toast("Token verificado ✅", "ok");
+					hide(step1);
+					show(step2);
+					setTimeout(() => passEl?.focus(), 10);
+				} catch (err) {
+					console.error(err);
+					toast("Error de red", "err");
+				} finally {
+					btnStep1.disabled = false;
+				}
+			});
+
+			step2?.addEventListener("submit", async (e) => {
+				e.preventDefault();
+				clearInvalid(passEl, errPass);
+				clearInvalid(pass2El, errPass2);
+
+				const p1 = passEl.value || "";
+				const p2 = pass2El.value || "";
+				if (p1.length < 8) {
+					invalidate(passEl, errPass, "Mínimo 8 caracteres");
+					return passEl.focus();
+				}
+				if (p2 !== p1) {
+					invalidate(
+						pass2El,
+						errPass2,
+						"Las contraseñas no coinciden"
+					);
+					return pass2El.focus();
+				}
+				if (!RECOVERY_TOKEN) {
+					toast("Sesión de recuperación expirada. Reintentá.", "err");
+					hide(step2);
+					show(step1);
+					return;
+				}
+
+				btnStep2.disabled = true;
+				try {
+					toast("Guardando contraseña…");
+					const res = await fetch(setPwdEndpoint, {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							newPassword: p1,
+							recoveryToken: RECOVERY_TOKEN,
+						}),
+					});
+					if (!res.ok) {
+						const text = await safeText(res);
+						invalidate(
+							passEl,
+							errPass,
+							text || "No se pudo guardar la contraseña"
+						);
+						toast("No se pudo guardar la contraseña", "err");
+						return;
+					}
+					toast("Listo ✅", "ok");
+					setTimeout(() => (location.href = successRedirect), 600);
+				} catch (err) {
+					console.error(err);
+					toast("Error de red", "err");
+				} finally {
+					btnStep2.disabled = false;
+				}
+			});
+
+			backBtn?.addEventListener("click", () => {
+				hide(step2);
+				show(step1);
+				setTimeout(() => tokenEl?.focus(), 10);
+			});
+
+			async function safeText(res) {
+				try {
+					return await res.text();
+				} catch {
+					return "";
+				}
+			}
+		</script>
+	</body>
+</html>

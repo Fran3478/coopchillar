@@ -1,0 +1,630 @@
+---
+export interface ImageItem {
+	src: string;
+	alt?: string;
+	description?: string;
+	album?: string;
+}
+
+interface Props {
+	images: ImageItem[];
+	maxWidth?: string;
+	modalTopPadding?: number;
+	thumbWidth?: number;
+}
+
+const {
+	images,
+	maxWidth = "1200px",
+	modalTopPadding = 130,
+	thumbWidth = 140,
+} = Astro.props;
+const visibleIdx = Array.from(
+	{ length: Math.min(6, images.length) },
+	(_, i) => i
+);
+---
+
+<section class="gal collage">
+	<div class="wrap" style={`--maxw:${maxWidth};`}>
+		{
+			visibleIdx.map((idx) => {
+				const img = images[idx];
+				return (
+					<figure class={`slot s${idx}`} data-idx={idx}>
+						<img
+							src={img.src}
+							alt={img.alt ?? ""}
+							loading="lazy"
+							decoding="async"
+						/>
+					</figure>
+				);
+			})
+		}
+	</div>
+
+	<div
+		class="lb hidden"
+		aria-hidden="true"
+		role="dialog"
+		aria-modal="true"
+		style={`--thumb-w:${thumbWidth}px; --lb-top:${modalTopPadding}px;`}
+	>
+		<div class="lb-dialog" role="document">
+			<button
+				class="lb-close"
+				type="button"
+				aria-label="Cerrar"
+				data-action="close"
+			>
+				&#x2715;
+			</button>
+
+			<div class="lb-card">
+				<div class="lb-stage">
+					<button
+						class="lb-nav lb-prev desktop-only"
+						type="button"
+						aria-label="Anterior"
+						data-action="prev"
+					>
+						&#x276E;
+					</button>
+					<div class="lb-media">
+						<img class="lb-img" alt="" />
+					</div>
+					<button
+						class="lb-nav lb-next desktop-only"
+						type="button"
+						aria-label="Siguiente"
+						data-action="next"
+					>
+						&#x276F;
+					</button>
+				</div>
+
+				<div class="lb-meta">
+					<div class="lb-title"></div>
+					<div class="lb-desc"></div>
+				</div>
+			</div>
+
+			<div class="lb-thumbs">
+				<button
+					class="lb-th-btn desktop-only"
+					data-action="thumb-prev"
+					aria-label="Miniaturas anteriores"
+					type="button"
+				>
+					‹
+				</button>
+				<div class="lb-th-strip">
+					{
+						images.map((img, i) => (
+							<button
+								class="lb-th"
+								data-idx={i}
+								data-alt={img.alt ?? ""}
+								data-desc={img.description ?? ""}
+								data-album={img.album ?? ""}
+								type="button"
+							>
+								<img
+									src={img.src}
+									alt={img.alt ?? ""}
+									loading="lazy"
+								/>
+							</button>
+						))
+					}
+				</div>
+				<button
+					class="lb-th-btn desktop-only"
+					data-action="thumb-next"
+					aria-label="Miniaturas siguientes"
+					type="button"
+				>
+					›
+				</button>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.gal.collage .wrap {
+		max-width: var(--maxw, 1200px);
+		margin: 0 auto;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		grid-template-rows: repeat(6, minmax(40px, 1fr));
+		gap: 0;
+	}
+	.gal.collage .slot {
+		overflow: hidden;
+		position: relative;
+	}
+	.gal.collage img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		cursor: pointer;
+	}
+
+	.gal.collage .s0 {
+		grid-column: 1 / span 3;
+		grid-row: 1 / span 6;
+	}
+	.gal.collage .s1 {
+		grid-column: 4 / span 3;
+		grid-row: 1 / span 3;
+	}
+	.gal.collage .s2 {
+		grid-column: 4 / span 3;
+		grid-row: 4 / span 3;
+	}
+	.gal.collage .s3 {
+		grid-column: 7 / span 6;
+		grid-row: 1 / span 4;
+	}
+	.gal.collage .s4 {
+		grid-column: 7 / span 3;
+		grid-row: 5 / span 2;
+	}
+	.gal.collage .s5 {
+		grid-column: 10 / span 3;
+		grid-row: 5 / span 2;
+	}
+
+	.gal.collage .wrap:hover .slot {
+		opacity: 0.6;
+		transition:
+			opacity 0.15s,
+			transform 0.15s;
+	}
+	.gal.collage .wrap:hover .slot:hover {
+		opacity: 1;
+		transform: scale(1.02);
+		z-index: 2;
+	}
+
+	@media (max-width: 1024px) {
+		.gal.collage .wrap {
+			grid-template-columns: repeat(6, 1fr);
+			grid-template-rows: repeat(12, minmax(32px, 1fr));
+		}
+		.gal.collage .s0 {
+			grid-column: 1 / span 6;
+			grid-row: 1 / span 6;
+		}
+		.gal.collage .s1 {
+			grid-column: 1 / span 3;
+			grid-row: 7 / span 3;
+		}
+		.gal.collage .s2 {
+			grid-column: 4 / span 3;
+			grid-row: 7 / span 3;
+		}
+		.gal.collage .s3 {
+			grid-column: 1 / span 6;
+			grid-row: 10 / span 2;
+		}
+		.gal.collage .s4 {
+			grid-column: 1 / span 3;
+			grid-row: 12 / span 1;
+		}
+		.gal.collage .s5 {
+			grid-column: 4 / span 3;
+			grid-row: 12 / span 1;
+		}
+	}
+
+	.lb.hidden {
+		display: none;
+	}
+	.lb {
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+
+		background: rgba(0, 0, 0, 0.65);
+		backdrop-filter: blur(2px);
+
+		overflow-y: auto;
+
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: var(--lb-top, 80px) 16px 20px;
+	}
+
+	.lb-dialog {
+		pointer-events: none;
+		width: 100%;
+		max-width: min(80vw, 1200px);
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		align-items: center;
+	}
+
+	.lb-card {
+		pointer-events: auto;
+		background: #fff;
+		border-radius: 14px;
+		overflow: hidden;
+		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.lb-stage {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		padding: 0 16px;
+	}
+	.lb-media {
+		flex: 1;
+		background: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-top: 1rem;
+		margin-bottom: 1rem;
+	}
+	.lb-img {
+		max-width: 100%;
+		max-height: 55vh;
+		object-fit: contain;
+	}
+
+	.lb-meta {
+		padding: 12px 14px;
+		border-top: 1px solid #eee;
+	}
+	.lb-title {
+		font:
+			600 15px/1.3 system-ui,
+			-apple-system,
+			Segoe UI,
+			Roboto,
+			sans-serif;
+		margin-bottom: 6px;
+	}
+	.lb-desc {
+		font:
+			400 14px/1.5 system-ui,
+			-apple-system,
+			Segoe UI,
+			Roboto,
+			sans-serif;
+		color: #444;
+		max-height: 18vh;
+		overflow: auto;
+	}
+
+	.lb-close {
+		position: fixed;
+		top: 80px;
+		right: 22px;
+		pointer-events: auto;
+		background: #ff8c00;
+		border: none;
+		color: #fff;
+		font-size: 1.2rem;
+		width: 42px;
+		height: 42px;
+		border-radius: 50%;
+		cursor: pointer;
+		transition:
+			filter 0.15s ease,
+			transform 0.1s ease;
+		box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+	}
+
+	.lb-close:hover {
+		filter: brightness(0.95);
+		transform: translateY(-1px);
+	}
+
+	.desktop-only {
+		display: none;
+	}
+	@media (min-width: 768px) {
+		.desktop-only {
+			display: inline-block;
+		}
+	}
+
+	@media (max-height: 720px) {
+		.lb {
+			padding: 40px 12px 16px;
+		}
+
+		.lb-img {
+			max-height: 45vh;
+		}
+
+		.lb-meta {
+			max-height: 24vh;
+		}
+	}
+
+	.lb-nav {
+		pointer-events: auto;
+		background: #ff8c00;
+		border: none;
+		color: #fff;
+		font-size: 1.2rem;
+		width: 42px;
+		height: 42px;
+		border-radius: 50%;
+		cursor: pointer;
+		transition:
+			filter 0.15s ease,
+			transform 0.1s ease;
+		box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+	}
+
+	.lb-nav:hover {
+		filter: brightness(0.95);
+		transform: translateY(-1px);
+	}
+
+	.lb-thumbs {
+		pointer-events: auto;
+		width: min(92vw, 1200px);
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.lb-th-btn {
+		display: none;
+		background: rgba(255, 255, 255, 0.92);
+		border: 0;
+		cursor: pointer;
+		width: 34px;
+		height: 48px;
+		font-size: 22px;
+		color: #222;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	}
+	@media (min-width: 768px) {
+		.lb-th-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+
+	.lb-th-strip {
+		position: relative;
+		overflow: auto;
+		white-space: nowrap;
+		scrollbar-width: thin;
+		-webkit-overflow-scrolling: touch;
+		flex: 1;
+		display: flex;
+		gap: 8px;
+		padding: 4px;
+	}
+	.lb-th {
+		border: 0;
+		background: #000;
+		padding: 0;
+		cursor: pointer;
+		flex: 0 0 var(--thumb-w, 140px);
+		aspect-ratio: 3 / 2;
+		overflow: hidden;
+		opacity: 0.9;
+		transition:
+			opacity 0.15s ease,
+			transform 0.15s ease;
+	}
+	.lb-th img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+	.lb-th[aria-current="true"] {
+		outline: 2px solid #333;
+		opacity: 1;
+		transform: translateY(-1px);
+	}
+
+	html.no-scroll,
+	body.no-scroll {
+		overflow: hidden !important;
+	}
+	.gal.collage .wrap {
+		max-width: var(--maxw, 1200px);
+		margin: 0 auto;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		grid-template-rows: repeat(6, minmax(40px, 1fr));
+		gap: 0;
+	}
+	.gal.collage .slot {
+		overflow: hidden;
+		position: relative;
+		margin: 0;
+	} /* <- */
+	.gal.collage .slot img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const root = document.querySelector(".gal.collage");
+		if (!root) return;
+
+		const modal = root.querySelector(".lb");
+		if (!modal) return;
+
+		const imgEl = modal.querySelector(".lb-img");
+		const titleEl = modal.querySelector(".lb-title");
+		const descEl = modal.querySelector(".lb-desc");
+		const strip = modal.querySelector(".lb-th-strip");
+		const thumbBtns = Array.from(modal.querySelectorAll(".lb-th"));
+		const cards = Array.from(root.querySelectorAll(".slot"));
+
+		const data = thumbBtns.map((b) => {
+			const img = b.querySelector("img");
+			return {
+				src: img ? img.src : "",
+				alt: b.dataset.alt || "",
+				description: b.dataset.desc || "",
+				album: b.dataset.album || "",
+			};
+		});
+
+		let current = -1;
+		let savedScrollY = 0;
+
+		function lockScroll() {
+			savedScrollY = window.scrollY || document.documentElement.scrollTop;
+			document.documentElement.classList.add("modal-open", "no-scroll");
+			document.body.classList.add("no-scroll");
+			document.body.style.position = "fixed";
+			document.body.style.top = `-${savedScrollY}px`;
+			document.body.style.left = "0";
+			document.body.style.right = "0";
+		}
+
+		function unlockScroll() {
+			document.documentElement.classList.remove(
+				"modal-open",
+				"no-scroll"
+			);
+			document.body.classList.remove("no-scroll");
+			document.body.style.position = "";
+			document.body.style.top = "";
+			document.body.style.left = "";
+			document.body.style.right = "";
+			window.scrollTo(0, savedScrollY);
+		}
+
+		function renderAt(i) {
+			const it = data[i];
+			if (!it) return;
+
+			imgEl.src = it.src;
+			imgEl.alt = it.alt || "";
+			titleEl.textContent = it.album || "";
+			descEl.textContent = it.description || "";
+
+			thumbBtns.forEach((b) => b.removeAttribute("aria-current"));
+			const activeThumb = modal.querySelector(`.lb-th[data-idx="${i}"]`);
+			if (activeThumb && strip) {
+				activeThumb.setAttribute("aria-current", "true");
+				const diff =
+					activeThumb.offsetLeft -
+					(strip.clientWidth / 2 - activeThumb.clientWidth / 2);
+				strip.scrollTo({ left: diff, behavior: "smooth" });
+			}
+
+			current = i;
+		}
+
+		function openAt(i) {
+			modal.classList.remove("hidden");
+			modal.setAttribute("aria-hidden", "false");
+			lockScroll();
+			renderAt(i);
+		}
+
+		function close() {
+			modal.classList.add("hidden");
+			modal.setAttribute("aria-hidden", "true");
+			imgEl.src = "";
+			unlockScroll();
+			current = -1;
+		}
+
+		function prev() {
+			if (current < 0) return;
+			renderAt((current - 1 + data.length) % data.length);
+		}
+
+		function next() {
+			if (current < 0) return;
+			renderAt((current + 1) % data.length);
+		}
+
+		cards.forEach((el) =>
+			el.addEventListener("click", () => {
+				const idx = Number(el.getAttribute("data-idx") || 0);
+				openAt(idx);
+			})
+		);
+
+		modal.addEventListener("click", (e) => {
+			const t = e.target;
+			if (!(t instanceof HTMLElement)) return;
+
+			if (t.dataset.action === "close") {
+				close();
+				return;
+			}
+
+			if (t.dataset.action === "prev") {
+				e.preventDefault();
+				prev();
+				return;
+			}
+			if (t.dataset.action === "next") {
+				e.preventDefault();
+				next();
+				return;
+			}
+			if (t.dataset.action === "thumb-prev" && strip) {
+				e.preventDefault();
+				strip.scrollBy({
+					left: -strip.clientWidth,
+					behavior: "smooth",
+				});
+				return;
+			}
+			if (t.dataset.action === "thumb-next" && strip) {
+				e.preventDefault();
+				strip.scrollBy({
+					left: strip.clientWidth,
+					behavior: "smooth",
+				});
+				return;
+			}
+
+			if (!t.closest(".lb-card") && !t.closest(".lb-thumbs")) {
+				close();
+			}
+		});
+
+		window.addEventListener("keydown", (e) => {
+			if (modal.classList.contains("hidden")) return;
+			if (e.key === "Escape") close();
+			if (e.key === "ArrowLeft") prev();
+			if (e.key === "ArrowRight") next();
+		});
+
+		thumbBtns.forEach((b) =>
+			b.addEventListener("click", (e) => {
+				e.stopPropagation();
+				e.preventDefault();
+				const idx = Number(b.getAttribute("data-idx") || -1);
+				if (idx >= 0) renderAt(idx);
+			})
+		);
+	});
+</script>

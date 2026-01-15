@@ -1,0 +1,382 @@
+---
+export const prerender = false;
+import DashboardLayout from "../../../layouts/DashboardLayout.astro";
+
+const DEFAULT_FOLDER = "novedades";
+const RESOURCE_TYPE = "image";
+---
+
+<DashboardLayout title="Editar novedad">
+	<section class="page">
+		<header class="page-head">
+			<div class="titles">
+				<h1>Editar novedad</h1>
+				<p class="subtitle">Modificá los datos y guardá.</p>
+			</div>
+			<div class="actions">
+				<button id="saveBtn" class="btn primary" type="button"
+					>Guardar</button
+				>
+			</div>
+		</header>
+
+		<div
+			id="cfg-nov"
+			data-folder={DEFAULT_FOLDER}
+			data-resource-type={RESOURCE_TYPE}
+		>
+		</div>
+
+		<div class="grid">
+			<aside class="side" style="grid-column: 1 / -1;">
+				<div class="card post">
+					<h3>Datos de la novedad</h3>
+
+					<label class="field">
+						<span>Título</span>
+						<input
+							id="titulo"
+							placeholder="Título visible en el slider"
+						/>
+					</label>
+
+					<label class="field">
+						<span>Portada</span>
+						<div class="file-row">
+							<input
+								id="portadaUrl"
+								type="url"
+								placeholder="https://…"
+							/>
+							<input
+								id="portadaFile"
+								type="file"
+								accept="image/*"
+							/>
+						</div>
+						<small class="hint"
+							>Podés pegar la URL o subir una imagen.</small
+						>
+					</label>
+
+					<label class="field">
+						<span>Enlace externo (opcional)</span>
+						<input
+							id="linkUrl"
+							type="url"
+							placeholder="https://sitio-externo.com/nota"
+						/>
+						<small class="hint"
+							>Si lo completás, el botón “Conoce más” abre este
+							enlace.</small
+						>
+					</label>
+				</div>
+			</aside>
+		</div>
+
+		<div id="status" class="status"></div>
+	</section>
+
+	<style>
+		:root {
+			--brand: #002e6e;
+			--accent: #ff8c00;
+			--bg: #f5f6f8;
+			--card: #fff;
+			--border: #e6e8ec;
+			--text: #1f2328;
+			--muted: #60646c;
+			--ring: rgba(0, 46, 110, 0.18);
+		}
+		.page {
+			max-width: 900px;
+			margin: 0 auto;
+			padding: 1rem;
+		}
+		.page-head {
+			position: static;
+			display: flex;
+			gap: 1rem;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0.85rem 1rem;
+			margin: 0.25rem 0 1rem;
+			background: color-mix(in oklab, var(--card) 85%, var(--bg));
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+		}
+		.titles h1 {
+			margin: 0 0 0.25rem;
+			font-size: 1.25rem;
+			color: var(--brand);
+		}
+		.subtitle {
+			margin: 0;
+			color: var(--muted);
+			font-size: 0.95rem;
+		}
+		.actions {
+			display: flex;
+			gap: 0.5rem;
+		}
+		.btn {
+			appearance: none;
+			border: 1px solid var(--border);
+			background: var(--card);
+			color: var(--text);
+			padding: 0.6rem 0.95rem;
+			border-radius: 0.65rem;
+			font-weight: 600;
+			cursor: pointer;
+			transition: 0.15s ease;
+		}
+		.btn:hover {
+			transform: translateY(-1px);
+		}
+		.btn:focus-visible {
+			outline: none;
+			box-shadow: 0 0 0 4px var(--ring);
+		}
+		.btn.primary {
+			background: var(--accent);
+			border-color: color-mix(in oklab, var(--accent), black 10%);
+			color: #fff;
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 16px;
+			align-items: start;
+		}
+		.card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			padding: 1rem;
+		}
+		.card h3 {
+			margin: 0 0 0.5rem;
+			color: var(--brand);
+			font-size: 1rem;
+		}
+		.side {
+			display: grid;
+			gap: 1rem;
+			min-width: 0;
+			container-type: inline-size;
+		}
+		.field {
+			display: grid;
+			gap: 0.45rem;
+			margin-top: 0.6rem;
+		}
+		.field input,
+		.field textarea,
+		.field select {
+			width: 100%;
+			max-width: 100%;
+			min-width: 0;
+			box-sizing: border-box;
+			border: 1px solid var(--border);
+			border-radius: 0.55rem;
+			padding: 0.55rem 0.7rem;
+			font: inherit;
+			background: #fff;
+		}
+		.field input:focus,
+		.field textarea:focus,
+		.field select:focus {
+			outline: none;
+			box-shadow: 0 0 0 4px var(--ring);
+		}
+		.file-row {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
+			align-items: center;
+		}
+		@container (min-width:520px) {
+			.file-row {
+				grid-template-columns: minmax(0, 1fr) max-content;
+			}
+		}
+		.hint {
+			color: var(--muted);
+			font-size: 0.85rem;
+		}
+
+		.status {
+			position: fixed;
+			right: 18px;
+			bottom: 18px;
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 0.5rem 0.75rem;
+			color: var(--muted);
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+			min-width: 160px;
+			display: none;
+		}
+		.status.show {
+			display: inline-block;
+		}
+		.status.ok {
+			border-color: color-mix(in oklab, var(--accent), white 60%);
+			color: var(--text);
+		}
+		.status.err {
+			border-color: #ff4157;
+			color: #b31b2c;
+		}
+	</style>
+
+	<script type="module">
+		import {
+			apiGet,
+			apiPut,
+			apiPost,
+			getErrorInfo,
+			toErrorText,
+		} from "/src/lib/api";
+
+		function toast(msg, type = "") {
+			const el = document.getElementById("status");
+			if (!el) return;
+			el.textContent = msg;
+			el.className = `status show ${type}`;
+			if (type === "ok")
+				setTimeout(() => (el.className = "status"), 1600);
+		}
+
+		async function requestSignature(payload) {
+			const res = await apiPost("/v1/media/sign", payload);
+			if (!res.ok) throw new Error("No se pudo obtener la firma");
+			return res.json();
+		}
+		async function uploadToCloudinary(file, sig, publicId) {
+			console.log(sig);
+			const cloudName = sig.cloudName;
+			const resourceType = sig.resourceType || "image";
+			const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+			const form = new FormData();
+			form.append("file", file);
+			form.append("api_key", String(sig.apiKey));
+			form.append("timestamp", String(sig.timestamp));
+			form.append("signature", String(sig.signature));
+			if (sig.folder) form.append("folder", sig.folder);
+			if (publicId) form.append("public_id", publicId);
+			if (sig.transformation)
+				form.append("transformation", sig.transformation);
+			if (sig.eager) form.append("eager", sig.eager);
+
+			const r = await fetch(url, { method: "POST", body: form });
+			if (!r.ok)
+				throw new Error(`Error subiendo a Cloudinary (${r.status})`);
+			return r.json();
+		}
+
+		(async () => {
+			const params = new URLSearchParams(location.search);
+			const id = params.get("id");
+			if (!id) {
+				const raw = localStorage.getItem("cms:postEdit");
+				if (!raw) return toast("Falta id en la URL", "err");
+				const nov = JSON.parse(raw);
+				hydrate(nov);
+				return;
+			}
+
+			const cfg = document.getElementById("cfg-nov");
+			const DEFAULT_FOLDER = cfg?.dataset.folder || "novedades";
+			const RESOURCE_TYPE = cfg?.dataset.resourceType || "image";
+
+			const tituloEl = document.getElementById("titulo");
+			const portadaEl = document.getElementById("portadaUrl");
+			const fileEl = document.getElementById("portadaFile");
+			const linkUrlEl = document.getElementById("linkUrl");
+			const saveBtn = document.getElementById("saveBtn");
+
+			try {
+				const res = await apiGet(`/v1/posts/${encodeURIComponent(id)}`);
+				if (!res.ok) throw res;
+				const nov = await res.json();
+				hydrate(nov);
+			} catch (e) {
+				const raw = localStorage.getItem("cms:postEdit");
+				if (raw) hydrate(JSON.parse(raw));
+				else toast("No se pudo cargar la novedad", "err");
+			}
+
+			function hydrate(nov) {
+				tituloEl.value = nov?.titulo || "";
+				portadaEl.value = nov?.portadaUrl || "";
+				linkUrlEl.value = nov?.linkUrl || "";
+			}
+
+			fileEl?.addEventListener("change", async (e) => {
+				const file = e.target?.files?.[0];
+				if (!file) return;
+				if (!/^image\//.test(file.type))
+					return toast("Formato no soportado", "err");
+				if (file.size > 10 * 1024 * 1024)
+					return toast("La imagen supera 10MB", "err");
+
+				try {
+					toast("Subiendo imagen…");
+					const sig = await requestSignature({
+						resourceType: RESOURCE_TYPE,
+						folder: DEFAULT_FOLDER,
+						incomingTransform: "c_limit,w_2560/f_webp,q_auto:good",
+						// eager: "c_fill,w_1200",
+					});
+					const resp = await uploadToCloudinary(file, sig);
+					portadaEl.value = resp.secure_url;
+					toast("Imagen subida ✅", "ok");
+				} catch (err) {
+					console.error(err);
+					toast("No se pudo subir la imagen", "err");
+				}
+			});
+
+			saveBtn?.addEventListener("click", async () => {
+				try {
+					const titulo = (tituloEl.value || "").trim();
+					const portada = (portadaEl.value || "").trim();
+					const link = (linkUrlEl.value || "").trim();
+
+					if (!titulo) throw new Error("Falta el título");
+					if (!portada) throw new Error("Agregá una portada");
+
+					const body = {
+						tipo: "novedad",
+						titulo,
+						excerpt: "",
+						destacado: true,
+						blocksJson: { time: Date.now(), blocks: [] },
+						portadaUrl: portada,
+						...(link ? { linkUrl: link } : {}),
+					};
+
+					toast("Guardando…");
+					const putRes = await apiPut(
+						`/v1/posts/${encodeURIComponent(id)}`,
+						body
+					);
+					if (!putRes.ok) {
+						const { text } = await getErrorInfo(putRes);
+						throw new Error(text);
+					}
+					localStorage.removeItem("cms:postEdit");
+					toast("Guardado ✅", "ok");
+				} catch (e) {
+					console.error(e);
+					toast(toErrorText(e), "err");
+				}
+			});
+		})();
+	</script>
+</DashboardLayout>

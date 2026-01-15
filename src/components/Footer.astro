@@ -1,21 +1,32 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
 <footer class="footer">
 	<div class="footer-container">
 		<div class="footer-logo">
-			<img src="/images/logo-sanjusto.webp" alt="Logo" />
+			<img src="/images/logo.webp" alt="logo-coop" />
 		</div>
 
 		<div class="footer-links">
-			<h4>Secciones</h4>
+			<h4>Enlaces</h4>
 			<ul>
 				<li><a href="/">Inicio</a></li>
-				<li><a href="#">Servicios</a></li>
-				<li><a href="#">Noticias</a></li>
-				<li><a href="#">Novedades</a></li>
-				<li><a href="#">Contacto</a></li>
+				<li>
+					<a href="https://migestarcoop.com.ar/Chillar/login"
+						>Oficina Virtual</a
+					>
+				</li>
+				<li><a href="/servicios">Servicios</a></li>
+				<li><a href="/origen">Origen</a></li>
+				<li><a href="/mision-y-vision">Misión y Visión</a></li>
+				<li><a href="/nuestros-valores">Nuestros Valores</a></li>
+				<li><a href="/institucional">Institucional</a></li>
+				<li><a href="/contacto">Contacto</a></li>
 			</ul>
 		</div>
 
-		<div class="footer-contact">
+		<!-- <div class="footer-contact">
 			<h4>Contacto</h4>
 			<p>
 				📍 <a
@@ -31,35 +42,46 @@
 					>cspsanjusto@gmail.com</a
 				>
 			</p>
-		</div>
+		</div> -->
 
 		<div class="footer-social">
-			<h4>Seguinos</h4>
+			<!-- <h4>Seguinos</h4> -->
 			<div class="social-icons">
-				<a href="#" aria-label="Facebook"
+				<!-- <a href="#" aria-label="Facebook"
 					><img
 						class="footer-icon"
 						src="/images/icons/facebook.svg"
 						alt="facebook"
 					/></a
-				>
-				<a href="#" aria-label="Instagram"
+				> -->
+				<a
+					href="https://www.instagram.com/clapo_chillar?igshid=YmMyMTA2M2Y%3D"
+					aria-label="Instagram"
 					><img
 						class="footer-icon"
 						src="/images/icons/instagram.svg"
 						alt="instagram"
 					/></a
 				>
-				<a href="#" aria-label="Twitter"
-					><i class="fab fa-x-twitter"></i></a
+				<a
+					href="https://api.whatsapp.com/send?phone=https://wa.me/54228115491794"
+					aria-label="Whatsapp"
+					><img
+						class="footer-icon"
+						src="/images/logowpp.webp"
+						alt="whatsapp"
+					/></a
 				>
+				<!-- <a href="#" aria-label="Twitter"
+					><i class="fab fa-x-twitter"></i></a
+				> -->
 			</div>
 		</div>
 	</div>
 	<div class="footer-bottom">
 		<p>
-			&copy; 2025 Cooperativa San Justo Ltda. Todos los derechos
-			reservados.
+			&copy; {currentYear} Cooperativa Ltda. de Agua Potable y Otros Servicios
+			Públicos de Chillar. Todos los derechos reservados.
 		</p>
 		<p>
 			Desarrollado por
@@ -74,7 +96,7 @@
 
 <style>
 	.footer {
-		background-color: #004481;
+		background-color: #06752e;
 		color: #fff;
 		padding: 4rem 1.5rem 1rem;
 		font-family: sans-serif;
@@ -124,7 +146,7 @@
 	.footer-social h4 {
 		margin-bottom: 1rem;
 		font-size: 1.1rem;
-		color: #ffcc00;
+		color: #ffcd34;
 	}
 
 	.footer-links ul {
@@ -144,7 +166,7 @@
 	}
 
 	.footer-links a:hover {
-		color: #ffcc00;
+		color: #ffcd34;
 	}
 
 	.footer-contact p {
@@ -170,7 +192,7 @@
 	}
 
 	.social-icons a:hover {
-		color: #ffcc00;
+		color: #ffcd34;
 	}
 
 	.footer-bottom {

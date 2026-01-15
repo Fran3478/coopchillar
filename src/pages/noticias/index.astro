@@ -1,0 +1,290 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+
+const TENANT_ID = Number(import.meta.env.PUBLIC_TENANT_ID) || 1;
+
+const page = Number(Astro.url.searchParams.get("page") || "1");
+const pageSize = 12;
+
+const origin = Astro.url.origin;
+const apiBase = `${origin}/v1/public/tenants/${TENANT_ID}`;
+
+function fmtDate(iso?: string) {
+	if (!iso) return "";
+	try {
+		return new Date(iso).toLocaleDateString("es-AR", {
+			day: "2-digit",
+			month: "short",
+			year: "numeric",
+		});
+	} catch {
+		return "";
+	}
+}
+
+let items: any[] = [];
+let total = 0;
+
+try {
+	const qs = new URLSearchParams({
+		tipo: "noticia",
+		estado: "published",
+		page: String(page),
+		pageSize: String(pageSize),
+	});
+	const res = await fetch(`${apiBase}/posts?${qs.toString()}`);
+	if (res.ok) {
+		const j = await res.json();
+		items = j.items || [];
+		total = j.total || 0;
+	}
+} catch {}
+
+const first = (page - 1) * pageSize + 1;
+const last = Math.min(page * pageSize, total);
+const hasPrev = page > 1;
+const hasNext = page * pageSize < total;
+---
+
+<Layout title="Noticias">
+	<div id="main-content">
+		<main class="content">
+			<header class="head">
+				<h1>Noticias</h1>
+				<p class="sub">Últimas publicaciones del sitio.</p>
+			</header>
+
+			{
+				items.length === 0 ? (
+					<p class="empty">No hay noticias publicadas.</p>
+				) : (
+					<section class="grid">
+						{items.map((p) => (
+							<article class="card" data-id={p.id}>
+								<a
+									href={`/noticias/${p.slug}`}
+									class="media"
+									aria-label={p.titulo}
+								>
+									{p.portadaUrl ? (
+										<img
+											src={p.portadaUrl}
+											alt={p.titulo || "Portada"}
+											loading="lazy"
+										/>
+									) : (
+										<img
+											src="/images/logo.webp"
+											alt={p.titulo || "Portada"}
+											loading="lazy"
+										/>
+									)}
+								</a>
+
+								<div class="body">
+									<h2 class="title">
+										<a href={`/noticias/${p.slug}`}>
+											{p.titulo ?? "Sin título"}
+										</a>
+									</h2>
+
+									<div class="meta">
+										<time datetime={p.publicadoEn || ""}>
+											{fmtDate(p.publicadoEn)}
+										</time>
+									</div>
+
+									{p.excerpt ? (
+										<p class="excerpt">{p.excerpt}</p>
+									) : null}
+
+									<div class="actions">
+										<a
+											class="btn"
+											href={`/noticias/${p.slug}`}
+										>
+											Leer nota
+										</a>
+									</div>
+								</div>
+							</article>
+						))}
+					</section>
+				)
+			}
+
+			{
+				total > pageSize && (
+					<nav class="pager">
+						<a
+							class={`kbtn ${hasPrev ? "" : "disabled"}`}
+							href={hasPrev ? `/noticias?page=${page - 1}` : "#"}
+						>
+							← Anteriores
+						</a>
+						<span class="muted">
+							{first}-{last} de {total}
+						</span>
+						<a
+							class={`kbtn ${hasNext ? "" : "disabled"}`}
+							href={hasNext ? `/noticias?page=${page + 1}` : "#"}
+						>
+							Siguientes →
+						</a>
+					</nav>
+				)
+			}
+		</main>
+	</div>
+
+	<style>
+		#main-content {
+			padding-top: 160px;
+			margin: 0 1rem;
+			transition: padding-top 0.3s ease;
+		}
+		.content {
+			max-width: 1100px;
+			margin: 0 auto;
+		}
+
+		:root {
+			--brand: #06752e;
+			--accent: #ffcd34;
+			--bg: #f6f7fb;
+			--card: #fff;
+			--border: #e6e8ec;
+			--text: #111827;
+			--muted: #6b7280;
+		}
+
+		.head {
+			margin: 0.5rem 0 1rem;
+		}
+		.head h1 {
+			margin: 0;
+			color: var(--brand);
+		}
+		.head .sub {
+			margin: 0.25rem 0 0;
+			color: var(--muted);
+		}
+		.empty {
+			color: var(--muted);
+			padding: 2rem 0;
+			text-align: center;
+		}
+
+		.grid {
+			display: grid;
+			gap: 16px;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+		@media (max-width: 1024px) {
+			.grid {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+		}
+		@media (max-width: 640px) {
+			.grid {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		.card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+		}
+
+		.media {
+			display: block;
+			aspect-ratio: 16 / 9;
+			background: #eef1f5;
+		}
+		.media img {
+			width: 100%;
+			height: 250px;
+			object-fit: cover;
+			display: block;
+		}
+
+		/* clave: body ahora es flex en columna y ocupa el alto disponible */
+		.body {
+			padding: 12px 14px 14px;
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			min-height: 0;
+		}
+
+		.title {
+			margin: 2px 0 6px;
+			font-size: 1.05rem;
+		}
+		.title a {
+			color: #0f172a;
+			text-decoration: none;
+		}
+		.title a:hover {
+			text-decoration: underline;
+		}
+		.meta {
+			color: var(--muted);
+			font-size: 0.9rem;
+			margin-bottom: 0.4rem;
+		}
+
+		.excerpt {
+			margin: 0.25rem 0 0.75rem;
+			color: #374151;
+		}
+
+		/* clave: empuja el boton hacia abajo siempre */
+		.actions {
+			margin-top: auto;
+			padding-top: 0.25rem;
+		}
+
+		.btn {
+			display: inline-block;
+			text-decoration: none;
+			font-weight: 700;
+			background: var(--accent);
+			color: #fff;
+			padding: 0.5rem 0.8rem;
+			border-radius: 0.55rem;
+			border: 1px solid color-mix(in oklab, var(--accent), black 12%);
+		}
+
+		.pager {
+			display: flex;
+			gap: 0.5rem;
+			align-items: center;
+			justify-content: center;
+			padding: 1rem 0;
+		}
+		.kbtn {
+			display: inline-block;
+			text-decoration: none;
+			font-weight: 600;
+			background: #fff;
+			border: 1px solid var(--border);
+			color: #111827;
+			padding: 0.45rem 0.75rem;
+			border-radius: 0.55rem;
+		}
+		.kbtn.disabled {
+			opacity: 0.5;
+			pointer-events: none;
+		}
+		.muted {
+			color: var(--muted);
+		}
+	</style>
+</Layout>

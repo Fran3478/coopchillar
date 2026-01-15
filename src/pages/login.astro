@@ -1,0 +1,446 @@
+---
+export const prerender = false;
+import AuthLayout from "../layouts/AuthLayout.astro";
+const TENANT_ID = Number(import.meta.env.PUBLIC_TENANT_ID) || 1;
+---
+
+<AuthLayout title="Iniciar sesión">
+	<section class="wrap">
+		<div class="card">
+			<div class="brand">
+				<img src="/images/logo-sanjusto.webp" alt="Logo" />
+				<h1>Panel de administración</h1>
+				<p class="lead">Ingresá con tus credenciales para continuar.</p>
+			</div>
+
+			<form id="login-form" autocomplete="on" novalidate>
+				<label class="field">
+					<span>Email</span>
+					<input
+						id="email"
+						name="email"
+						type="email"
+						placeholder="tucorreo@ejemplo.com"
+						required
+					/>
+				</label>
+
+				<label class="field">
+					<span>Contraseña</span>
+					<div class="psw-row">
+						<input
+							id="password"
+							name="password"
+							type="password"
+							placeholder="Tu contraseña"
+							required
+						/>
+						<button
+							type="button"
+							class="psw-toggle"
+							aria-label="Mostrar u ocultar contraseña"
+							aria-pressed="false"
+						>
+							<svg
+								class="ico eye"
+								viewBox="0 0 24 24"
+								width="18"
+								height="18"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path
+									d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"
+								></path>
+								<circle cx="12" cy="12" r="3.2"></circle>
+							</svg>
+							<svg
+								class="ico eye-off"
+								viewBox="0 0 24 24"
+								width="18"
+								height="18"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+							>
+								<path
+									d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.37 21.37 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 5c7 0 11 7 11 7a21.37 21.37 0 0 1-3.06 3.94M1 1l22 22"
+								></path>
+							</svg>
+						</button>
+					</div>
+				</label>
+
+				<div class="form-actions">
+					<a href="/recuperar" class="btn ghost">Recuperar cuenta</a>
+					<button id="submitBtn" type="submit" class="btn primary"
+						>Entrar</button
+					>
+				</div>
+
+				<p
+					id="form-hint"
+					class="hint"
+					hidden
+					aria-live="polite"
+					role="status"
+				>
+				</p>
+			</form>
+
+			<a href="/" class="back">← Volver al sitio</a>
+		</div>
+	</section>
+
+	<style>
+		:root {
+			--brand: #002e6e;
+			--accent: #ff8c00;
+			--border: #e6e8ec;
+			--text: #1f2328;
+			--muted: #60646c;
+			--bg: #f7f8fb;
+		}
+		.wrap {
+			width: 100%;
+			min-height: 70vh;
+			display: grid;
+			place-items: center;
+			padding: 2.2rem 1rem;
+			background:
+				radial-gradient(
+					1200px 600px at 20% -10%,
+					#eaf0ff 0,
+					transparent 60%
+				),
+				radial-gradient(
+					900px 500px at 120% 10%,
+					#fff3e0 0,
+					transparent 45%
+				),
+				var(--bg);
+		}
+		.card {
+			width: 100%;
+			max-width: 460px;
+			background: #fff;
+			padding: 1.25rem 1.25rem 1.35rem;
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+		}
+		.brand {
+			text-align: center;
+			margin-bottom: 0.75rem;
+		}
+		.brand img {
+			width: 64px;
+			height: 64px;
+			object-fit: contain;
+		}
+		.brand h1 {
+			font-size: 1.15rem;
+			margin: 0.5rem 0 0;
+			color: var(--brand);
+		}
+		.brand .lead {
+			margin: 0.25rem 0 0;
+			color: var(--muted);
+			font-size: 0.95rem;
+		}
+
+		form {
+			display: grid;
+			gap: 0.9rem;
+			margin-top: 0.75rem;
+		}
+		.field {
+			display: grid;
+			gap: 0.35rem;
+			min-width: 0;
+		}
+		.field > span {
+			font-weight: 600;
+			color: var(--text);
+		}
+
+		input,
+		button {
+			box-sizing: border-box;
+		}
+		input {
+			width: 100%;
+			padding: 0.6rem 0.8rem;
+			border: 1px solid var(--border);
+			border-radius: 0.65rem;
+			font-size: 0.95rem;
+			background: #fff;
+			color: #111;
+			caret-color: #111;
+			line-height: 1.2;
+		}
+		input::placeholder {
+			color: #9aa1ab;
+		}
+		input:focus {
+			outline: none;
+			box-shadow: none;
+			border-color: #ff8c00;
+			background: #fff;
+			color: #111;
+		}
+
+		.psw-row {
+			position: relative;
+		}
+		.psw-row input {
+			padding-right: 2.5rem;
+		}
+		.psw-toggle {
+			position: absolute;
+			top: 50%;
+			right: 0.45rem;
+			transform: translateY(-50%);
+			border: 0;
+			background: transparent;
+			cursor: pointer;
+			width: 2rem;
+			height: 2rem;
+			border-radius: 0.5rem;
+			display: grid;
+			place-items: center;
+			color: #4b5563;
+		}
+		.psw-toggle:hover {
+			background: #f3f4f6;
+			color: #111827;
+		}
+		.psw-toggle .ico {
+			display: none;
+		}
+		.psw-toggle:not([data-state="show"]) .eye {
+			display: block;
+		}
+		.psw-toggle[data-state="show"] .eye-off {
+			display: block;
+		}
+
+		.btn {
+			appearance: none;
+			border: 1px solid var(--border);
+			background: #fff;
+			color: var(--text);
+			padding: 0.68rem 0.95rem;
+			border-radius: 0.7rem;
+			font-weight: 700;
+			cursor: pointer;
+			transition: 0.15s ease;
+		}
+		.btn.primary {
+			background: var(--accent);
+			color: #fff;
+			border-color: color-mix(in oklab, var(--accent), black 12%);
+		}
+		.btn:hover {
+			transform: translateY(-1px);
+		}
+		.btn[disabled] {
+			opacity: 0.65;
+			cursor: default;
+			transform: none;
+		}
+		.form-actions {
+			display: flex;
+			gap: 0.5rem;
+			align-items: center;
+			justify-content: space-between;
+			flex-wrap: wrap;
+		}
+
+		.btn.ghost {
+			background: #fff;
+			text-decoration: none;
+		}
+		.btn.ghost:hover {
+			background: #f3f4f6;
+		}
+
+		.hint {
+			display: block;
+			margin: 0.6rem 0 0;
+			padding: 0.7rem 0.8rem;
+			border: 1px solid var(--border);
+			border-radius: 0.65rem;
+			background: #fff;
+			color: var(--text);
+			font-size: 0.95rem;
+		}
+		.hint[hidden] {
+			display: none;
+		}
+		.hint.err {
+			background: #fef2f2;
+			border-color: #fecaca;
+			color: #991b1b;
+		}
+		.hint.ok {
+			background: #effaf0;
+			border-color: #c6f6d5;
+			color: #166534;
+		}
+
+		.is-invalid {
+			border-color: #ef4444 !important;
+			box-shadow: none !important;
+		}
+
+		.back {
+			display: inline-block;
+			margin-top: 0.9rem;
+			font-size: 0.95rem;
+			text-decoration: none;
+			color: #333;
+		}
+		.back:hover {
+			text-decoration: underline;
+		}
+	</style>
+
+	<script type="module" define:vars={{ TENANT_ID }}>
+		const form = document.getElementById("login-form");
+		const emailEl = document.getElementById("email");
+		const pswEl = document.getElementById("password");
+		const hint = document.getElementById("form-hint");
+		const btn = document.getElementById("submitBtn");
+		const toggle = document.querySelector(".psw-toggle");
+
+		function setHint(text = "", kind = "") {
+			hint.textContent = text || "";
+			hint.classList.remove("err", "ok");
+			if (kind) hint.classList.add(kind);
+			hint.toggleAttribute("hidden", !text);
+		}
+		function clearFieldError(el) {
+			el?.classList.remove("is-invalid");
+		}
+		[emailEl, pswEl].forEach((el) =>
+			["input", "change"].forEach((evt) =>
+				el.addEventListener(evt, () => clearFieldError(el))
+			)
+		);
+
+		toggle?.addEventListener("click", () => {
+			const show = pswEl.type === "password";
+			pswEl.type = show ? "text" : "password";
+			toggle.dataset.state = show ? "show" : "";
+			toggle.setAttribute("aria-pressed", String(show));
+			pswEl.focus();
+		});
+
+		const params = new URLSearchParams(location.search);
+		const returnTo = params.get("returnTo") || "/admin";
+
+		async function getErrorText(res) {
+			let msg = `Error ${res.status}`;
+			try {
+				const j = await res.json();
+				const err = j?.error ?? j;
+				if (Array.isArray(err?.details) && err.details.length) {
+					const label = (f) =>
+						({ email: "Email", password: "Contraseña" })[f] || f;
+					err.details.forEach((d) => {
+						const f =
+							d.field ||
+							(Array.isArray(d.path) ? d.path.at(-1) : "");
+						const el =
+							f === "email"
+								? emailEl
+								: f === "password"
+									? pswEl
+									: null;
+						el && el.classList.add("is-invalid");
+					});
+					msg = err.details
+						.map((d) => {
+							const f =
+								d.field ||
+								(Array.isArray(d.path)
+									? d.path.at(-1)
+									: "campo");
+							return `${label(f)}: ${d.message || "Dato inválido"}`;
+						})
+						.join(" • ");
+				} else if (typeof err?.message === "string") {
+					msg = err.message;
+				} else if (typeof err === "string") {
+					msg = err;
+				} else {
+					msg = JSON.stringify(err);
+				}
+			} catch {
+				try {
+					msg = await res.text();
+				} catch {}
+			}
+			return msg;
+		}
+
+		form.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			setHint("", "");
+			clearFieldError(emailEl);
+			clearFieldError(pswEl);
+
+			const body = JSON.stringify({
+				email: String(emailEl.value || "").trim(),
+				password: String(pswEl.value || ""),
+				tenantId: TENANT_ID,
+			});
+
+			btn.disabled = true;
+
+			try {
+				const res = await fetch("/v1/auth/login", {
+					method: "POST",
+					credentials: "include",
+					headers: { "Content-Type": "application/json" },
+					body,
+				});
+
+				if (!res.ok) {
+					const msg = await getErrorText(res);
+					setHint(msg || "No se pudo iniciar sesión.", "err");
+					btn.disabled = false;
+					return;
+				}
+
+				const j = await res.json().catch(() => ({}));
+				const token =
+					j.accessToken ||
+					j.token ||
+					j.jwt ||
+					(j.data &&
+						(j.data.accessToken || j.data.token || j.data.jwt));
+
+				if (!token) {
+					setHint("Login OK, pero no llegó el token.", "err");
+					btn.disabled = false;
+					return;
+				}
+
+				document.cookie = `access_token=${encodeURIComponent(token)}; Path=/; SameSite=Lax`;
+				location.href = returnTo;
+			} catch (err) {
+				console.error(err);
+				setHint("No se pudo conectar. Probá de nuevo.", "err");
+				btn.disabled = false;
+			}
+		});
+	</script>
+</AuthLayout>

@@ -1,0 +1,425 @@
+---
+interface Props {
+	title?: string;
+}
+const { title = "Panel" } = Astro.props;
+
+const path = Astro.url.pathname;
+
+const isNoticiasList = path === "/admin/noticias";
+const isNoticiasNew = path === "/admin/noticias/nueva";
+const isNoticiasEdit = path.startsWith("/admin/noticias/editar");
+
+const isNovedadesList = path === "/admin/novedades";
+const isNovedadesNew = path === "/admin/novedades/nueva";
+const isNovedadesEdit = path.startsWith("/admin/novedades/editar");
+
+const isContactos = path.startsWith("/admin/contactos");
+
+const isGallery = path.startsWith("/admin/galeria");
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>{title}</title>
+	</head>
+	<body>
+		<header class="topbar">
+			<button
+				class="burger"
+				id="burger"
+				aria-label="Abrir menú"
+				aria-expanded="false"
+			>
+				<svg
+					width="22"
+					height="22"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+				>
+					<path
+						d="M3 6h18M3 12h18M3 18h18"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"></path>
+				</svg>
+			</button>
+
+			<div class="brand">
+				<span class="dot" aria-hidden="true"></span>
+				<span class="brand-text">Admin</span>
+				<span class="sep">/</span>
+				<span class="page">{title}</span>
+			</div>
+
+			<form id="logout-form">
+				<button class="btn ghost" type="submit">Salir</button>
+			</form>
+		</header>
+
+		<div class="shell">
+			<aside id="sidebar" class="sidebar">
+				<nav class="nav">
+					<div class="group">
+						<h4>General</h4>
+						<a
+							class={`link${Astro.url.pathname === "/admin" ? " active" : ""}`}
+							href="/admin">Inicio</a
+						>
+					</div>
+
+					<div class="group">
+						<h4>Atención</h4>
+						<a
+							class={`link${isContactos ? " active" : ""}`}
+							href="/admin/contactos">Contactos</a
+						>
+					</div>
+
+					<div class="group">
+						<h4>Noticias</h4>
+						<a
+							class={`link ${isNoticiasList ? "active" : ""}`}
+							href="/admin/noticias">Listado</a
+						>
+						<a
+							class={`link ${isNoticiasNew || isNoticiasEdit ? "active" : ""}`}
+							href="/admin/noticias/nueva">Nueva noticia</a
+						>
+					</div>
+
+					<div class="group">
+						<h4>Novedades</h4>
+						<a
+							class={`link ${isNovedadesList ? "active" : ""}`}
+							href="/admin/novedades">Listado</a
+						>
+						<a
+							class={`link ${isNovedadesNew || isNovedadesEdit ? "active" : ""}`}
+							href="/admin/novedades/nueva">Nueva novedad</a
+						>
+					</div>
+
+					<div class="group">
+						<h4>Secciones</h4>
+						<a
+							class={`link ${isGallery ? "active" : ""}`}
+							href="/admin/galeria">Galería</a
+						>
+					</div>
+
+					<div class="group">
+						<h4>Sistema</h4>
+						<a
+							class={`link${Astro.url.pathname.startsWith("/admin/media") ? " active" : ""}`}
+							href="/admin/media">Medios</a
+						>
+						<a
+							class={`link${Astro.url.pathname.startsWith("/admin/usuarios") ? " active" : ""}`}
+							href="/admin/usuarios">Usuarios</a
+						>
+					</div>
+				</nav>
+
+				<div class="side-foot">Desarrollado por GestarCoop</div>
+			</aside>
+
+			<main class="content">
+				<slot />
+			</main>
+		</div>
+
+		<div class="backdrop" id="backdrop" hidden></div>
+
+		<script type="module">
+			const burger = document.getElementById("burger");
+			const sidebar = document.getElementById("sidebar");
+			const backdrop = document.getElementById("backdrop");
+
+			const openNav = () => {
+				sidebar?.classList.add("open");
+				backdrop?.removeAttribute("hidden");
+				burger?.setAttribute("aria-expanded", "true");
+			};
+			const closeNav = () => {
+				sidebar?.classList.remove("open");
+				backdrop?.setAttribute("hidden", "");
+				burger?.setAttribute("aria-expanded", "false");
+			};
+
+			burger?.addEventListener("click", () => {
+				sidebar?.classList.contains("open") ? closeNav() : openNav();
+			});
+			backdrop?.addEventListener("click", closeNav);
+
+			document
+				.getElementById("logout-form")
+				?.addEventListener("submit", async (e) => {
+					e.preventDefault();
+					await fetch("/v1/auth/logout", {
+						method: "POST",
+						credentials: "include",
+					}).catch(() => {});
+					document.cookie =
+						"access_token=; Path=/; Max-Age=0; SameSite=Lax";
+					location.href = "/login";
+				});
+		</script>
+	</body>
+</html>
+
+<style>
+	:root {
+		--brand: #0b2a66;
+		--accent: #ff8c00;
+		--bg: #f6f7fb;
+		--card: #fff;
+		--border: #e5e7eb;
+		--text: #1f2328;
+		--muted: #6b7280;
+		--ring: rgba(11, 42, 102, 0.16);
+		--sidebar-w: 260px;
+		--topbar-h: 56px;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+	html,
+	body {
+		margin: 0;
+		min-height: 100%;
+		background: var(--bg);
+		color: var(--text);
+		font-family:
+			system-ui,
+			-apple-system,
+			Segoe UI,
+			Roboto,
+			Ubuntu,
+			Cantarell,
+			"Noto Sans",
+			sans-serif;
+	}
+
+	.topbar {
+		position: sticky;
+		top: 0;
+		z-index: 30;
+		height: var(--topbar-h);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding: 0 0.9rem;
+		background: color-mix(in oklab, var(--card) 94%, var(--bg));
+		border-bottom: 1px solid var(--border);
+		backdrop-filter: saturate(1.1) blur(4px);
+	}
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-weight: 600;
+	}
+	.dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: var(--accent);
+		box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent), white 80%);
+	}
+	.brand-text {
+		color: var(--brand);
+	}
+	.sep {
+		opacity: 0.4;
+	}
+	.page {
+		color: var(--text);
+	}
+
+	.btn {
+		appearance: none;
+		border: 1px solid var(--border);
+		background: var(--card);
+		color: var(--text);
+		padding: 0.48rem 0.78rem;
+		border-radius: 0.55rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
+	.btn.ghost:hover {
+		background: #f1f5f9;
+	}
+	.btn:focus-visible {
+		outline: none;
+		box-shadow: 0 0 0 4px var(--ring);
+	}
+
+	.burger {
+		display: none;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		border-radius: 10px;
+		border: 1px solid var(--border);
+		background: var(--card);
+		color: #111;
+		cursor: pointer;
+	}
+	.burger:hover {
+		filter: brightness(0.98);
+	}
+
+	.shell {
+		display: grid;
+		grid-template-columns: var(--sidebar-w) 1fr;
+		height: calc(100dvh - var(--topbar-h));
+		overflow: hidden;
+	}
+
+	.sidebar {
+		background: linear-gradient(
+			180deg,
+			color-mix(in oklab, var(--card) 92%, var(--bg)),
+			var(--card)
+		);
+		border-right: 1px solid var(--border);
+		padding: 0.9rem 0.8rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		position: sticky;
+		top: var(--topbar-h);
+		height: calc(100dvh - var(--topbar-h));
+		overflow: auto;
+	}
+
+	.nav {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+	.group {
+		margin-top: 0.5rem;
+	}
+	.group h4 {
+		margin: 0.75rem 0.35rem 0.35rem;
+		font-size: 0.73rem;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+	.link {
+		display: block;
+		padding: 0.58rem 0.68rem;
+		border-radius: 0.55rem;
+		color: #1f2328;
+		text-decoration: none;
+		font-weight: 600;
+		border: 1px solid transparent;
+	}
+	.link:hover {
+		background: #eef2f7;
+	}
+	.link.active {
+		background: #eef3ff;
+		color: #0b2a66;
+		border-color: color-mix(in oklab, var(--brand), white 70%);
+		box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand), white 78%);
+	}
+	.side-foot {
+		margin-top: auto;
+		padding: 0.4rem 0.4rem;
+		color: var(--muted);
+	}
+
+	.content {
+		min-width: 0;
+		padding: 1rem;
+		height: 100%;
+		overflow: auto;
+	}
+	.content > :first-child {
+		margin-top: 0;
+	}
+	.content .page-head {
+		position: sticky;
+		top: 0.5rem;
+		z-index: 1;
+	}
+
+	@media (max-width: 991px) {
+		.burger {
+			display: flex;
+		}
+		.shell {
+			grid-template-columns: 1fr;
+		}
+		.sidebar {
+			position: fixed;
+			z-index: 40;
+			top: var(--topbar-h);
+			left: 0;
+			bottom: 0;
+			width: min(88vw, var(--sidebar-w));
+			transform: translateX(-100%);
+			transition: transform 0.18s ease-out;
+			box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+		}
+		.sidebar.open {
+			transform: translateX(0);
+		}
+	}
+
+	.backdrop {
+		position: fixed;
+		z-index: 35;
+		inset: var(--topbar-h) 0 0 0;
+		background: rgba(0, 0, 0, 0.28);
+		backdrop-filter: blur(2px);
+	}
+</style>
+<style is:global>
+	:root {
+		--danger: #ef4444;
+		--danger-ink: #7f1d1d;
+		--danger-bg: #fff1f2;
+		--danger-br: #fecaca;
+	}
+
+	.invalid,
+	.is-invalid {
+		border-color: var(--danger) !important;
+		box-shadow: 0 0 0 3px
+			color-mix(in oklab, var(--danger) 18%, transparent) !important;
+	}
+
+	.err-tip {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+		margin-top: 0.4rem;
+		padding: 0.5rem 0.6rem;
+		font-size: 0.86rem;
+		line-height: 1.25;
+		font-weight: 600;
+		color: var(--danger-ink);
+		background: var(--danger-bg);
+		border: 1px solid var(--danger-br);
+		border-left: 3px solid var(--danger);
+		border-radius: 0.5rem;
+	}
+	.err-tip::before {
+		content: "⚠";
+		font-size: 1rem;
+		line-height: 1;
+		transform: translateY(1px);
+		opacity: 0.9;
+	}
+</style>

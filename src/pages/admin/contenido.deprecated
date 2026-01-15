@@ -1,0 +1,380 @@
+---
+export const prerender = false;
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+
+// ⚠️ PONÉ TU CLOUD NAME:
+const CLOUD_NAME = "tu_cloud_name";
+const DEFAULT_FOLDER = "pages";
+const RESOURCE_TYPE = "image";
+---
+
+<DashboardLayout title="Contenido">
+	<section class="page">
+		<header class="page-head">
+			<div class="titles">
+				<h1>Editor de contenido</h1>
+				<p class="subtitle">
+					Editá el contenido de las páginas. Las imágenes se suben a
+					Cloudinary automáticamente.
+				</p>
+			</div>
+
+			<div class="actions">
+				<button id="previewBtn" class="btn ghost" type="button"
+					>Vista previa</button
+				>
+				<button id="saveBtn" class="btn primary" type="button"
+					>Guardar</button
+				>
+			</div>
+		</header>
+
+		<div class="grid">
+			<article class="editor-card">
+				<div
+					id="editorjs"
+					class="editor"
+					data-cloud-name={CLOUD_NAME}
+					data-folder={DEFAULT_FOLDER}
+					data-resource-type={RESOURCE_TYPE}
+				>
+				</div>
+			</article>
+
+			<aside class="side">
+				<div class="card">
+					<h3>Consejos</h3>
+					<ul>
+						<li>
+							Usá <strong>Títulos</strong> (H2–H4) para jerarquía.
+						</li>
+						<li>Las imágenes se optimizan en Cloudinary.</li>
+						<li>Guardá seguido; hay autoguardado local.</li>
+					</ul>
+				</div>
+
+				<div class="card meta">
+					<h3>Meta</h3>
+					<label class="field">
+						<span>Slug</span>
+						<input id="slug" value="home" />
+					</label>
+					<label class="field">
+						<span>Descripción</span>
+						<textarea
+							id="desc"
+							rows="3"
+							placeholder="Descripción corta para SEO opcional"
+						></textarea>
+					</label>
+				</div>
+				<div class="card post">
+					<h3>Publicación</h3>
+
+					<label class="field">
+						<span>Tipo</span>
+						<select id="tipo">
+							<option value="noticia" selected
+								>Noticia (blog)</option
+							>
+							<option value="novedad">Novedad (slider)</option>
+						</select>
+					</label>
+
+					<label class="field">
+						<span>Título</span>
+						<input
+							id="titulo"
+							placeholder="Título de la publicación"
+						/>
+					</label>
+
+					<label class="field">
+						<span>Resumen</span>
+						<textarea
+							id="excerpt"
+							rows="3"
+							placeholder="Resumen breve (opcional)"></textarea>
+					</label>
+
+					<label class="field">
+						<span>Portada (URL)</span>
+						<input id="portadaUrl" placeholder="https://…" />
+						<small class="hint"
+							>Opcional. Si subís imágenes con el editor, podés
+							pegar acá la URL como portada.</small
+						>
+					</label>
+
+					<label class="field row">
+						<input id="destacado" type="checkbox" />
+						<span>Destacar (aparece en Novedades / slider)</span>
+					</label>
+
+					<!-- Solo para Novedad: link externo opcional -->
+					<label
+						id="linkUrlField"
+						class="field"
+						style="display:none;"
+					>
+						<span>Enlace externo</span>
+						<input
+							id="linkUrl"
+							placeholder="https://sitio-externo.com/nota"
+						/>
+						<small class="hint"
+							>Solo se usa para <strong>Novedad</strong>. Si está
+							presente, el botón del slider abre este enlace.</small
+						>
+					</label>
+				</div>
+			</aside>
+		</div>
+
+		<div id="status" class="status"></div>
+	</section>
+
+	<style>
+		/* ====== Tema / tokens ====== */
+		:root {
+			--brand: #002e6e; /* azul */
+			--accent: #ff8c00; /* naranja */
+			--bg: #f5f6f8;
+			--card: #ffffff;
+			--border: #e6e8ec;
+			--text: #1f2328;
+			--muted: #60646c;
+			--ring: rgba(0, 46, 110, 0.18);
+		}
+
+		.page {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 1rem;
+		}
+
+		.page-head {
+			position: sticky;
+			top: 0;
+			z-index: 5;
+			display: flex;
+			gap: 1rem;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0.85rem 1rem;
+			margin: 0.25rem 0 1rem;
+			background: color-mix(in oklab, var(--card) 85%, var(--bg));
+			backdrop-filter: saturate(1.2) blur(4px);
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+		}
+		.titles h1 {
+			margin: 0 0 0.25rem;
+			font-size: 1.25rem;
+			color: var(--brand);
+		}
+		.subtitle {
+			margin: 0;
+			color: var(--muted);
+			font-size: 0.95rem;
+		}
+
+		.actions {
+			display: flex;
+			gap: 0.5rem;
+		}
+		.btn {
+			appearance: none;
+			border: 1px solid var(--border);
+			background: var(--card);
+			color: var(--text);
+			padding: 0.6rem 0.95rem;
+			border-radius: 0.65rem;
+			font-weight: 600;
+			cursor: pointer;
+			transition: 0.15s ease;
+		}
+		.btn:hover {
+			transform: translateY(-1px);
+		}
+		.btn:focus-visible {
+			outline: none;
+			box-shadow: 0 0 0 4px var(--ring);
+		}
+		.btn.primary {
+			background: var(--accent);
+			border-color: color-mix(in oklab, var(--accent), black 10%);
+			color: white;
+		}
+		.btn.ghost {
+			background: transparent;
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) 320px;
+			align-items: start;
+			gap: 1rem;
+		}
+
+		.editor-card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
+			padding: 0.75rem 0.75rem;
+		}
+
+		.editor {
+			background: white;
+			border: 1px dashed #e9ebef;
+			border-radius: 12px;
+			min-height: 520px;
+			padding: 0.25rem 0.25rem;
+		}
+
+		.side {
+			display: grid;
+			gap: 1rem;
+		}
+		.card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			padding: 1rem;
+		}
+		.card h3 {
+			margin: 0 0 0.5rem;
+			color: var(--brand);
+			font-size: 1rem;
+		}
+		.card ul {
+			margin: 0.5rem 0 0 1rem;
+			color: var(--muted);
+		}
+		.meta .field {
+			display: grid;
+			gap: 0.35rem;
+			margin-top: 0.6rem;
+		}
+		.meta input,
+		.meta textarea {
+			border: 1px solid var(--border);
+			border-radius: 0.55rem;
+			padding: 0.55rem 0.7rem;
+			font: inherit;
+			background: #fff;
+		}
+		.meta input:focus,
+		.meta textarea:focus {
+			outline: none;
+			box-shadow: 0 0 0 4px var(--ring);
+		}
+
+		/* ====== Status / toast ====== */
+		.status {
+			position: fixed;
+			right: 18px;
+			bottom: 18px;
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 0.5rem 0.75rem;
+			color: var(--muted);
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+			min-width: 160px;
+			display: none;
+		}
+		.status.show {
+			display: inline-block;
+		}
+		.status.ok {
+			border-color: color-mix(in oklab, var(--accent), white 60%);
+			color: var(--text);
+		}
+		.status.err {
+			border-color: #ff4157;
+			color: #b31b2c;
+		}
+
+		/* ====== Editor.js tweaks visuales ====== */
+		/* contenedor base */
+		.codex-editor {
+			--block-gap: 8px;
+		}
+		/* ancho cómodo de lectura */
+		.codex-editor__redactor {
+			max-width: 860px;
+			margin: 0 auto;
+			padding: 0.5rem 1rem 2rem;
+		}
+		/* espaciado entre bloques */
+		.ce-block {
+			margin: var(--block-gap) 0;
+		}
+		/* toolbar + y mover visibles */
+		.ce-toolbar__plus,
+		.ce-toolbar__settings-btn {
+			opacity: 0.85;
+		}
+		.ce-toolbar__plus:hover,
+		.ce-toolbar__settings-btn:hover {
+			opacity: 1;
+		}
+		/* placeholder más tenue */
+		.ce-paragraph[data-placeholder]:empty::before {
+			color: #9aa1ab;
+		}
+
+		.card.post .field {
+			display: grid;
+			gap: 0.35rem;
+			margin-top: 0.6rem;
+		}
+		.card.post .field.row {
+			grid-template-columns: 1.25rem 1fr;
+			align-items: center;
+		}
+		.card.post .hint {
+			color: var(--muted);
+			font-size: 0.85rem;
+		}
+		.card.post input,
+		.card.post textarea,
+		.card.post select {
+			border: 1px solid var(--border);
+			border-radius: 0.55rem;
+			padding: 0.55rem 0.7rem;
+			font: inherit;
+			background: #fff;
+		}
+		.card.post input:focus,
+		.card.post textarea:focus,
+		.card.post select:focus {
+			outline: none;
+			box-shadow: 0 0 0 4px var(--ring);
+		}
+
+		/* ====== Responsive ====== */
+		@media (max-width: 1024px) {
+			.grid {
+				grid-template-columns: 1fr;
+			}
+			.side {
+				order: -1;
+			}
+		}
+		@media (max-width: 640px) {
+			.actions {
+				width: 100%;
+				justify-content: flex-end;
+			}
+			.page {
+				padding: 0.75rem;
+			}
+		}
+	</style>
+
+	<script type="module" src="/src/scripts/content-editor.ts"></script>
+</DashboardLayout>

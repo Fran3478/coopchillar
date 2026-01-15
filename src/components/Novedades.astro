@@ -1,147 +1,159 @@
+---
+interface Item {
+	slug: string;
+	title: string;
+	imageUrl?: string;
+	date?: string;
+	category?: string;
+}
+const { novedades = [], noticias = [] } = Astro.props as {
+	novedades: Item[];
+	noticias: Item[];
+};
+
+function fmt(d?: string) {
+	if (!d) return "";
+	const dt = new Date(d);
+	return new Intl.DateTimeFormat("es-AR", {
+		day: "2-digit",
+		month: "short",
+	}).format(dt);
+}
+const imgOr = (fallback: string) => (url?: string) => url || fallback;
+const fallbackNews = "/images/slide1.webp";
+const fallbackBlog = "/images/factura-electronica.webp";
+const safeNewsImg = imgOr(fallbackNews);
+const safeBlogImg = imgOr(fallbackBlog);
+---
+
 <div class="noticias-y-blog">
-	<!-- Carrusel de Noticias -->
 	<div class="news-carousel" id="news-carousel">
 		<div class="carousel-wrapper">
-			<!-- Slide 1 -->
-			<div class="news-highlight">
-				<img
-					src="/images/slide1.webp"
-					alt="Noticia 1"
-					class="news-image"
-				/>
-				<div class="news-overlay">
-					<div class="news-card">
-						<h4>NOTICIAS RECIENTES</h4>
-						<p class="news-title">
-							Inauguramos nueva sede de atención
-						</p>
-						<div class="news-footer">
-							<span>18 jul.</span>
-							<a href="#">Conoce más <span>&rarr;</span></a>
+			{
+				novedades.map((n) => (
+					<div class="news-highlight">
+						<img
+							src={safeNewsImg(n.imageUrl)}
+							alt={n.title}
+							class="news-image"
+						/>
+						<div class="news-overlay">
+							<div class="news-card">
+								<p class="news-title">{n.title}</p>
+								<div class="news-footer">
+									<span>{fmt(n.date)}</span>
+
+									{n.kind === "noticia" ? (
+										<a href={`/noticias/${n.slug}`}>
+											Conoce más <span>&rarr;</span>
+										</a>
+									) : n.externalUrl ? (
+										<a
+											href={n.externalUrl}
+											target="_blank"
+											rel="noopener"
+										>
+											Conoce más <span>&rarr;</span>
+										</a>
+									) : null}
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-			<!-- Slide 2 -->
-			<div class="news-highlight">
-				<img
-					src="/images/factura-electronica.webp"
-					alt="Noticia 2"
-					class="news-image"
-				/>
-				<div class="news-overlay">
-					<div class="news-card">
-						<h4>NOTICIAS RECIENTES</h4>
-						<p class="news-title">
-							Factura electrónica: más ágil y ecológica
-						</p>
-						<div class="news-footer">
-							<span>08 jul.</span>
-							<a href="#">Conoce más <span>&rarr;</span></a>
-						</div>
-					</div>
-				</div>
-			</div>
+				))
+			}
 		</div>
-		<div class="news-arrows">
-			<button class="arrow-btn" id="prev">&#x276E;</button>
-			<button class="arrow-btn" id="next">&#x276F;</button>
-		</div>
+		{
+			novedades.length === 0 && (
+				<div class="empty-box">
+					<span class="empty-icon" aria-hidden="true">
+						🗞️
+					</span>
+					<p class="empty-title">Aún no hay novedades</p>
+					<p class="empty-sub">
+						Cuando publiques una novedad, aparecerá aquí como
+						destacada.
+					</p>
+				</div>
+			)
+		}
+
+		{
+			novedades.length > 1 && (
+				<div class="news-arrows">
+					<button class="arrow-btn" id="prev">
+						&#x276E;
+					</button>
+					<button class="arrow-btn" id="next">
+						&#x276F;
+					</button>
+				</div>
+			)
+		}
 	</div>
 
-	<!-- Carrusel de Blog -->
 	<div class="blog-sidebar">
-		<h3 class="blog-title">Novedades</h3>
+		<h3 class="blog-title">Noticias</h3>
 		<div class="blog-carousel">
-			<div class="blog-entries" id="blog-entries">
-				<!-- Entradas del blog -->
-				<div class="blog-entry">
-					<img src="/images/factura-electronica.webp" alt="Blog 1" />
-					<div>
-						<p class="blog-entry-title">
-							Corte de energía este sábado
+			{
+				noticias.length === 0 ? (
+					<div class="empty-list">
+						<span class="empty-icon" aria-hidden="true">
+							📰
+						</span>
+						<p class="empty-title">Todavía no hay noticias</p>
+						<p class="empty-sub">
+							Publicá tu primera noticia para mostrarla en este
+							listado.
 						</p>
-						<p class="blog-entry-category">Avisos</p>
-						<p class="blog-entry-date">21 jul.</p>
 					</div>
-				</div>
-				<div class="blog-entry">
-					<img src="/images/factura-electronica.webp" alt="Blog 2" />
-					<div>
-						<p class="blog-entry-title">
-							Inauguramos nueva sede de atención
-						</p>
-						<p class="blog-entry-category">Institucional</p>
-						<p class="blog-entry-date">18 jul.</p>
-					</div>
-				</div>
-				<div class="blog-entry">
-					<img src="/images/factura-electronica.webp" alt="Blog 3" />
-					<div>
-						<p class="blog-entry-title">
-							Ya podés inscribirte al Plan de Vivienda 2025
-						</p>
-						<p class="blog-entry-category">Vivienda</p>
-						<p class="blog-entry-date">12 jul.</p>
-					</div>
-				</div>
-				<div class="blog-entry">
-					<img src="/images/factura-electronica.webp" alt="Blog 4" />
-					<div>
-						<p class="blog-entry-title">
-							Factura electrónica: más ágil y ecológica
-						</p>
-						<p class="blog-entry-category">Tecnología</p>
-						<p class="blog-entry-date">08 jul.</p>
-					</div>
-				</div>
-				<div class="blog-entry">
-					<img src="/images/factura-electronica.webp" alt="Blog 1" />
-					<div>
-						<p class="blog-entry-title">
-							Corte de agua en zona sur por mejoras
-						</p>
-						<p class="blog-entry-category">Servicios</p>
-						<p class="blog-entry-date">03 jul.</p>
-					</div>
-				</div>
-				<div class="blog-entry">
-					<img src="/images/factura-electronica.webp" alt="Blog 1" />
-					<div>
-						<p class="blog-entry-title">
-							Corte de agua en zona sur por mejoras
-						</p>
-						<p class="blog-entry-category">Servicios</p>
-						<p class="blog-entry-date">03 jul.</p>
-					</div>
-				</div>
-				<div class="blog-entry">
-					<img src="/images/factura-electronica.webp" alt="Blog 1" />
-					<div>
-						<p class="blog-entry-title">
-							Corte de agua en zona sur por mejoras
-						</p>
-						<p class="blog-entry-category">Servicios</p>
-						<p class="blog-entry-date">03 jul.</p>
-					</div>
-				</div>
-				<div class="blog-entry">
-					<img src="/images/factura-electronica.webp" alt="Blog 1" />
-					<div>
-						<p class="blog-entry-title">
-							Corte de agua en zona sur por mejoras
-						</p>
-						<p class="blog-entry-category">Servicios</p>
-						<p class="blog-entry-date">03 jul.</p>
-					</div>
-				</div>
-			</div>
-			<div class="blog-arrows" id="blog-arrows">
-				<button class="blog-arrow" id="blog-prev">&#x25B2;</button>
-				<button class="blog-arrow" id="blog-next">&#x25BC;</button>
-			</div>
+				) : (
+					<>
+						<div class="blog-entries" id="blog-entries">
+							{noticias.map((p) => (
+								<div class="blog-entry">
+									<img
+										src={safeBlogImg(p.imageUrl)}
+										alt={p.title}
+									/>
+									<div>
+										<p class="blog-entry-title">
+											<a
+												href={`/noticias/${p.slug}`}
+												style="color:inherit;text-decoration:none"
+											>
+												{p.title}
+											</a>
+										</p>
+										{p.category && (
+											<p class="blog-entry-category">
+												{p.category}
+											</p>
+										)}
+										<p class="blog-entry-date">
+											{fmt(p.date)}
+										</p>
+									</div>
+								</div>
+							))}
+						</div>
+
+						{noticias.length > 5 && (
+							<div class="blog-arrows" id="blog-arrows">
+								<button class="blog-arrow" id="blog-prev">
+									&#x25B2;
+								</button>
+								<button class="blog-arrow" id="blog-next">
+									&#x25BC;
+								</button>
+							</div>
+						)}
+					</>
+				)
+			}
 		</div>
-		<a href="#" class="ver-todo-btn">VER TODO &rarr;</a>
+
+		<a href="/noticias" class="ver-todo-btn">VER TODO &rarr;</a>
 	</div>
 </div>
 
@@ -150,122 +162,128 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 2rem;
-		max-width: 1200px;
+		max-width: 1600px;
 		margin: 0 auto;
 		align-items: flex-start;
 	}
 
 	.news-carousel {
-		flex: 1 1 60%;
-		position: relative;
+		flex: 1 1 65%;
 		max-width: 60%;
+		position: relative;
 		overflow: hidden;
 		border-radius: 16px;
+		aspect-ratio: 16 / 9;
+		background: #f3f4f6;
 	}
 
 	.carousel-wrapper {
 		display: flex;
+		height: 100%;
 		transition: transform 0.6s ease-in-out;
 	}
-
 	.news-highlight {
 		min-width: 100%;
 		position: relative;
+		height: 100%;
 	}
 
 	.news-image {
 		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
 		display: block;
-		border-radius: 16px;
+		border-radius: 0;
+		background: #f3f4f6;
 	}
 
 	.news-overlay {
 		position: absolute;
 		inset: 0;
+		z-index: 1;
 	}
-
 	.news-card {
 		position: absolute;
 		bottom: 1rem;
 		right: 1rem;
 		background-color: #004481;
-		color: white;
+		color: #fff;
 		padding: 1.5rem;
 		border-radius: 20px;
-		max-width: 300px;
+		max-width: 340px;
 		z-index: 2;
 	}
 
 	.news-title {
 		font-size: 1rem;
 		line-height: 1.4;
-		margin-bottom: 1rem;
 	}
-
 	.news-footer {
 		display: flex;
 		justify-content: space-between;
 		font-size: 0.85rem;
 		font-weight: 600;
 	}
-
 	.news-footer a {
 		color: white;
 		text-decoration: none;
 	}
 
 	.news-arrows {
+		position: absolute;
+		inset: 0;
 		display: flex;
-		justify-content: center;
-		gap: 1rem;
-		margin-top: 1rem;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0 0.5rem;
+		z-index: 3;
+		pointer-events: none;
 	}
-
 	.arrow-btn {
-		background-color: orange;
+		pointer-events: auto;
+		background: #ff8c00;
 		border: none;
-		color: white;
+		color: #fff;
 		font-size: 1.2rem;
-		width: 40px;
-		height: 40px;
+		width: 42px;
+		height: 42px;
 		border-radius: 50%;
 		cursor: pointer;
-		transition: background 0.2s ease;
+		transition:
+			filter 0.15s ease,
+			transform 0.1s ease;
+		box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
 	}
-
 	.arrow-btn:hover {
-		background-color: darkorange;
+		filter: brightness(0.95);
+		transform: translateY(-1px);
+	}
+	.arrow-btn:active {
+		transform: translateY(0);
 	}
 
-	/* BLOG */
 	.blog-sidebar {
-		flex: 1 1 35%;
-		max-width: 35%;
-		display: flex;
-		flex-direction: column;
-		height: 100%;
+		flex: 1 1 33%;
+		max-width: 33%;
 	}
-
 	.blog-title {
 		color: #004481;
 		font-weight: bold;
 		font-size: 1.2rem;
 		margin-bottom: 1rem;
 	}
-
 	.blog-carousel {
 		position: relative;
 		flex: 1;
 		overflow: hidden;
 		max-height: 490px;
 	}
-
 	.blog-entries {
 		display: flex;
 		flex-direction: column;
 		transition: transform 0.5s ease;
 	}
-
 	.blog-entry {
 		display: flex;
 		gap: 1rem;
@@ -273,27 +291,23 @@
 		align-items: center;
 		height: 80px;
 	}
-
 	.blog-entry img {
 		width: 80px;
 		height: 60px;
 		object-fit: cover;
 		border-radius: 12px;
 	}
-
 	.blog-entry-title {
 		font-weight: bold;
 		font-size: 0.95rem;
 		margin: 0;
 		color: #333;
 	}
-
 	.blog-entry-category {
 		font-size: 0.8rem;
 		color: #888;
 		margin: 0.2rem 0;
 	}
-
 	.blog-entry-date {
 		font-size: 0.75rem;
 		color: #666;
@@ -308,7 +322,6 @@
 		flex-direction: column;
 		gap: 0.5rem;
 	}
-
 	.blog-arrow {
 		background-color: orange;
 		color: white;
@@ -319,7 +332,6 @@
 		cursor: pointer;
 		opacity: 0.8;
 	}
-
 	.blog-arrow:hover {
 		opacity: 1;
 	}
@@ -335,12 +347,47 @@
 		font-size: 0.9rem;
 		transition: background 0.3s ease;
 	}
-
 	.ver-todo-btn:hover {
 		background-color: #0060b4;
 	}
 
-	@media (max-width: 768px) {
+	.empty-box,
+	.empty-list {
+		box-sizing: border-box;
+		width: 100%;
+		min-height: 220px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.25rem;
+		background: #f7f8fb;
+		border: 1px dashed #d8dbe5;
+		border-radius: 15px;
+		text-align: center;
+		color: #556;
+		padding: 1.25rem;
+	}
+
+	.empty-list {
+		min-height: 240px;
+	}
+	.empty-icon {
+		font-size: 28px;
+		opacity: 0.7;
+	}
+	.empty-title {
+		margin: 0.25rem 0 0;
+		font-weight: 700;
+		color: #223;
+	}
+	.empty-sub {
+		margin: 0;
+		font-size: 0.9rem;
+		color: #667;
+	}
+
+	@media (max-width: 1070px) {
 		.noticias-y-blog {
 			flex-direction: column;
 		}
@@ -352,349 +399,138 @@
 </style>
 
 <script>
-	const wrapper = document.querySelector(
-		".carousel-wrapper"
-	) as HTMLElement | null;
-	const slides = document.querySelectorAll<HTMLElement>(".news-highlight");
-	const prevBtn = document.getElementById("prev") as HTMLButtonElement | null;
-	const nextBtn = document.getElementById("next") as HTMLButtonElement | null;
+	/** @type {HTMLElement|null} */
+	const wrapper = document.querySelector(".carousel-wrapper");
+	/** @type {NodeListOf<HTMLElement>} */
+	const slides = document.querySelectorAll(".news-highlight");
+	/** @type {HTMLButtonElement|null} */
+	const prevBtn = document.getElementById("prev");
+	/** @type {HTMLButtonElement|null} */
+	const nextBtn = document.getElementById("next");
 
-	let index = 0;
-	let autoSlideInterval: ReturnType<typeof setInterval>;
+	/** @type {number} */ let index = 0;
+	/** @type {number|null} */ let autoSlideInterval = null;
 
-	function updateCarousel(): void {
-		if (wrapper) {
-			const offset = -index * 100;
-			wrapper.style.transform = `translateX(${offset}%)`;
-		}
+	function updateCarousel() {
+		if (!wrapper) return;
+		const offset = -index * 100;
+		wrapper.style.transform = `translateX(${offset}%)`;
 	}
 	function nextSlide() {
-		index = (index + 1) % slides.length;
+		const total = slides.length;
+		if (!total) return;
+		index = (index + 1) % total;
 		updateCarousel();
 	}
-
 	function prevSlide() {
-		index = (index - 1 + slides.length) % slides.length;
+		const total = slides.length;
+		if (!total) return;
+		index = (index - 1 + total) % total;
 		updateCarousel();
 	}
-
-	function startAutoSlide(): void {
-		autoSlideInterval = setInterval(nextSlide, 8000);
+	function startAutoSlide() {
+		if (slides.length > 1 && autoSlideInterval === null) {
+			autoSlideInterval = window.setInterval(nextSlide, 8000);
+		}
 	}
-
-	function resetAutoSlide(): void {
-		clearInterval(autoSlideInterval);
+	function resetAutoSlide() {
+		if (autoSlideInterval !== null) {
+			window.clearInterval(autoSlideInterval);
+			autoSlideInterval = null;
+		}
 		startAutoSlide();
 	}
 
-	if (nextBtn) {
-		nextBtn.addEventListener("click", () => {
-			nextSlide();
+	nextBtn?.addEventListener("click", () => {
+		nextSlide();
+		resetAutoSlide();
+	});
+	prevBtn?.addEventListener("click", () => {
+		prevSlide();
+		resetAutoSlide();
+	});
+
+	// Swipe móvil
+	/** @type {number} */ let startX = 0;
+	/** @type {boolean} */ let isDragging = false;
+
+	wrapper?.addEventListener("touchstart", (e) => {
+		startX = e.touches[0].clientX;
+		isDragging = true;
+	});
+	wrapper?.addEventListener("touchmove", (e) => {
+		if (!isDragging) return;
+		const diffX = e.touches[0].clientX - startX;
+		if (Math.abs(diffX) > 50) {
+			diffX < 0 ? nextSlide() : prevSlide();
 			resetAutoSlide();
-		});
-	}
-
-	if (prevBtn) {
-		prevBtn.addEventListener("click", () => {
-			prevSlide();
-			resetAutoSlide();
-		});
-	}
-
-	// Swipe soporte táctil
-	let startX = 0;
-	let isDragging = false;
-
-	if (wrapper) {
-		wrapper.addEventListener("touchstart", (e: TouchEvent) => {
-			startX = e.touches[0].clientX;
-			isDragging = true;
-		});
-
-		wrapper.addEventListener("touchmove", (e: TouchEvent) => {
-			if (!isDragging) return;
-			const currentX = e.touches[0].clientX;
-			const diffX = currentX - startX;
-
-			if (Math.abs(diffX) > 50) {
-				if (diffX < 0) nextSlide();
-				else prevSlide();
-				resetAutoSlide();
-				isDragging = false;
-			}
-		});
-
-		wrapper.addEventListener("touchend", () => {
 			isDragging = false;
-		});
-	}
+		}
+	});
+	wrapper?.addEventListener("touchend", () => {
+		isDragging = false;
+	});
 
 	updateCarousel();
 	startAutoSlide();
 
+	/** @type {HTMLElement|null} */
 	const blogEntries = document.getElementById("blog-entries");
+	/** @type {HTMLButtonElement|null} */
 	const blogPrev = document.getElementById("blog-prev");
+	/** @type {HTMLButtonElement|null} */
 	const blogNext = document.getElementById("blog-next");
+	/** @type {HTMLElement|null} */
 	const blogArrows = document.getElementById("blog-arrows");
 
-	let blogIndex = 0;
-	const entryHeight = 90; // altura aprox. con margen
-	const totalEntries = blogEntries?.children.length ?? 0;
-	const maxVisible = 5;
+	/** @type {number} */ const entryHeight = 90;
+	/** @type {number} */ let blogIndex = 0;
+	/** @type {number} */ const totalEntries = blogEntries
+		? blogEntries.children.length
+		: 0;
+	/** @type {number} */ const maxVisible = 5;
+	/** @type {number|null} */ let autoScrollInterval = null;
 
-	let autoScrollInterval;
-
-	function updateBlogCarousel() {
-		if (blogEntries) {
-			const offset = -blogIndex * entryHeight;
-			blogEntries.style.transform = `translateY(${offset}px)`;
-		}
+	function updateBlog() {
+		if (!blogEntries) return;
+		blogEntries.style.transform = `translateY(${-blogIndex * entryHeight}px)`;
 	}
-
-	function startAutoScroll() {
-		if (totalEntries > maxVisible) {
-			autoScrollInterval = setInterval(() => {
+	function startAuto() {
+		if (totalEntries > maxVisible && autoScrollInterval === null) {
+			autoScrollInterval = window.setInterval(() => {
 				blogIndex = (blogIndex + 1) % (totalEntries - maxVisible + 1);
-				updateBlogCarousel();
-			}, 5000); // cada 5 segundos
+				updateBlog();
+			}, 5000);
+		}
+	}
+	function stopAuto() {
+		if (autoScrollInterval !== null) {
+			window.clearInterval(autoScrollInterval);
+			autoScrollInterval = null;
 		}
 	}
 
-	function stopAutoScroll() {
-		clearInterval(autoScrollInterval);
-	}
+	blogNext?.addEventListener("click", () => {
+		if (blogIndex < totalEntries - maxVisible) {
+			blogIndex++;
+			updateBlog();
+			stopAuto();
+			startAuto();
+		}
+	});
+	blogPrev?.addEventListener("click", () => {
+		if (blogIndex > 0) {
+			blogIndex--;
+			updateBlog();
+			stopAuto();
+			startAuto();
+		}
+	});
 
-	if (blogNext) {
-		blogNext.addEventListener("click", () => {
-			if (blogIndex < totalEntries - maxVisible) {
-				blogIndex++;
-				updateBlogCarousel();
-				stopAutoScroll();
-				startAutoScroll();
-			}
-		});
-	}
-
-	if (blogPrev) {
-		blogPrev.addEventListener("click", () => {
-			if (blogIndex > 0) {
-				blogIndex--;
-				updateBlogCarousel();
-				stopAutoScroll();
-				startAutoScroll();
-			}
-		});
-	}
-
-	// Ocultar botones si hay 5 o menos entradas
 	if (blogArrows) {
 		blogArrows.style.display = totalEntries > maxVisible ? "flex" : "none";
 	}
 
-	// Iniciar scroll si hay más de 5
-	updateBlogCarousel();
-	startAutoScroll();
+	updateBlog();
+	startAuto();
 </script>
-
-<!-- <div class="news-highlight">
-	<img
-		src="/images/factura-electronica.webp"
-		alt="Imagen de noticia"
-		class="news-image"
-	/>
-
-	<div class="news-overlay">
-		<div class="news-card">
-			<h4>NOTICIAS RECIENTES</h4>
-			<p class="news-title">
-				Consejos para mejorar tu Economía Financiera
-			</p>
-			<div class="news-footer">
-				<span>05 abr.</span>
-				<a href="#">Conoce más <span>&rarr;</span></a>
-			</div>
-		</div>
-
-		<div class="news-arrows">
-			<button class="arrow-btn">&#x276E;</button>
-			<button class="arrow-btn">&#x276F;</button>
-		</div>
-	</div>
-	<div class="news-card">
-		<h4>NOTICIAS RECIENTES</h4>
-		<p class="news-title">Consejos para mejorar tu Economía Financiera</p>
-		<div class="news-footer">
-			<span>05 abr.</span>
-			<a href="#">Conoce más <span>&rarr;</span></a>
-		</div>
-	</div>
-
-	<div class="news-arrows">
-		<button class="arrow-btn">&#x276E;</button>
-		<button class="arrow-btn">&#x276F;</button>
-	</div>
-</div>
-
-<style>
-	.news-highlight {
-		position: relative;
-		width: 100%;
-		max-width: 850px;
-		border-radius: 16px;
-		overflow: hidden;
-		font-family: sans-serif;
-	}
-
-	.news-image {
-		width: 100%;
-		height: auto;
-		display: block;
-	}
-
-	.news-overlay {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-	}
-
-	.news-card {
-		position: absolute;
-		bottom: 1rem;
-		right: 1rem;
-		background-color: #1c154d; /* Azul oscuro */
-		color: white;
-		padding: 1.5rem;
-		border-radius: 20px;
-		max-width: 300px;
-		z-index: 2;
-	}
-
-	.news-card h4 {
-		font-size: 0.9rem;
-		margin: 0 0 0.5rem;
-		font-weight: 700;
-		letter-spacing: 0.5px;
-	}
-
-	.news-title {
-		font-size: 1rem;
-		margin: 0 0 1rem;
-		line-height: 1.4;
-	}
-
-	.news-footer {
-		display: flex;
-		justify-content: space-between;
-		font-size: 0.85rem;
-		font-weight: 600;
-	}
-
-	.news-footer a {
-		color: white;
-		text-decoration: none;
-	}
-
-	.news-footer a span {
-		margin-left: 4px;
-	}
-
-	.news-arrows {
-		position: absolute;
-		top: 50%;
-		right: 1rem;
-		transform: translateY(-50%);
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		z-index: 2;
-	}
-
-	.arrow-btn {
-		background-color: orange;
-		border: none;
-		color: white;
-		font-size: 1.2rem;
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
-		cursor: pointer;
-		transition: background 0.2s ease;
-	}
-
-	.arrow-btn:hover {
-		background-color: darkorange;
-	}
-</style> -->
-
-<!-- <div class="news-card">
-	<img src="/images/factura-electronica.webp" alt="Imagen de la noticia" />
-	<div class="news-content">
-		<h3>Noticias Recientes</h3>
-		<p>Consejos para mejorar tu Economía Financiera</p>
-		<div class="news-footer">
-			<span>05 abr.</span>
-			<a href="#">Conoce más &rarr;</a>
-		</div>
-	</div>
-</div>
-
-<style>
-	.news-card {
-		width: 300px;
-		background: #ffffff;
-		border-radius: 10px;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-		margin: 1rem;
-		transition: transform 0.3s ease;
-	}
-
-	.news-card:hover {
-		transform: scale(1.05);
-	}
-
-	.news-card img {
-		width: 100%;
-		height: 180px;
-		object-fit: cover;
-	}
-
-	.news-content {
-		padding: 1rem;
-		text-align: left;
-	}
-
-	.news-content h3 {
-		font-size: 1.1rem;
-		color: #4a6fa5;
-		margin-bottom: 0.5rem;
-	}
-
-	.news-content p {
-		font-size: 0.9rem;
-		color: #333333;
-		margin-bottom: 1rem;
-	}
-
-	.news-footer {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		font-size: 0.8rem;
-		color: #999999;
-	}
-
-	.news-footer a {
-		color: #4a6fa5;
-		text-decoration: none;
-		font-weight: bold;
-	}
-
-	.news-footer a:hover {
-		text-decoration: underline;
-	}
-</style> -->
