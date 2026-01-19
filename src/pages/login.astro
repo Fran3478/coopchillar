@@ -8,7 +8,7 @@ const TENANT_ID = Number(import.meta.env.PUBLIC_TENANT_ID) || 1;
 	<section class="wrap">
 		<div class="card">
 			<div class="brand">
-				<img src="/images/logo-sanjusto.webp" alt="Logo" />
+				<img src="/images/logo.webp" alt="Logo" />
 				<h1>Panel de administración</h1>
 				<p class="lead">Ingresá con tus credenciales para continuar.</p>
 			</div>
@@ -331,8 +331,8 @@ const TENANT_ID = Number(import.meta.env.PUBLIC_TENANT_ID) || 1;
 		}
 		[emailEl, pswEl].forEach((el) =>
 			["input", "change"].forEach((evt) =>
-				el.addEventListener(evt, () => clearFieldError(el))
-			)
+				el.addEventListener(evt, () => clearFieldError(el)),
+			),
 		);
 
 		toggle?.addEventListener("click", () => {

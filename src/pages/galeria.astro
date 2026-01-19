@@ -1,0 +1,207 @@
+---
+import Layout from "../layouts/Layout.astro";
+import GalleryMasonry from "../components/GalleryMasonry.astro";
+import { fetchPublicGallerySSR } from "../lib/cms.ts";
+
+const base = new URL(Astro.request.url);
+const TENANT_ID = Number(import.meta.env.PUBLIC_TENANT_ID || 1);
+const galleryRaw = await fetchPublicGallerySSR(base, TENANT_ID, {
+	pageSize: 100,
+});
+
+const galleryImages = galleryRaw.map((x) => ({
+	src: x.src,
+	alt: x.alt ?? "",
+	description: x.description ?? "",
+	album: x.album ?? "",
+}));
+---
+
+<Layout
+	title="Galería - Cooperativa Ltda. de Agua Potable y Otros Servicios Públicos de Chillar"
+>
+	<div id="main-content">
+		<main class="content">
+			<header class="hero">
+				<h1>Nuestra cooperativa en imágenes</h1>
+				<p>
+					Obras, eventos y actividades que acompañan el crecimiento de
+					la comunidad. Recorré las fotos y conocé más de nuestro
+					trabajo.
+				</p>
+			</header>
+
+			<section class="card card--gallery">
+				<GalleryMasonry
+					images={galleryImages}
+					maxWidth="980px"
+					modalTopPadding={130}
+					thumbWidth={140}
+				/>
+			</section>
+
+			<section class="cta">
+				<div class="cta-inner">
+					<h3>¿Querés ver más sobre nuestros servicios?</h3>
+					<p>
+						Conocé qué brindamos hoy y cómo trabajamos para mejorar
+						la calidad de vida en Chillar y zonas aledañas.
+					</p>
+
+					<div class="cta-actions">
+						<a class="btn" href="/servicios">Ver servicios</a>
+						<a class="btn btn--ghost" href="/contacto"
+							>Contactanos</a
+						>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<style>
+		:root {
+			--brand: #06752e;
+			--accent: #ffcd34;
+
+			--text: #111827;
+			--muted: #4b5563;
+			--bg: #f6f7fb;
+			--card: #ffffff;
+			--border: rgba(17, 24, 39, 0.08);
+
+			--brand-ghost: color-mix(in oklab, var(--brand), white 92%);
+			--accent-ghost: color-mix(in oklab, var(--accent), white 82%);
+		}
+
+		#main-content {
+			padding-top: clamp(96px, 12vw, 160px);
+			margin: 0;
+			transition: padding-top 0.3s ease;
+			background: var(--bg);
+		}
+
+		.content {
+			max-width: 980px;
+			margin: 0 auto;
+			line-height: 1.65;
+			padding: clamp(1rem, 4vw, 2rem);
+			font-size: clamp(1rem, 1.2vw + 0.75rem, 1.1rem);
+			color: var(--text);
+		}
+
+		.hero {
+			text-align: center;
+			margin-bottom: clamp(2rem, 6vw, 3.5rem);
+		}
+
+		.hero h1 {
+			font-size: clamp(1.9rem, 4vw, 2.8rem);
+			color: var(--brand);
+			margin: 0.55rem 0 0.6rem;
+			letter-spacing: -0.02em;
+		}
+
+		.hero p {
+			max-width: 720px;
+			margin: 0 auto;
+			color: var(--muted);
+			font-size: clamp(1rem, 1vw + 0.7rem, 1.15rem);
+		}
+
+		.badge {
+			display: inline-flex;
+			align-items: center;
+			width: fit-content;
+			font-size: 0.9rem;
+			padding: 0.35rem 0.6rem;
+			border-radius: 999px;
+			background: var(--accent-ghost);
+			color: var(--brand);
+			font-weight: 800;
+		}
+
+		.badge--soft {
+			background: var(--brand-ghost);
+			color: color-mix(in oklab, var(--brand), black 10%);
+		}
+
+		.card {
+			background: var(--card);
+			padding: clamp(1.1rem, 4vw, 1.6rem);
+			border-radius: 18px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+			border: 1px solid var(--border);
+		}
+
+		.card--gallery {
+			padding: clamp(0.9rem, 3.2vw, 1.2rem);
+		}
+
+		.cta-inner {
+			margin-top: clamp(1.6rem, 5vw, 2.6rem);
+			border-radius: 18px;
+			padding: clamp(1.1rem, 4vw, 2rem);
+			background: linear-gradient(
+				135deg,
+				color-mix(in oklab, var(--brand), white 90%),
+				color-mix(in oklab, var(--accent), white 85%)
+			);
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+			border: 1px solid color-mix(in oklab, var(--brand), white 82%);
+			text-align: center;
+		}
+
+		.cta-inner h3 {
+			margin: 0 0 0.5rem;
+			color: var(--brand);
+			font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+		}
+
+		.cta-inner p {
+			margin: 0 auto 1.2rem;
+			color: #374151;
+			max-width: 720px;
+		}
+
+		.cta-actions {
+			display: flex;
+			gap: 0.8rem;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0.75rem 1rem;
+			border-radius: 999px;
+			font-weight: 900;
+			text-decoration: none;
+			background: var(--brand);
+			color: #fff;
+			border: 2px solid var(--brand);
+			transition:
+				transform 0.15s ease,
+				opacity 0.15s ease,
+				box-shadow 0.15s ease;
+		}
+
+		.btn:hover {
+			transform: translateY(-1px);
+			opacity: 0.96;
+			box-shadow: 0 10px 22px rgba(6, 117, 46, 0.18);
+		}
+
+		.btn--ghost {
+			background: transparent;
+			color: var(--brand);
+		}
+
+		.btn--ghost:hover {
+			background: color-mix(in oklab, var(--brand), white 92%);
+			box-shadow: none;
+		}
+	</style>
+</Layout>

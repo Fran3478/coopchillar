@@ -50,7 +50,7 @@ const pickShape = (i: number, s?: ImageItem["shape"]) =>
 		style={`--gap-x:${gapX}px; --gap-y:${gapY}px; --maxw:${maxWidth}; --cols-m:${columns.mobile ?? 1}; --cols-t:${columns.tablet ?? 2}; --cols-d:${columns.desktop ?? 3};`}
 	>
 		{
-			visibleImages.map((img, i) => (
+			images.map((img, i) => (
 				<figure
 					class={`g-item g-${pickShape(i, img.shape)}`}
 					data-idx={i}

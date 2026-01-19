@@ -45,7 +45,7 @@ function renderBlocks(blocksJson: any): string {
 				: "";
 			if (url)
 				html.push(
-					`<figure><img src="${url}" alt="${d.caption || ""}" />${cap}</figure>`
+					`<figure><img src="${url}" alt="${d.caption || ""}" />${cap}</figure>`,
 				);
 		}
 	}

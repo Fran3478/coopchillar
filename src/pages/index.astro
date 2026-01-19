@@ -3,9 +3,7 @@ export const prerender = false;
 
 import Servicios from "../components/Servicios.astro";
 import Layout from "../layouts/Layout.astro";
-import Novedades from "../components/Novedades.astro";
 import GalleryCollage from "../components/GalleryCollage.astro";
-import GalleryMasonry from "../components/GalleryMasonry.astro";
 
 import { fetchPublicPostsSSR, fetchPublicGallerySSR } from "../lib/cms.ts";
 import NoticiaContenedor from "../components/NoticiaContenedor.astro";
@@ -29,7 +27,7 @@ novedades.sort(byDateDesc);
 noticias.sort(byDateDesc);
 
 const galleryRaw = await fetchPublicGallerySSR(base, TENANT_ID, {
-	pageSize: 24,
+	pageSize: 6,
 });
 
 const galleryImages = galleryRaw.map((x) => ({
@@ -66,9 +64,21 @@ const galleryImages = galleryRaw.map((x) => ({
 		</section>
 		<Servicios />
 		<NoticiaContenedor {novedades} {noticias} />
-		<!-- <Novedades {novedades} {noticias} /> -->
-		<GalleryCollage images={galleryImages} />
-		<!-- <GalleryMasonry images={galleryImages} /> -->
+		<section class="gallery-preview" aria-label="Galería">
+			<div class="head">
+				<h2>Nuestra cooperativa en imágenes</h2>
+				<p>
+					Un vistazo rápido. Mirá la galería completa para ver más
+					fotos.
+				</p>
+			</div>
+
+			<GalleryCollage images={galleryImages} maxWidth="980px" />
+
+			<div class="actions">
+				<a class="btn" href="/galeria">Ver galería completa</a>
+			</div>
+		</section>
 	</div>
 </Layout>
 
@@ -264,6 +274,222 @@ const galleryImages = galleryRaw.map((x) => ({
 		.hero-card.custom-bg-card {
 			min-height: 300px;
 			padding-bottom: 1rem;
+		}
+	}
+
+	.gallery-preview {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 2.5rem 1rem 3rem;
+		border-top: 1px solid rgba(17, 24, 39, 0.08);
+		margin-top: 2rem;
+	}
+
+	.gallery-preview .head {
+		text-align: center;
+		margin: 0 auto 1.1rem;
+	}
+
+	.gallery-preview .badge {
+		display: inline-flex;
+		align-items: center;
+		width: fit-content;
+		font-size: 0.9rem;
+		padding: 0.35rem 0.65rem;
+		border-radius: 999px;
+		font-weight: 800;
+		background: rgba(6, 117, 46, 0.08);
+		color: #06752e;
+	}
+
+	.gallery-preview .badge--soft {
+		background: rgba(6, 117, 46, 0.08);
+		color: #06752e;
+	}
+
+	.gallery-preview h2 {
+		margin: 0.55rem 0 0.4rem;
+		font-size: clamp(1.55rem, 3.2vw, 2.15rem);
+		letter-spacing: -0.02em;
+		color: #06752e;
+	}
+
+	.gallery-preview p {
+		margin: 0 auto;
+		max-width: 760px;
+		color: #4b5563;
+		font-size: clamp(1rem, 1vw + 0.7rem, 1.1rem);
+		line-height: 1.6;
+	}
+
+	.gallery-preview .g-card {
+		background: #fff;
+		border: 1px solid rgba(17, 24, 39, 0.08);
+		border-radius: 18px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		padding: clamp(0.9rem, 2.6vw, 1.25rem);
+		overflow: hidden;
+	}
+
+	.gallery-preview .g-card:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 14px 30px rgba(6, 117, 46, 0.08);
+		transition:
+			transform 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.gallery-preview .actions {
+		display: flex;
+		justify-content: center;
+		margin-top: 1rem;
+	}
+
+	.gallery-preview .btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.75rem 1rem;
+		border-radius: 999px;
+		font-weight: 900;
+		text-decoration: none;
+		background: #06752e;
+		color: #fff;
+		border: 2px solid #06752e;
+		transition:
+			transform 0.15s ease,
+			opacity 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.gallery-preview .btn:hover {
+		transform: translateY(-1px);
+		opacity: 0.96;
+		box-shadow: 0 10px 22px rgba(6, 117, 46, 0.18);
+	}
+
+	.gallery-preview .btn::after {
+		content: " →";
+		font-weight: 900;
+		margin-left: 0.25rem;
+	}
+
+	@media (max-width: 700px) {
+		.gallery-preview {
+			padding: 2.2rem 0.25rem 2.6rem;
+		}
+		.gallery-preview .g-card {
+			border-radius: 16px;
+		}
+		.gallery-preview .btn {
+			width: 100%;
+			max-width: 420px;
+		}
+	}
+
+	.gallery-preview {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 2.5rem 1rem 3rem;
+		border-top: 1px solid rgba(17, 24, 39, 0.08);
+		margin-top: 2rem;
+	}
+
+	.gallery-preview .head {
+		text-align: center;
+		margin: 0 auto 1.1rem;
+	}
+
+	.gallery-preview .badge {
+		display: inline-flex;
+		align-items: center;
+		width: fit-content;
+		font-size: 0.9rem;
+		padding: 0.35rem 0.65rem;
+		border-radius: 999px;
+		font-weight: 800;
+		background: rgba(6, 117, 46, 0.08);
+		color: #06752e;
+	}
+
+	.gallery-preview h2 {
+		margin: 0.55rem 0 0.4rem;
+		font-size: clamp(1.55rem, 3.2vw, 2.15rem);
+		letter-spacing: -0.02em;
+		color: #06752e;
+	}
+
+	.gallery-preview p {
+		margin: 0 auto;
+		max-width: 760px;
+		color: #4b5563;
+		font-size: clamp(1rem, 1vw + 0.7rem, 1.1rem);
+		line-height: 1.6;
+	}
+
+	.gallery-preview :global(.gal.collage .wrap) {
+		background: #fff;
+		border: 1px solid rgba(17, 24, 39, 0.08);
+		border-radius: 18px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		overflow: hidden;
+	}
+
+	.gallery-preview :global(.gal.collage .wrap:hover) {
+		border-color: rgba(6, 117, 46, 0.18);
+		box-shadow: 0 14px 30px rgba(6, 117, 46, 0.1);
+		transition:
+			box-shadow 0.15s ease,
+			border-color 0.15s ease;
+	}
+
+	.gallery-preview .actions {
+		display: flex;
+		justify-content: center;
+		margin-top: 1rem;
+	}
+
+	.gallery-preview .btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.75rem 1rem;
+		border-radius: 999px;
+		font-weight: 900;
+		text-decoration: none;
+		background: #06752e;
+		color: #fff;
+		border: 2px solid #06752e;
+		transition:
+			transform 0.15s ease,
+			opacity 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.gallery-preview .btn:hover {
+		transform: translateY(-1px);
+		opacity: 0.96;
+		box-shadow: 0 10px 22px rgba(6, 117, 46, 0.18);
+	}
+
+	.gallery-preview .btn::after {
+		content: " →";
+		font-weight: 900;
+		margin-left: 0.25rem;
+	}
+
+	@media (max-width: 700px) {
+		.gallery-preview {
+			padding: 2.2rem 0.25rem 2.6rem;
+		}
+
+		.gallery-preview :global(.gal.collage .wrap) {
+			border-radius: 16px;
+		}
+
+		.gallery-preview .btn {
+			width: 100%;
+			max-width: 420px;
 		}
 	}
 </style>
