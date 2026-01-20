@@ -159,6 +159,11 @@ export async function apiFetch(path: string, init: RequestInit = {}) {
     headers.set("Authorization", `Bearer ${token}`);
   }
 
+  const csrf = getCookie("csrf");
+  if (csrf && !headers.has("x-csrf-token")) {
+    headers.set("x-csrf-token", csrf);
+  }
+
   let res = await fetch(path, { ...init, headers, credentials: init.credentials ?? "include" });
 
   if (res.status !== 401 || path.startsWith("/v1/auth/")) return res;
