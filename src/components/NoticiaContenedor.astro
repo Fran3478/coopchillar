@@ -18,7 +18,10 @@ const { novedades = [], noticias = [] } = Astro.props as {
 };
 ---
 
-<div class="noticias-y-blog">
+<div
+	class="noticias-y-blog"
+	class:list={{ "is-empty": novedades.length === 0 }}
+>
 	<NovedadesCarousel novedades={novedades} />
 	<NoticiasSidebar noticias={noticias} />
 </div>
@@ -36,6 +39,16 @@ const { novedades = [], noticias = [] } = Astro.props as {
 	@media (max-width: 1070px) {
 		.noticias-y-blog {
 			flex-direction: column;
+		}
+	}
+	.noticias-y-blog.is-empty {
+		align-items: center;
+	}
+
+	/* en mobile mantenemos el comportamiento normal (stack) */
+	@media (max-width: 1070px) {
+		.noticias-y-blog.is-empty {
+			align-items: stretch;
 		}
 	}
 </style>

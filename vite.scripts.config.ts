@@ -11,6 +11,11 @@ export default defineConfig({
       input: {
         "content-editor": resolve(__dirname, "src/scripts/content-editor.ts"),
         "post-edit": resolve(__dirname, "src/scripts/post-edit.ts"),
+        "gallery-admin": "src/scripts/gallery-admin.ts",
+        "admin-contactos": "src/scripts/admin-contactos.ts",
+        "admin-medios": "src/scripts/admin-medios.ts",
+        "admin-nueva-novedad": "src/scripts/admin-nueva-novedad.ts",
+        "admin-usuarios": "src/scripts/admin-usuarios.ts",
       },
       output: {
         // Nombres fijos (sin hash) para que no tengas que cambiar HTML

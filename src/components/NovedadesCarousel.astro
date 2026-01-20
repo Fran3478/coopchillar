@@ -29,48 +29,50 @@ const safeNewsImg = imgOr(fallbackNews);
 ---
 
 <div class="news-carousel" id="news-carousel">
-	<div class="carousel-wrapper">
-		{
-			novedades.map((n) => (
-				<div class="news-highlight">
-					<img
-						src={safeNewsImg(n.imageUrl)}
-						alt={n.title}
-						class="news-image"
-					/>
-					<div class="news-overlay">
-						<div class="news-card">
-							<p class="news-title">{n.title}</p>
-							<div class="news-footer">
-								<span>{fmt(n.date)}</span>
+	{
+		novedades.length > 0 && (
+			<div class="carousel-wrapper">
+				{
+					novedades.map((n) => (
+						<div class="news-highlight">
+							<img
+								src={safeNewsImg(n.imageUrl)}
+								alt={n.title}
+								class="news-image"
+							/>
+							<div class="news-overlay">
+								<div class="news-card">
+									<p class="news-title">{n.title}</p>
+									<div class="news-footer">
+										<span>{fmt(n.date)}</span>
 
-								{n.kind === "noticia" ? (
-									<a href={`/noticias/${n.slug}`}>
-										Conoce más <span>&rarr;</span>
-									</a>
-								) : n.externalUrl ? (
-									<a
-										href={n.externalUrl}
-										target="_blank"
-										rel="noopener"
-									>
-										Conoce más <span>&rarr;</span>
-									</a>
-								) : null}
+										{n.kind === "noticia" ? (
+											<a href={`/noticias/${n.slug}`}>
+												Conoce más <span>&rarr;</span>
+											</a>
+										) : n.externalUrl ? (
+											<a
+												href={n.externalUrl}
+												target="_blank"
+												rel="noopener"
+											>
+												Conoce más <span>&rarr;</span>
+											</a>
+										) : null}
+									</div>
+								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-			))
-		}
-	</div>
+					))
+				}
+			</div>
+		)
+	}
 
 	{
 		novedades.length === 0 && (
 			<div class="empty-box">
-				<span class="empty-icon" aria-hidden="true">
-					🗞️
-				</span>
+				<span class="empty-icon" aria-hidden="true">🗞️</span>
 				<p class="empty-title">Aún no hay novedades</p>
 				<p class="empty-sub">
 					Cuando publiques una novedad, aparecerá aquí como destacada.
@@ -82,12 +84,8 @@ const safeNewsImg = imgOr(fallbackNews);
 	{
 		novedades.length > 1 && (
 			<div class="news-arrows">
-				<button class="arrow-btn" id="prev">
-					&#x276E;
-				</button>
-				<button class="arrow-btn" id="next">
-					&#x276F;
-				</button>
+				<button class="arrow-btn" id="prev">&#x276E;</button>
+				<button class="arrow-btn" id="next">&#x276F;</button>
 			</div>
 		)
 	}
@@ -288,6 +286,19 @@ const safeNewsImg = imgOr(fallbackNews);
 		}
 		.news-footer {
 			margin-top: auto;
+		}
+	}
+
+	/* ===== FIX: empty state ocupa TODO el alto del carrusel en desktop ===== */
+	.news-carousel .empty-box {
+		min-height: 0; /* pisa el min-height fijo */
+		height: 100%;  /* llena el alto del contenedor (aspect-ratio) */
+	}
+
+	@media (max-width: 720px) {
+		.news-carousel .empty-box {
+			height: auto;      /* vuelve al flujo normal */
+			min-height: 220px; /* como estaba */
 		}
 	}
 </style>

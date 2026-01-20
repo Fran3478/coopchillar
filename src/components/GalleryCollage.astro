@@ -193,12 +193,9 @@ const visibleIdx = Array.from(
 
 	@media (max-width: 700px) {
 		.gal.collage .wrap {
-			/* que ocupe todo el ancho disponible */
 			width: 100%;
 			max-width: 100%;
-
-			/* alto predecible => no queda grilla “suelta” */
-			aspect-ratio: 4 / 5; /* podés ajustar 1/1, 3/4, 4/5 según te guste */
+			aspect-ratio: 4 / 5;
 			height: auto;
 
 			display: grid;
@@ -207,7 +204,6 @@ const visibleIdx = Array.from(
 			gap: 0;
 		}
 
-		/* Layout mobile: 6 imágenes en 2x3 (más compacto y siempre llena) */
 		.gal.collage .s0 {
 			grid-column: 1;
 			grid-row: 1 / span 2;
@@ -233,7 +229,6 @@ const visibleIdx = Array.from(
 			grid-row: 5 / span 2;
 		}
 
-		/* asegurá que figure no meta márgenes raros */
 		.gal.collage .slot {
 			margin: 0;
 		}
@@ -460,25 +455,8 @@ const visibleIdx = Array.from(
 	body.no-scroll {
 		overflow: hidden !important;
 	}
-	.gal.collage .wrap {
-		max-width: var(--maxw, 1200px);
-		margin: 0 auto;
-		padding: 0;
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		grid-template-rows: repeat(6, minmax(40px, 1fr));
-		gap: 0;
-	}
 	.gal.collage .slot {
-		overflow: hidden;
-		position: relative;
 		margin: 0;
-	} /* <- */
-	.gal.collage .slot img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		display: block;
 	}
 </style>
 

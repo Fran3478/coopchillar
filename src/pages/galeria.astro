@@ -15,6 +15,8 @@ const galleryImages = galleryRaw.map((x) => ({
 	description: x.description ?? "",
 	album: x.album ?? "",
 }));
+
+const hasImages = galleryImages.length > 0;
 ---
 
 <Layout
@@ -31,14 +33,29 @@ const galleryImages = galleryRaw.map((x) => ({
 				</p>
 			</header>
 
-			<section class="card card--gallery">
-				<GalleryMasonry
-					images={galleryImages}
-					maxWidth="980px"
-					modalTopPadding={130}
-					thumbWidth={140}
-				/>
-			</section>
+			{
+				hasImages ? (
+					<section class="card card--gallery">
+						<GalleryMasonry
+							images={galleryImages}
+							maxWidth="980px"
+							modalTopPadding={130}
+							thumbWidth={140}
+						/>
+					</section>
+				) : (
+					<section class="card empty">
+						<h2 class="empty-title">
+							Aún no hay imágenes cargadas
+						</h2>
+						<p class="empty-sub">
+							Estamos preparando la galería. Volvé pronto para ver
+							fotos de obras, eventos y actividades de la
+							cooperativa.
+						</p>
+					</section>
+				)
+			}
 
 			<section class="cta">
 				<div class="cta-inner">
@@ -136,6 +153,41 @@ const galleryImages = galleryRaw.map((x) => ({
 
 		.card--gallery {
 			padding: clamp(0.9rem, 3.2vw, 1.2rem);
+		}
+
+		.empty {
+			text-align: center;
+			display: grid;
+			gap: 0.55rem;
+			justify-items: center;
+			padding: clamp(1.1rem, 4vw, 2rem);
+			margin-bottom: clamp(1.1rem, 4vw, 2rem);
+		}
+
+		.empty-icon {
+			font-size: 34px;
+			opacity: 0.75;
+		}
+
+		.empty-title {
+			margin: 0.2rem 0 0.35rem;
+			color: color-mix(in oklab, var(--brand), black 10%);
+			font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+			letter-spacing: -0.01em;
+		}
+
+		.empty-sub {
+			margin: 0;
+			max-width: 720px;
+			color: var(--muted);
+		}
+
+		.empty-actions {
+			display: flex;
+			gap: 0.8rem;
+			flex-wrap: wrap;
+			justify-content: center;
+			margin-top: 0.6rem;
 		}
 
 		.cta-inner {

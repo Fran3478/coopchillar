@@ -183,7 +183,6 @@ const galleryImages = galleryRaw.map((x) => ({
 
 	.card-logo {
 		position: absolute;
-		/* 1rem (bottom) + 14rem (alto del shape) - 40px (radio del logo) */
 		bottom: calc(1rem + 14rem - 40px);
 		left: 50%;
 		transform: translateX(-50%);
@@ -288,11 +287,6 @@ const galleryImages = galleryRaw.map((x) => ({
 		}
 	}
 
-	/* =========================
-   Landing: Galería (preview)
-   (Opción A: si no hay imágenes, no se renderiza el section)
-   ========================= */
-
 	.gallery-preview {
 		max-width: 1200px;
 		margin: 0 auto;
@@ -321,7 +315,6 @@ const galleryImages = galleryRaw.map((x) => ({
 		line-height: 1.6;
 	}
 
-	/* “Card” aplicada al collage directo (sin wrapper extra => sin flicker) */
 	.gallery-preview :global(.gal.collage .wrap) {
 		background: #fff;
 		border: 1px solid rgba(17, 24, 39, 0.08);
