@@ -396,61 +396,7 @@ const RESOURCE_TYPE = "image";
 		}
 	</style>
 
-	<script type="module" src="/src/scripts/content-editor.ts"></script>
 	<script type="module">
-		import {
-			requestSignature,
-			uploadToCloudinary,
-			makeToaster,
-			markInvalid,
-			clearFieldError,
-			bindClearOnInput,
-			clearFileInput,
-			assertImage,
-		} from "/src/lib/admin-uploader";
-		const cfg = document.getElementById("cfg-post");
-		const DEFAULT_FOLDER = cfg?.dataset.folder || "noticias";
-		const RESOURCE_TYPE = cfg?.dataset.resourceType || "image";
-
-		const tituloEl = document.getElementById("titulo");
-		const urlEl = document.getElementById("portadaUrl");
-		const fileEl = document.getElementById("portadaFile");
-
-		bindClearOnInput([tituloEl, urlEl, fileEl]);
-
-		const toast = makeToaster("status", { okMs: 1600, errMs: 5000 });
-
-		fileEl?.addEventListener("change", async (e) => {
-			const file = e.target?.files?.[0];
-			if (!file) return;
-
-			try {
-				assertImage(file, 10);
-			} catch (error) {
-				markInvalid(fileEl, error?.message || "Archivo inválido");
-				clearFileInput(fileEl);
-				return toast.show(error?.message || "Archivo inválido", "err");
-			}
-
-			try {
-				toast.show("Subiendo imagen...");
-
-				const sig = await requestSignature({
-					resourceType: RESOURCE_TYPE,
-					folder: `${DEFAULT_FOLDER}/portadas`,
-					incomingTransform: "c_limit,w_2560/f_webp,q_auto:good",
-				});
-
-				const resp = await uploadToCloudinary(file, sig);
-				if (urlEl) urlEl.value = resp.secure_url;
-				clearFieldError(fileEl);
-				toast.show("Imagen subida✅", "ok");
-			} catch (error) {
-				console.log(error);
-				markInvalid(fileEl, "No se pudo subir la imagen");
-				clearFileInput(fileEl);
-				toast.show("No se pudo subir la imagen", "err");
-			}
-		});
-	</script></DashboardLayout
->
+		import "/src/scripts/content-editor.ts";
+	</script>
+</DashboardLayout>

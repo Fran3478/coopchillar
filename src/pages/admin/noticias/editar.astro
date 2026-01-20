@@ -2,8 +2,7 @@
 export const prerender = false;
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
 
-const CLOUD_NAME = "tu_cloud_name"; //remplazar!!
-const DEFAULT_FOLDER = "posts";
+const DEFAULT_FOLDER = "noticias";
 const RESOURCE_TYPE = "image";
 ---
 
@@ -25,7 +24,6 @@ const RESOURCE_TYPE = "image";
 
 		<div
 			id="cfg"
-			data-cloud-name={CLOUD_NAME}
 			data-folder={DEFAULT_FOLDER}
 			data-resource-type={RESOURCE_TYPE}
 		>
@@ -36,7 +34,6 @@ const RESOURCE_TYPE = "image";
 				<div
 					id="editorjs"
 					class="editor"
-					data-cloud-name={CLOUD_NAME}
 					data-folder={DEFAULT_FOLDER}
 					data-resource-type={RESOURCE_TYPE}
 				>
@@ -340,5 +337,7 @@ const RESOURCE_TYPE = "image";
 		}
 	</style>
 
-	<script type="module" src="/src/scripts/post-edit.ts"></script>
+	<script type="module">
+		import "/src/scripts/post-edit.ts";
+	</script>
 </DashboardLayout>

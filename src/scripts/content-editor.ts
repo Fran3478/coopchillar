@@ -2,16 +2,23 @@ import EditorJS, { type ToolConstructable } from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import ImageTool from "@editorjs/image";
-import { apiPost, getErrorInfo, toErrorText, jsonOrThrow } from "../lib/api";
-import { requestSignature, uploadToCloudinary, assertImage, markInvalid, clearFieldError } from "../lib/admin-uploader";
-// import LinkTool from "@editorjs/link";
+
+import { apiPost, getErrorInfo, toErrorText } from "../lib/api";
+import {
+  requestSignature,
+  uploadToCloudinary,
+  assertImage,
+  markInvalid,
+  clearFieldError,
+  clearFileInput,
+} from "../lib/admin-uploader";
 
 const HeaderTool: ToolConstructable = Header as unknown as ToolConstructable;
-const ListTool:   ToolConstructable = List   as unknown as ToolConstructable;
+const ListTool: ToolConstructable = List as unknown as ToolConstructable;
 const ImageToolC: ToolConstructable = ImageTool as unknown as ToolConstructable;
 
 const CONTENT_KEY = "cms:contenido:draft";
-const META_KEY    = "cms:postmeta:draft:new";
+const META_KEY = "cms:postmeta:draft:new";
 
 function getEl<T extends HTMLElement>(id: string) {
   const el = document.getElementById(id) as T | null;
@@ -24,24 +31,34 @@ function isValidUrl(str: string) {
   try {
     new URL(str);
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
 
-
-
+/**
+ * IMPORTANTE:
+ * - Si msg es vacío, limpiamos el status (sin .show)
+ * - Si type === "ok", autocierra
+ */
 function showStatus(msg: string, type: "" | "ok" | "err" = "") {
   const statusEl = document.getElementById("status");
   if (!statusEl) return;
+
+  if (!msg) {
+    statusEl.textContent = "";
+    statusEl.className = "status";
+    return;
+  }
+
   statusEl.textContent = msg;
   statusEl.className = `status show ${type}`;
   if (type === "ok") setTimeout(() => (statusEl.className = "status"), 1600);
 }
 
 function clearFieldErrors() {
-  document.querySelectorAll(".invalid").forEach(el => el.classList.remove("invalid"));
-  document.querySelectorAll(".err-tip").forEach(el => el.remove());
+  document.querySelectorAll(".invalid").forEach((el) => el.classList.remove("invalid", "is-invalid"));
+  document.querySelectorAll(".err-tip").forEach((el) => el.remove());
 }
 
 function toHumanLabel(field: string) {
@@ -58,25 +75,21 @@ function toHumanLabel(field: string) {
 }
 
 function markFieldErrors(fieldErrors: { field: string; message: string }[]) {
-  document.querySelectorAll(".invalid").forEach(el => el.classList.remove("invalid","is-invalid"));
-  document.querySelectorAll(".err-tip").forEach(el => el.remove());
+  clearFieldErrors();
 
   for (const { field, message } of fieldErrors) {
     const el =
-      (field === "titulo"     && document.getElementById("titulo"))     ||
-      (field === "excerpt"    && document.getElementById("excerpt"))    ||
+      (field === "titulo" && document.getElementById("titulo")) ||
+      (field === "excerpt" && document.getElementById("excerpt")) ||
       (field === "portadaUrl" && document.getElementById("portadaUrl")) ||
-      (field === "destacado"  && document.getElementById("destacado"))  ||
-      (field === "linkUrl"    && document.getElementById("linkUrl"))    ||
-      (field === "tipo"       && document.getElementById("tipo"))       ||
+      (field === "destacado" && document.getElementById("destacado")) ||
+      (field === "linkUrl" && document.getElementById("linkUrl")) ||
+      (field === "tipo" && document.getElementById("tipo")) ||
       null;
 
-    if (el) {
-      markInvalid(el, `${toHumanLabel(field)}: ${message || "Dato inválido"}`);
-    }
+    if (el) markInvalid(el, `${toHumanLabel(field)}: ${message || "Dato inválido"}`);
   }
 }
-
 
 function escapeHtml(str: string) {
   return str.replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]!));
@@ -99,8 +112,10 @@ function markDirty() {
   if (metaTimer) window.clearTimeout(metaTimer);
   metaTimer = window.setTimeout(saveMeta, 600);
 }
+
 function saveMeta() {
   metaTimer = null;
+
   const tipoEl = document.getElementById("tipo") as HTMLInputElement | null;
   const tituloEl = document.getElementById("titulo") as HTMLInputElement | null;
   const excerptEl = document.getElementById("excerpt") as HTMLTextAreaElement | null;
@@ -109,19 +124,25 @@ function saveMeta() {
   const linkUrlEl = document.getElementById("linkUrl") as HTMLInputElement | null;
 
   const meta: MetaDraft = {
-    tipo: (tipoEl?.value === "novedad" ? "novedad" : "noticia"),
+    tipo: tipoEl?.value === "novedad" ? "novedad" : "noticia",
     titulo: (tituloEl?.value || "").trim(),
     excerpt: (excerptEl?.value || "").trim(),
     portadaUrl: (portadaEl?.value || "").trim(),
     destacado: !!destacadoEl?.checked,
-    linkUrl: (tipoEl?.value === "novedad") ? ((linkUrlEl?.value || "").trim() || null) : null,
+    linkUrl: tipoEl?.value === "novedad" ? ((linkUrlEl?.value || "").trim() || null) : null,
   };
+
   localStorage.setItem(META_KEY, JSON.stringify(meta));
 }
+
 function loadMeta(): MetaDraft | null {
   const raw = localStorage.getItem(META_KEY);
   if (!raw) return null;
-  try { return JSON.parse(raw) as MetaDraft; } catch { return null; }
+  try {
+    return JSON.parse(raw) as MetaDraft;
+  } catch {
+    return null;
+  }
 }
 
 function bindUnsavedChangesGuard() {
@@ -135,6 +156,7 @@ function bindUnsavedChangesGuard() {
 async function boot() {
   const holder = getEl<HTMLDivElement>("editorjs");
 
+  // IMPORTANTE: esta config viene del DOM (nueva.astro / editar.astro)
   const DEFAULT_FOLDER = holder.dataset.folder || "pages";
   const rawType = holder.dataset.resourceType;
   const RESOURCE_TYPE: "image" | "video" = rawType === "video" ? "video" : "image";
@@ -146,19 +168,62 @@ async function boot() {
   const tituloEl = document.getElementById("titulo") as HTMLInputElement | null;
   const excerptEl = document.getElementById("excerpt") as HTMLTextAreaElement | null;
   const portadaEl = document.getElementById("portadaUrl") as HTMLInputElement | null;
+  const portadaFileEl = document.getElementById("portadaFile") as HTMLInputElement | null;
   const destacadoEl = document.getElementById("destacado") as HTMLInputElement | null;
   const linkUrlEl = document.getElementById("linkUrl") as HTMLInputElement | null;
 
+  // ---- Guardar meta / limpiar errores en inputs (UN SOLO SET DE LISTENERS) ----
   [tipoEl, tituloEl, excerptEl, portadaEl, destacadoEl, linkUrlEl].forEach((el) => {
     if (!el) return;
-    const clear = () => {
-       clearFieldError(el as HTMLElement);
+    const handler = () => {
+      clearFieldError(el as HTMLElement);
       markDirty();
     };
-    el.addEventListener("input", clear);
-    el.addEventListener("change", clear);
+    el.addEventListener("input", handler);
+    el.addEventListener("change", handler);
   });
 
+  // ---- Portada upload ----
+  portadaFileEl?.addEventListener("change", async (e) => {
+    const input = e.currentTarget as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    if (!file || !portadaEl) return;
+
+    try {
+      assertImage(file, 10);
+    } catch (err: any) {
+      markInvalid(portadaFileEl, err?.message || "Archivo inválido");
+      clearFileInput(portadaFileEl);
+      showStatus(err?.message || "Archivo inválido", "err");
+      return;
+    }
+
+    try {
+      showStatus("Subiendo portada…");
+
+      const sig = await requestSignature({
+        resourceType: RESOURCE_TYPE,
+        folder: `${DEFAULT_FOLDER}/portadas`,
+        incomingTransform: "c_limit,w_2560/f_webp,q_auto:good",
+      });
+
+      const resp = await uploadToCloudinary(file, sig);
+      portadaEl.value = resp.secure_url;
+
+      clearFieldError(portadaFileEl);
+      clearFileInput(portadaFileEl);
+
+      showStatus("Imagen subida ✅", "ok");
+      markDirty();
+    } catch (err: any) {
+      console.error(err);
+      markInvalid(portadaFileEl, err?.message || "No se pudo subir la imagen");
+      clearFileInput(portadaFileEl);
+      showStatus(err?.message || "No se pudo subir la imagen", "err");
+    }
+  });
+
+  // ---- Cargar draft meta ----
   const metaDraft = loadMeta();
   if (metaDraft) {
     if (tipoEl) tipoEl.value = metaDraft.tipo;
@@ -170,6 +235,7 @@ async function boot() {
     dirty = true;
   }
 
+  // ---- EditorJS Image tool ----
   const imageToolConfig = {
     class: ImageToolC,
     config: {
@@ -200,57 +266,65 @@ async function boot() {
     autofocus: true,
     placeholder: "Escribí acá…",
     i18n: {
-      /**
-      * @type {I18nDictionary}
-      */
       messages: {
         ui: {
-          toolbar: { toolbox: { "Add": "Añadir bloque", "Filter": "Buscar", "Nothing found": "Sin resultados" }, converter: { "Convert to": "Convertir a" } },
+          toolbar: { toolbox: { Add: "Añadir bloque", Filter: "Buscar", "Nothing found": "Sin resultados" }, converter: { "Convert to": "Convertir a" } },
           blockTunes: { toggler: { "Click to tune": "Ajustes", "or move": "o mover" } },
-          popover : {"Filter": "Buscar","Nothing found": "Sin resultados", "Convert to":"Convertir a"}
+          popover: { Filter: "Buscar", "Nothing found": "Sin resultados", "Convert to": "Convertir a" },
         },
         toolNames: {
-          "Paragraph": "Párrafo", "Text": "Párrafo", "Header": "Título", "Heading": "Título",
-          "Image": "Imagen", "Checklist": "Lista de tareas",
-          "Unordered List": "Lista con viñetas", "Ordered List": "Lista numerada",
-          "Unordered list": "Lista con viñetas", "Ordered list": "Lista numerada",
-          "Warning": "Advertencia", "Quote": "Cita", "Italic": "Itálica", "Bold": "Negrita"
+          Paragraph: "Párrafo",
+          Text: "Párrafo",
+          Header: "Título",
+          Heading: "Título",
+          Image: "Imagen",
+          Checklist: "Lista de tareas",
+          "Unordered List": "Lista con viñetas",
+          "Ordered List": "Lista numerada",
+          "Unordered list": "Lista con viñetas",
+          "Ordered list": "Lista numerada",
+          Warning: "Advertencia",
+          Quote: "Cita",
+          Italic: "Itálica",
+          Bold: "Negrita",
         },
         blockTunes: {
-          delete: { "Delete": "Eliminar", "Click to delete": "Click para confirmar" },
-          moveUp: { "Move up": "Mover arriba" }, moveDown: { "Move down": "Mover abajo" },
+          delete: { Delete: "Eliminar", "Click to delete": "Click para confirmar" },
+          moveUp: { "Move up": "Mover arriba" },
+          moveDown: { "Move down": "Mover abajo" },
         },
         tools: {
-          list: { "Ordered": "Numerada", "Unordered": "Viñetas" },
-          image: { "Caption": "Pie de imagen", "Select an Image": "Seleccionar imagen",
-                   "With border": "Con borde", "Stretch image": "Estirar imagen", "With background": "Con fondo" },
-          header: { "Heading": "Título", "Heading 2": "Título 2", "Heading 3": "Título 3", "Heading 4": "Título 4" },
-          "convertTo": {
-            "Convert to": "Convertir a"
+          list: { Ordered: "Numerada", Unordered: "Viñetas" },
+          image: {
+            Caption: "Pie de imagen",
+            "Select an Image": "Seleccionar imagen",
+            "With border": "Con borde",
+            "Stretch image": "Estirar imagen",
+            "With background": "Con fondo",
           },
-          checklist: { "Checklist": "Lista de tareas", "Add an item": "Agregar ítem" },
-          "link": { "Add a link": "Añadir un enlace" }
+          header: { Heading: "Título", "Heading 2": "Título 2", "Heading 3": "Título 3", "Heading 4": "Título 4" },
+          checklist: { Checklist: "Lista de tareas", "Add an item": "Agregar ítem" },
+          link: { "Add a link": "Añadir un enlace" },
         },
       },
     },
     tools: {
-      header: { 
+      header: {
         class: HeaderTool,
         inlineToolbar: true,
         toolbox: { title: "Título" },
-        config: { levels: [2, 3, 4], defaultLevel: 2 }
+        config: { levels: [2, 3, 4], defaultLevel: 2 },
       } as any,
       list: {
         class: ListTool,
         inlineToolbar: true,
-        toolbox: { title: "Lista" } 
+        toolbox: { title: "Lista" },
       } as any,
       image: imageToolConfig,
-      // linkTool: { class: LinkTool as unknown as ToolConstructable, config: { endpoint: "/v1/links/preview" } } as any,
     },
     data: JSON.parse(
       localStorage.getItem(CONTENT_KEY) ||
-      '{"time":0,"blocks":[{"type":"paragraph","data":{"text":""}}],"version":"2.29.0"}'
+        '{"time":0,"blocks":[{"type":"paragraph","data":{"text":""}}],"version":"2.29.0"}'
     ),
     onChange: async () => {
       try {
@@ -261,25 +335,20 @@ async function boot() {
     },
   });
 
-  [tipoEl, tituloEl, excerptEl, portadaEl, destacadoEl, linkUrlEl].forEach((el) => {
-    el?.addEventListener("input", markDirty);
-    el?.addEventListener("change", markDirty);
-  });
-
   bindUnsavedChangesGuard();
 
   saveBtn?.addEventListener("click", async () => {
     try {
       showStatus("Guardando…");
 
-      const blocks = JSON.parse(localStorage.getItem(CONTENT_KEY) || "null") || await editor.save();
+      const blocks = JSON.parse(localStorage.getItem(CONTENT_KEY) || "null") || (await editor.save());
 
-      const tipo = (tipoEl?.value === "novedad") ? "novedad" : "noticia";
+      const tipo = tipoEl?.value === "novedad" ? "novedad" : "noticia";
       const titulo = (tituloEl?.value ?? "").trim();
       const excerpt = (excerptEl?.value ?? "").trim();
       const portada = (portadaEl?.value ?? "").trim();
-      const destacado = (tipo === "novedad") ? true : !!destacadoEl?.checked;
-      const linkUrl = (tipo === "novedad" ? (linkUrlEl?.value ?? "").trim() : "");
+      const destacado = tipo === "novedad" ? true : !!destacadoEl?.checked;
+      const linkUrl = tipo === "novedad" ? (linkUrlEl?.value ?? "").trim() : "";
 
       clearFieldErrors();
 
@@ -320,7 +389,7 @@ async function boot() {
       if (!res.ok) {
         const { text, fieldErrors } = await getErrorInfo(res);
         if (fieldErrors.length) {
-          markFieldErrors(fieldErrors.map(fe => ({ field: fe.field, message: fe.message || "Dato inválido" })));
+          markFieldErrors(fieldErrors.map((fe) => ({ field: fe.field, message: fe.message || "Dato inválido" })));
         }
         showStatus(text, "err");
         return;
