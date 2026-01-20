@@ -2,8 +2,6 @@
 export const prerender = false;
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
 
-import contentEditorEntryUrl from "../../../scripts/content-editor-entry.js?url";
-
 const DEFAULT_FOLDER = "posts";
 const RESOURCE_TYPE = "image";
 ---
@@ -398,5 +396,5 @@ const RESOURCE_TYPE = "image";
 		}
 	</style>
 
-	<script type="module" src={contentEditorEntryUrl}></script>
+	<script type="module" src="/scripts/content-editor.js"></script>
 </DashboardLayout>
