@@ -2,6 +2,8 @@
 export const prerender = false;
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
 
+import postEdit from "../../../scripts/post-edit.ts?url";
+
 const DEFAULT_FOLDER = "noticias";
 const RESOURCE_TYPE = "image";
 ---
@@ -337,7 +339,5 @@ const RESOURCE_TYPE = "image";
 		}
 	</style>
 
-	<script type="module">
-		import "/src/scripts/post-edit.ts";
-	</script>
+	<script type="module" src={postEdit}></script>
 </DashboardLayout>
