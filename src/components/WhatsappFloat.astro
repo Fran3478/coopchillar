@@ -1,12 +1,9 @@
 ---
-const {
-	phone = "5491123456789",
-	message = "¡Hola! Quería hacer una consulta.",
-	position = "right",
-} = Astro.props;
+const { message = "Hola! Quería hacer una consulta.", position = "right" } =
+	Astro.props;
 
 const encodedMsg = encodeURIComponent(message);
-const href = `https://wa.me/${phone}?text=${encodedMsg}`;
+const href = `https://wa.me/5492281491794?text=${encodedMsg}`;
 
 const sideClass = position === "left" ? "left: 18px;" : "right: 18px;";
 ---
